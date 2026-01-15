@@ -1,0 +1,217 @@
+.signature-flow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signature-flow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.signature-flow__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-gray-200);
+  background-color: var(--color-white);
+  border-radius: var(--spacing-sm) var(--spacing-sm) 0 0;
+}
+
+.signature-flow__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.signature-flow__close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  color: var(--color-gray-500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--spacing-xs);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.signature-flow__close:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+}
+
+.signature-flow__body {
+  position: relative;
+  background-color: var(--color-white);
+  border-radius: 0 0 var(--spacing-sm) var(--spacing-sm);
+  padding: var(--spacing-lg);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.signature-flow__document-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+  margin: 0 0 var(--spacing-lg) 0;
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.signature-flow__signature-area {
+  margin-bottom: var(--spacing-lg);
+}
+
+.signature-flow__canvas {
+  width: 100%;
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--spacing-xs);
+  cursor: crosshair;
+  background-color: var(--color-white);
+  touch-action: none;
+}
+
+.signature-flow__canvas-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  text-align: center;
+  margin-top: var(--spacing-xs);
+}
+
+.signature-flow__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.signature-flow__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.signature-flow__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+}
+
+.signature-flow__input,
+.signature-flow__textarea,
+.signature-flow__select {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.signature-flow__input:focus,
+.signature-flow__textarea:focus,
+.signature-flow__select:focus {
+  outline: none;
+  border-color: var(--color-gray-900);
+}
+
+.signature-flow__textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.signature-flow__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.signature-flow__actions-right {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.signature-flow__button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.signature-flow__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.signature-flow__button--primary {
+  background-color: var(--color-gray-900);
+  color: var(--color-white);
+}
+
+.signature-flow__button--primary:hover:not(:disabled) {
+  background-color: var(--color-gray-800);
+}
+
+.signature-flow__button--secondary {
+  background-color: transparent;
+  color: var(--color-gray-700);
+  border-color: var(--color-gray-300);
+}
+
+.signature-flow__button--secondary:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+}
+
+.signature-flow__button--cancel {
+  background-color: transparent;
+  color: var(--color-gray-700);
+  border-color: var(--color-gray-300);
+}
+
+.signature-flow__button--cancel:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+}
+
+.signature-flow__button--decline {
+  background-color: transparent;
+  color: #DC2626;
+  border-color: #DC2626;
+}
+
+.signature-flow__button--decline:hover {
+  background-color: #FEE2E2;
+}
+
+.signature-flow__decline-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-gray-200);
+}

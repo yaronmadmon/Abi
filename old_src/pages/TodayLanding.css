@@ -1,0 +1,118 @@
+.today-landing {
+  width: 100%;
+  min-height: 100%;
+}
+
+.today-landing__header {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.today-landing__header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.today-landing__header-actions {
+  flex-shrink: 0;
+}
+
+.today-landing__title {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #000000;
+  margin: 0 0 var(--spacing-sm) 0;
+  letter-spacing: -0.02em;
+}
+
+.today-landing__welcome {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-500);
+  margin: 0;
+  font-weight: 400;
+}
+
+.today-landing__cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+@media (min-width: 768px) {
+  .today-landing__cards {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.today-landing__quick-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+@media (min-width: 768px) {
+  .today-landing__quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .today-landing__quick-actions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.today-landing__entry-points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.today-landing__entry-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--spacing-2xl);
+  background-color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.today-landing__entry-point:active {
+  transform: scale(0.98);
+}
+
+.today-landing__entry-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+
+.today-landing__entry-content {
+  width: 100%;
+}
+
+.today-landing__entry-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.today-landing__entry-description {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-500);
+  margin: 0;
+}

@@ -1,0 +1,100 @@
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--spacing-sm);
+}
+
+.task-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.task-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 640px) {
+  .task-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.task-form__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+}
+
+.task-form__input,
+.task-form__textarea,
+.task-form__select {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  color: var(--color-gray-900);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--spacing-xs);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.task-form__input:focus,
+.task-form__textarea:focus,
+.task-form__select:focus {
+  border-color: var(--color-gray-400);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+.task-form__textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.task-form__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm);
+}
+
+.task-form__button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--spacing-xs);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.task-form__button--cancel {
+  color: var(--color-gray-700);
+  background-color: var(--color-gray-100);
+}
+
+.task-form__button--cancel:hover {
+  background-color: var(--color-gray-200);
+}
+
+.task-form__button--submit {
+  color: var(--color-white);
+  background-color: var(--color-gray-900);
+}
+
+.task-form__button--submit:hover:not(:disabled) {
+  background-color: var(--color-gray-800);
+}
+
+.task-form__button--submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

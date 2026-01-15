@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   THEME SYSTEM - CSS Variables
+   ============================================ */
+
+/* Light Mode - Default */
+:root,
+:root.light-mode {
+  /* Colors */
+  --background: #FAFAF8;
+  --foreground: #1a1a1a;
+  --card-bg: #FFFFFF;
+  --card-border: rgba(0, 0, 0, 0.06);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --icon-color: #4a5568;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-tertiary: #718096;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --input-bg: #FFFFFF;
+  --input-border: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode */
+:root.dark-mode {
+  /* Colors - True dark with warmth */
+  --background: #0f0f0f;
+  --foreground: #ededed;
+  --card-bg: #1a1a1a;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --icon-color: #a0a0a0;
+  --text-primary: #ededed;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  --border-color: rgba(255, 255, 255, 0.12);
+  --input-bg: #1a1a1a;
+  --input-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Mobile Mode - Default */
+body.mobile-mode {
+  --content-max-width: 100%;
+  --content-padding: 1.5rem;
+  --card-padding: 1.25rem;
+  --spacing-unit: 0.75rem;
+}
+
+body.mobile-mode .max-w-2xl {
+  max-width: 42rem; /* 672px - narrow mobile-friendly width */
+}
+
+body.mobile-mode .max-w-4xl {
+  max-width: 56rem; /* 896px */
+}
+
+/* Desktop Mode */
+body.desktop-mode {
+  --content-max-width: 100%;
+  --content-padding: 2rem;
+  --card-padding: 1.5rem;
+  --spacing-unit: 1rem;
+}
+
+body.desktop-mode .max-w-2xl {
+  max-width: 80rem; /* 1280px - wider desktop width */
+}
+
+body.desktop-mode .max-w-4xl {
+  max-width: 90rem; /* 1440px */
+}
+
+body.desktop-mode .max-w-6xl {
+  max-width: 100rem; /* 1600px */
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Content container respects view mode */
+.max-w-2xl,
+.max-w-4xl {
+  max-width: var(--content-max-width, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--content-padding, 1.5rem);
+  padding-right: var(--content-padding, 1.5rem);
+}
+
+/* Subtle edge fade / vignette overlay
+   Creates a soft, premium edge fade that gently dissolves into the browser frame.
+   Extremely subtle - barely perceptible but creates depth and immersion.
+*/
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  /* Radial vignette: very subtle warm fade from edges */
+  background: radial-gradient(
+    ellipse 120% 120% at center,
+    transparent 0%,
+    transparent 65%,
+    rgba(248, 246, 243, 0.015) 80%,
+    rgba(245, 243, 240, 0.025) 90%,
+    rgba(242, 240, 237, 0.035) 100%
+  );
+  /* Ensures smooth rendering */
+  will-change: opacity;
+  transition: opacity 0.3s ease;
+}
+
+/* Dark mode vignette adjustment */
+.dark-mode body::before {
+  background: radial-gradient(
+    ellipse 120% 120% at center,
+    transparent 0%,
+    transparent 65%,
+    rgba(15, 15, 15, 0.3) 80%,
+    rgba(10, 10, 10, 0.5) 90%,
+    rgba(5, 5, 5, 0.7) 100%
+  );
+}
+
+/* Global keyframes for animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background-color: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+    padding: var(--card-padding, 1.25rem);
+  }
+  
+  .glass-card:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-6 py-3 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-200 active:scale-95;
+  }
+  
+  .btn-secondary {
+    background-color: var(--card-bg);
+    backdrop-filter: blur(8px);
+    color: var(--text-primary);
+    font-medium: true;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.2s ease;
+  }
+  
+  .btn-secondary:hover {
+    background-color: var(--card-bg);
+    opacity: 0.9;
+  }
+
+  /* Smooth animations */
+  .animate-fade-in {
+    animation: fadeIn 200ms ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area for bottom nav - using inline style in component instead */
+  
+  /* Page bottom padding to account for bottom nav (64px) + input bar (80px) + spacing */
+  .page-with-bottom-nav {
+    padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+  }
+}

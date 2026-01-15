@@ -1,0 +1,178 @@
+.device-card {
+  padding: var(--spacing-md);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.device-card:last-child {
+  margin-bottom: 0;
+}
+
+.device-card:hover {
+  border-color: var(--color-gray-300);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.device-card--offline {
+  opacity: 0.6;
+}
+
+.device-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.device-card__icon {
+  font-size: var(--font-size-2xl);
+  flex-shrink: 0;
+}
+
+.device-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.device-card__name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.device-card__state {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+}
+
+.device-card__status {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.device-card__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.device-card__toggle {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.device-card__toggle:hover {
+  background-color: var(--color-gray-200);
+  border-color: var(--color-gray-400);
+}
+
+.device-card__toggle--on {
+  background-color: var(--color-gray-900);
+  color: var(--color-white);
+  border-color: var(--color-gray-900);
+}
+
+.device-card__toggle--on:hover {
+  background-color: var(--color-gray-800);
+}
+
+.device-card__brightness {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.device-card__brightness-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-700);
+  font-weight: var(--font-weight-medium);
+}
+
+.device-card__brightness-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-gray-200);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.device-card__brightness-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-gray-900);
+  cursor: pointer;
+}
+
+.device-card__brightness-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-gray-900);
+  cursor: pointer;
+  border: none;
+}
+
+.device-card__temperature {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.device-card__temperature-display {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  text-align: center;
+}
+
+.device-card__temperature-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.device-card__temp-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.device-card__temp-button:hover {
+  background-color: var(--color-gray-200);
+}
+
+.device-card__offline-message {
+  padding: var(--spacing-sm);
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-600);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}

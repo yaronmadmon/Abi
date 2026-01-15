@@ -1,0 +1,105 @@
+.smart-prompt {
+  padding: var(--spacing-md);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.smart-prompt--cheer {
+  border-left: 3px solid #F59E0B;
+  background-color: #FEF3C7;
+}
+
+.smart-prompt--clarifying {
+  border-left: 3px solid #3B82F6;
+  background-color: #DBEAFE;
+}
+
+.smart-prompt--reflection {
+  border-left: 3px solid #10B981;
+  background-color: #D1FAE5;
+}
+
+.smart-prompt--followup {
+  border-left: 3px solid #8B5CF6;
+  background-color: #EDE9FE;
+}
+
+.smart-prompt__content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.smart-prompt__icon {
+  font-size: var(--font-size-xl);
+  flex-shrink: 0;
+}
+
+.smart-prompt__text {
+  flex: 1;
+}
+
+.smart-prompt__question {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.smart-prompt__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.smart-prompt__action-button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-white);
+  color: var(--color-gray-900);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.smart-prompt__action-button:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+}
+
+.smart-prompt__dismiss {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  border-radius: var(--spacing-xs);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.smart-prompt__dismiss:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+}

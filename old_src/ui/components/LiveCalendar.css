@@ -1,0 +1,42 @@
+.live-calendar {
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.live-calendar__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.live-calendar__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.live-calendar__date {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+}
+
+.live-calendar__content {
+  flex: 1;
+}
+
+.live-calendar__empty {
+  padding: var(--spacing-xl) 0;
+  text-align: center;
+}
+
+.live-calendar__empty-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin: 0;
+}

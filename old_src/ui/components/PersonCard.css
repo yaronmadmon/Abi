@@ -1,0 +1,118 @@
+.person-card {
+  background-color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.person-card:active {
+  transform: scale(0.98);
+}
+
+.person-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.person-card__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-700);
+  flex-shrink: 0;
+}
+
+.person-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.person-card__name {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--spacing-xs) 0;
+  line-height: var(--line-height-tight);
+}
+
+.person-card__role {
+  font-size: var(--font-size-base);
+  color: var(--color-gray-500);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.person-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 0.5px solid var(--color-gray-200);
+}
+
+.person-card__detail-item {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.person-card__detail-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-500);
+  min-width: 60px;
+}
+
+.person-card__detail-value {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-900);
+  line-height: var(--line-height-normal);
+}
+
+.person-card__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-lg);
+  border-top: 0.5px solid var(--color-gray-200);
+}
+
+.person-card__action-button {
+  flex: 1;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+
+.person-card__action-button:active {
+  background-color: var(--color-gray-200);
+  transform: scale(0.97);
+}
+
+.person-card__action-button--primary {
+  background-color: var(--color-gray-900);
+  color: var(--color-white);
+}
+
+.person-card__action-button--primary:active {
+  background-color: var(--color-gray-800);
+}

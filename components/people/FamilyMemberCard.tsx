@@ -1,0 +1,280 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import { Phone, Mail, MessageSquare, Edit2, Save, X, Camera, User, Trash2 } from 'lucide-react'
+import type { FamilyMember } from '@/types/home'
+import { showToast } from '../feedback/ToastContainer'
+
+interface FamilyMemberCardProps {
+  member: FamilyMember
+  onUpdate: (updated: FamilyMember) => void
+  onDelete: (id: string) => void
+}
+
+export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyMemberCardProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [name, setName] = useState(member.name)
+  const [relationship, setRelationship] = useState(member.relationship || '')
+  const [age, setAge] = useState(member.age?.toString() || '')
+  const [notes, setNotes] = useState(member.notes || '')
+  const [phone, setPhone] = useState(member.phone || '')
+  const [email, setEmail] = useState(member.email || '')
+  const [photo, setPhoto] = useState(member.photo || '')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const base64 = reader.result as string
+        setPhoto(base64)
+        if (!isEditing) {
+          // Auto-save photo if not in edit mode
+          onUpdate({ ...member, photo: base64, updatedAt: new Date().toISOString() })
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleSave = () => {
+    try {
+      onUpdate({
+        ...member,
+        name: name.trim(),
+        relationship: relationship.trim() || undefined,
+        age: age ? parseInt(age) : undefined,
+        notes: notes.trim() || undefined,
+        phone: phone.trim() || undefined,
+        email: email.trim() || undefined,
+        photo: photo || undefined,
+        updatedAt: new Date().toISOString(),
+      })
+      setIsEditing(false)
+      showToast('Family member updated', 'success')
+    } catch (error) {
+      showToast('Couldn\'t update family member', 'error')
+    }
+  }
+
+  const handleCancel = () => {
+    setName(member.name)
+    setRelationship(member.relationship || '')
+    setAge(member.age?.toString() || '')
+    setNotes(member.notes || '')
+    setPhone(member.phone || '')
+    setEmail(member.email || '')
+    setPhoto(member.photo || '')
+    setIsEditing(false)
+  }
+
+  const handleCall = () => {
+    if (phone) {
+      window.location.href = `tel:${phone}`
+    }
+  }
+
+  const handleText = () => {
+    if (phone) {
+      window.location.href = `sms:${phone}`
+    }
+  }
+
+  const handleEmail = () => {
+    if (email) {
+      window.location.href = `mailto:${email}`
+    }
+  }
+
+  return (
+    <div className="glass-card p-5">
+      <div className="flex items-start gap-4">
+        {/* Profile Image */}
+        <div className="relative flex-shrink-0">
+          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+            {photo ? (
+              <img src={photo} alt={member.name} className="w-full h-full object-cover" />
+            ) : (
+              <User className="w-10 h-10 text-gray-400" strokeWidth={1.5} />
+            )}
+          </div>
+          {isEditing && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors shadow-sm"
+              title="Change photo"
+            >
+              <Camera className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoSelect}
+            className="hidden"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {isEditing ? (
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
+              />
+              <input
+                type="text"
+                value={relationship}
+                onChange={(e) => setRelationship(e.target.value)}
+                placeholder="Relationship (optional)"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Phone (optional)"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email (optional)"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <input
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="Age (optional)"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Notes (optional)"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                rows={2}
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSave}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Save className="w-4 h-4" strokeWidth={2} />
+                  <span>Save</span>
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+                >
+                  <X className="w-4 h-4" strokeWidth={2} />
+                  <span>Cancel</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
+                  {member.relationship && (
+                    <p className="text-sm text-gray-600">{member.relationship}</p>
+                  )}
+                  {member.age && (
+                    <p className="text-sm text-gray-500">{member.age} years old</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Edit"
+                  >
+                    <Edit2 className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm(`Delete ${member.name}?`)) {
+                        onDelete(member.id)
+                      }
+                    }}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                </div>
+              </div>
+
+              {member.notes && (
+                <p className="text-sm text-gray-600 mb-3">{member.notes}</p>
+              )}
+
+              {/* Contact Info */}
+              {(member.phone || member.email) && (
+                <div className="mb-3 space-y-1">
+                  {member.phone && (
+                    <p className="text-sm text-gray-600">{member.phone}</p>
+                  )}
+                  {member.email && (
+                    <p className="text-sm text-gray-600">{member.email}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Quick Actions */}
+              {(member.phone || member.email) && (
+                <div className="flex gap-2">
+                  {member.phone && (
+                    <>
+                      <button
+                        onClick={handleCall}
+                        className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2"
+                        title="Call"
+                      >
+                        <Phone className="w-4 h-4" strokeWidth={2} />
+                        <span className="text-sm font-medium">Call</span>
+                      </button>
+                      <button
+                        onClick={handleText}
+                        className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors flex items-center justify-center gap-2"
+                        title="Text"
+                      >
+                        <MessageSquare className="w-4 h-4" strokeWidth={2} />
+                        <span className="text-sm font-medium">Text</span>
+                      </button>
+                    </>
+                  )}
+                  {member.email && (
+                    <button
+                      onClick={handleEmail}
+                      className="flex-1 px-3 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+                      title="Email"
+                    >
+                      <Mail className="w-4 h-4" strokeWidth={2} />
+                      <span className="text-sm font-medium">Email</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

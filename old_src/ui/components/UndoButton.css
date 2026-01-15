@@ -1,0 +1,37 @@
+.undo-button {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.undo-button__button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: transparent;
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.undo-button__button:hover:not(:disabled) {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+  color: var(--color-gray-900);
+}
+
+.undo-button__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.undo-button__button--undo:hover:not(:disabled) {
+  border-color: #3B82F6;
+  color: #3B82F6;
+}
+
+.undo-button__button--redo:hover:not(:disabled) {
+  border-color: #10B981;
+  color: #10B981;
+}

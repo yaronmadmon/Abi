@@ -1,0 +1,62 @@
+.input-area {
+  width: 100%;
+  position: relative;
+}
+
+.input-area__textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-900);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--spacing-sm);
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.input-area__textarea:focus {
+  border-color: var(--color-gray-400);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+.input-area__textarea:disabled {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-500);
+  cursor: not-allowed;
+}
+
+.input-area__textarea--brain-dump {
+  min-height: 100px;
+}
+
+.input-area__submit {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  right: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-white);
+  background-color: var(--color-gray-700);
+  border: none;
+  border-radius: var(--spacing-xs);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.input-area__submit:hover:not(:disabled) {
+  background-color: var(--color-gray-800);
+}
+
+.input-area__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-area__textarea::placeholder {
+  color: var(--color-gray-400);
+}

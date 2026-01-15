@@ -1,0 +1,336 @@
+/**
+ * AI Router
+ * Routes interpreted intents to appropriate module handlers
+ * Clean separation between AI understanding and app behavior
+ */
+
+import type { AIIntent, TaskPayload, MealPayload, ShoppingPayload, ReminderPayload, AppointmentPayload, FamilyPayload, PetPayload } from "./schemas/intentSchema";
+import type { ModuleRoute, RouterResult } from "./schemas/routerSchema";
+import { tasksHandler } from "./handlers/tasksHandler";
+import { mealsHandler } from "./handlers/mealsHandler";
+import { shoppingHandler } from "./handlers/shoppingHandler";
+import { remindersHandler } from "./handlers/remindersHandler";
+import { appointmentsHandler } from "./handlers/appointmentsHandler";
+import { familyHandler } from "./handlers/familyHandler";
+import { petsHandler } from "./handlers/petsHandler";
+
+/**
+ * Route intent to appropriate module
+ * Returns routing result with action and payload
+ */
+export async function routeIntent(intent: AIIntent): Promise<RouterResult> {
+  switch (intent.type) {
+    case "task":
+      return routeTask(intent.payload as TaskPayload);
+
+    case "meal":
+      return routeMeal(intent.payload as MealPayload);
+
+    case "shopping":
+      return routeShopping(intent.payload as ShoppingPayload);
+
+    case "reminder":
+      return routeReminder(intent.payload as ReminderPayload);
+
+    case "appointment":
+      return routeAppointment(intent.payload as AppointmentPayload);
+
+    case "family":
+      return routeFamily(intent.payload as FamilyPayload);
+
+    case "pet":
+      return routePet(intent.payload as PetPayload);
+
+    case "clarification":
+      return {
+        success: true,
+        route: "none",
+        message: "Clarification needed",
+        payload: {
+          question: intent.followUpQuestion,
+        },
+      };
+
+    case "unknown":
+      return {
+        success: false,
+        route: "none",
+        error: intent.followUpQuestion || "Could not understand the request",
+      };
+
+    default:
+      return {
+        success: false,
+        route: "none",
+        error: "Unknown intent type",
+      };
+  }
+}
+
+/**
+ * Route task intent
+ */
+async function routeTask(payload: TaskPayload): Promise<RouterResult> {
+  if (!payload || !payload.title) {
+    return {
+      success: false,
+      route: "tasks",
+      error: "Task title is required",
+    };
+  }
+
+  try {
+    console.log('🔄 Creating task:', payload);
+    await tasksHandler.create(payload);
+    console.log('✅ Task created successfully');
+    
+    const dateInfo = payload.dueDate 
+      ? ` for ${new Date(payload.dueDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`
+      : '';
+    return {
+      success: true,
+      route: "tasks",
+      message: `Task "${payload.title}"${dateInfo} has been added to your task list.`,
+      payload,
+    };
+  } catch (error) {
+    console.error('❌ Error in routeTask:', error);
+    return {
+      success: false,
+      route: "tasks",
+      error: error instanceof Error ? error.message : "Failed to create task",
+    };
+  }
+}
+
+/**
+ * Route meal intent
+ */
+async function routeMeal(payload: MealPayload): Promise<RouterResult> {
+  if (!payload || !payload.name) {
+    return {
+      success: false,
+      route: "meals",
+      error: "Meal name is required",
+    };
+  }
+
+  try {
+    await mealsHandler.create(payload);
+    const dayInfo = payload.day 
+      ? ` for ${payload.day.charAt(0).toUpperCase() + payload.day.slice(1)}`
+      : '';
+    return {
+      success: true,
+      route: "meals",
+      message: `"${payload.name}" has been added to your meal plan${dayInfo}.`,
+      payload,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      route: "meals",
+      error: error instanceof Error ? error.message : "Failed to create meal",
+    };
+  }
+}
+
+/**
+ * Route shopping intent
+ */
+async function routeShopping(payload: ShoppingPayload): Promise<RouterResult> {
+  if (!payload || !payload.items || payload.items.length === 0) {
+    return {
+      success: false,
+      route: "shopping",
+      error: "Shopping items are required",
+    };
+  }
+
+  try {
+    await shoppingHandler.create(payload);
+    const itemsList = payload.items.length === 1 
+      ? payload.items[0]
+      : payload.items.length === 2
+      ? `${payload.items[0]} and ${payload.items[1]}`
+      : `${payload.items.slice(0, -1).join(', ')}, and ${payload.items[payload.items.length - 1]}`;
+    return {
+      success: true,
+      route: "shopping",
+      message: `${itemsList} ${payload.items.length === 1 ? 'has' : 'have'} been added to your shopping list.`,
+      payload,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      route: "shopping",
+      error: error instanceof Error ? error.message : "Failed to add shopping items",
+    };
+  }
+}
+
+/**
+ * Route reminder intent
+ */
+async function routeReminder(payload: ReminderPayload): Promise<RouterResult> {
+  if (!payload || !payload.title) {
+    return {
+      success: false,
+      route: "reminders",
+      error: "Reminder title is required",
+    };
+  }
+
+  try {
+    console.log('🔄 Creating reminder:', payload);
+    // For now, reminders are treated as tasks
+    await remindersHandler.create(payload);
+    console.log('✅ Reminder created successfully');
+    
+    const timeInfo = payload.time ? ` at ${payload.time}` : '';
+    const dateInfo = payload.date ? ` on ${new Date(payload.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}` : '';
+    return {
+      success: true,
+      route: "reminders",
+      message: `Reminder "${payload.title}"${dateInfo}${timeInfo} has been added.`,
+      payload,
+    };
+  } catch (error) {
+    console.error('❌ Error in routeReminder:', error);
+    return {
+      success: false,
+      route: "reminders",
+      error: error instanceof Error ? error.message : "Failed to create reminder",
+    };
+  }
+}
+
+/**
+ * Route appointment intent
+ */
+async function routeAppointment(payload: AppointmentPayload): Promise<RouterResult> {
+  if (!payload || !payload.title) {
+    return {
+      success: false,
+      route: "appointments",
+      error: "Appointment title is required",
+    };
+  }
+
+  try {
+    await appointmentsHandler.create(payload);
+    
+    // Generate a detailed confirmation message
+    let message = `Your ${payload.title} appointment`;
+    if (payload.date) {
+      const date = new Date(payload.date);
+      const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      message += ` is scheduled for ${dateStr}`;
+    } else {
+      message += ` has been scheduled`;
+    }
+    if (payload.time) {
+      // Format time nicely (e.g., "3:00 PM")
+      const [hours, minutes] = payload.time.split(':');
+      const hour = parseInt(hours);
+      const min = minutes || '00';
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+      message += ` at ${displayHour}:${min} ${period}`;
+    }
+    message += '.';
+    
+    return {
+      success: true,
+      route: "appointments",
+      message,
+      payload,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      route: "appointments",
+      error: error instanceof Error ? error.message : "Failed to create appointment",
+    };
+  }
+}
+
+/**
+ * Route family intent
+ */
+async function routeFamily(payload: FamilyPayload): Promise<RouterResult> {
+  if (!payload || !payload.name) {
+    return {
+      success: false,
+      route: "none",
+      error: "Family member name is required",
+    };
+  }
+
+  try {
+    await familyHandler.create(payload);
+    
+    let message = `"${payload.name}" has been added to your family`;
+    if (payload.relationship) {
+      message += ` as your ${payload.relationship}`;
+    }
+    message += '.';
+    
+    return {
+      success: true,
+      route: "family",
+      message,
+      payload,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      route: "family",
+      error: error instanceof Error ? error.message : "Failed to add family member",
+    };
+  }
+}
+
+/**
+ * Route pet intent
+ */
+async function routePet(payload: PetPayload): Promise<RouterResult> {
+  if (!payload || !payload.name) {
+    return {
+      success: false,
+      route: "none",
+      error: "Pet name is required",
+    };
+  }
+
+  if (!payload.type) {
+    return {
+      success: false,
+      route: "none",
+      error: "Pet type is required",
+    };
+  }
+
+  try {
+    await petsHandler.create(payload);
+    
+    let message = `"${payload.name}" has been added to your pets`;
+    if (payload.type) {
+      message += ` as a ${payload.type}`;
+    }
+    message += '.';
+    
+    return {
+      success: true,
+      route: "pets",
+      message,
+      payload,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      route: "pets",
+      error: error instanceof Error ? error.message : "Failed to add pet",
+    };
+  }
+}
