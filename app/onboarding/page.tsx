@@ -130,10 +130,10 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-6">
             <h1 className="text-4xl font-semibold text-gray-900 mb-2">
-              You're all set! 🎉
+              You&apos;re all set! 🎉
             </h1>
             <p className="text-xl text-gray-600">
-              Let's get started managing your home.
+              Let&apos;s get started managing your home.
             </p>
             <button onClick={handleNext} className="btn-primary w-full py-6 text-xl">
               Go to Dashboard

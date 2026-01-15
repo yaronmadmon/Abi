@@ -17,6 +17,14 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
   const [emailAddress, setEmailAddress] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
 
+  // Initialize share link on mount
+  useEffect(() => {
+    if (isOpen && !shareLink) {
+      const link = fileUrl
+      setShareLink(link)
+    }
+  }, [isOpen, fileUrl, shareLink])
+
   if (!isOpen) return null
 
   // Generate shareable link (in production, this would be a server-generated link)
@@ -37,14 +45,6 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
     setShareLink(link)
     return link
   }
-  
-  // Initialize share link on mount
-  useEffect(() => {
-    if (isOpen && !shareLink) {
-      const link = fileUrl
-      setShareLink(link)
-    }
-  }, [isOpen, fileUrl, shareLink])
 
   const copyToClipboard = async (text: string) => {
     try {

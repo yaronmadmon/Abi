@@ -20,9 +20,9 @@ export default function SignInPage() {
     }
 
     // Dynamically import and initialize Supabase
-    import('@/lib/supabase-client').then(({ useSupabase }) => {
+    import('@/lib/supabase-client').then(({ createClient }) => {
       try {
-        const client = useSupabase()
+        const client = createClient()
         setSupabase(client)
         setSupabaseReady(true)
       } catch (error) {
@@ -204,7 +204,7 @@ export default function SignInPage() {
           </div>
 
           <p className="mt-6 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <a href="/auth/signup" className="text-blue-500 hover:text-blue-600">
               Sign up
             </a>

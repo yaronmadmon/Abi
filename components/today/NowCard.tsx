@@ -32,7 +32,7 @@ export default function NowCard() {
     return (
       <div className="glass-card p-5 mb-4">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Now</h2>
-        <p className="text-sm text-gray-500">Nothing urgent. You're all set.</p>
+        <p className="text-sm text-gray-500">Nothing urgent. You&apos;re all set.</p>
       </div>
     )
   }

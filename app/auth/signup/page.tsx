@@ -21,9 +21,9 @@ export default function SignUpPage() {
     }
 
     // Dynamically import and initialize Supabase
-    import('@/lib/supabase-client').then(({ useSupabase }) => {
+    import('@/lib/supabase-client').then(({ createClient }) => {
       try {
-        const client = useSupabase()
+        const client = createClient()
         setSupabase(client)
         setSupabaseReady(true)
       } catch (error) {
