@@ -157,7 +157,7 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
         setConversationContext('')
         setInput('')
         setImages([])
-        setImagePreviews.forEach(url => URL.revokeObjectURL(url))
+        imagePreviews.forEach(url => URL.revokeObjectURL(url))
         setImagePreviews([])
         
         // Call the handler with route and payload
