@@ -16,6 +16,9 @@ export default function FamilyPage() {
   const [newRelationship, setNewRelationship] = useState('')
   const [newAge, setNewAge] = useState('')
   const [newNotes, setNewNotes] = useState('')
+  const [newPhone, setNewPhone] = useState('')
+  const [newEmail, setNewEmail] = useState('')
+  const [newPhoto, setNewPhoto] = useState('')
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -227,6 +230,9 @@ export default function FamilyPage() {
                     setNewRelationship('')
                     setNewAge('')
                     setNewNotes('')
+                    setNewPhone('')
+                    setNewEmail('')
+                    setNewPhoto('')
                   }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                 >
