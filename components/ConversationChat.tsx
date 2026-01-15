@@ -27,12 +27,15 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
   const [isListening, setIsListening] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [conversationMode, setConversationMode] = useState(false)
+  const [images, setImages] = useState<string[]>([]) // Base64 encoded images
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]) // Preview URLs
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const recognitionRef = useRef<any>(null)
   const isSpeakingRef = useRef<boolean>(false)
   const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const conversationModeRef = useRef<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Initialize speech recognition
   useEffect(() => {
@@ -246,8 +249,8 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          input: inputText || (currentImages.length > 0 ? 'Analyze this image' : ''),
-          images: currentImages.length > 0 ? currentImages : undefined,
+          input: inputText || (images.length > 0 ? 'Analyze this image' : ''),
+          images: images.length > 0 ? images : undefined,
           conversationalMode: true, // Always conversational in ConversationChat
         }),
       })
@@ -350,6 +353,40 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     handleSubmit()
+  }
+
+  // Convert file to base64
+  const handleImageSelect = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      onError?.('Please select an image file')
+      return
+    }
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      onError?.('Image size must be less than 10MB')
+      return
+    }
+
+    try {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string
+        setImages(prev => [...prev, base64])
+        setImagePreviews(prev => [...prev, URL.createObjectURL(file)])
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('Error reading image:', error)
+      onError?.('Failed to read image')
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index))
+    if (imagePreviews[index]) {
+      URL.revokeObjectURL(imagePreviews[index])
+    }
+    setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
   return (
