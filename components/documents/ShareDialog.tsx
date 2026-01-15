@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { X, Mail, MessageCircle, Link2, Copy, Check } from 'lucide-react'
+import { showToast } from '@/components/feedback/ToastContainer'
 
 interface ShareDialogProps {
   isOpen: boolean
