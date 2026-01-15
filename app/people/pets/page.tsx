@@ -16,7 +16,11 @@ export default function PetsPage() {
   const [newType, setNewType] = useState('dog')
   const [newBreed, setNewBreed] = useState('')
   const [newAge, setNewAge] = useState('')
+  const [newBirthday, setNewBirthday] = useState('')
   const [newNotes, setNewNotes] = useState('')
+  const [newVetName, setNewVetName] = useState('')
+  const [newVetPhone, setNewVetPhone] = useState('')
+  const [newPhoto, setNewPhoto] = useState('')
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -249,7 +253,11 @@ export default function PetsPage() {
                     setNewType('dog')
                     setNewBreed('')
                     setNewAge('')
+                    setNewBirthday('')
                     setNewNotes('')
+                    setNewVetName('')
+                    setNewVetPhone('')
+                    setNewPhoto('')
                   }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                 >
