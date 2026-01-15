@@ -1,19 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSupabase } from '@/lib/supabase-client'
 import { showToast } from '@/components/feedback/ToastContainer'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const supabase = useSupabase()
+  const [supabaseReady, setSupabaseReady] = useState(false)
+  const [supabase, setSupabase] = useState<any>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    // Check if Supabase is configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      setSupabaseReady(false)
+      return
+    }
+
+    // Dynamically import and initialize Supabase
+    import('@/lib/supabase-client').then(({ useSupabase }) => {
+      try {
+        const client = useSupabase()
+        setSupabase(client)
+        setSupabaseReady(true)
+      } catch (error) {
+        console.error('Failed to initialize Supabase:', error)
+        setSupabaseReady(false)
+      }
+    })
+  }, [])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!supabase || !supabaseReady) {
+      showToast('Supabase not configured. Please check your environment variables.', 'error')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -35,6 +61,11 @@ export default function SignInPage() {
   }
 
   const handleSignInWithGoogle = async () => {
+    if (!supabase || !supabaseReady) {
+      showToast('Supabase not configured. Please check your environment variables.', 'error')
+      return
+    }
+
     setLoading(true)
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -48,6 +79,41 @@ export default function SignInPage() {
       showToast(error.message || 'Failed to sign in with Google', 'error')
       setLoading(false)
     }
+  }
+
+  if (!supabaseReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="w-full max-w-md">
+          <div className="glass-card p-8 text-center">
+            <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+              Setup Required
+            </h1>
+            <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+              Supabase is not configured. Please set up your environment variables.
+            </p>
+            <div className="space-y-3 text-left bg-blue-50 p-4 rounded-lg mb-6" style={{ backgroundColor: 'var(--card-bg)' }}>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Quick Setup:</p>
+              <ol className="text-sm space-y-2 list-decimal list-inside" style={{ color: 'var(--text-secondary)' }}>
+                <li>Open <code className="bg-gray-100 px-2 py-1 rounded text-xs">SETUP-SUPABASE.md</code></li>
+                <li>Create a Supabase project at <a href="https://supabase.com" target="_blank" className="text-blue-500 underline">supabase.com</a></li>
+                <li>Run the database schema</li>
+                <li>Create <code className="bg-gray-100 px-2 py-1 rounded text-xs">.env.local</code> with your keys</li>
+                <li>Restart the dev server</li>
+              </ol>
+            </div>
+            <a
+              href="https://supabase.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Set Up Supabase
+            </a>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

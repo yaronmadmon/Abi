@@ -2,6 +2,21 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Check if Supabase is configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // If Supabase is not configured, allow access (for development)
+  // This allows the app to run before Supabase is set up
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // In development, allow access to all routes
+    // In production, you should have these variables set
+    if (process.env.NODE_ENV === 'production') {
+      console.error('⚠️ Supabase environment variables are missing in production!')
+    }
+    return NextResponse.next()
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -9,24 +24,20 @@ export async function middleware(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    request.cookies,
-    (name, value, options) => {
-      request.cookies.set({ name, value, ...options })
-      response = NextResponse.next({
-        request: {
-          headers: request.headers,
+    supabaseUrl,
+    supabaseAnonKey,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
         },
-      })
-      response.cookies.set({ name, value, ...options })
-    },
-    (name, options) => {
-      request.cookies.delete({ name, ...options })
-      response = NextResponse.next({
-        request: {
-          headers: request.headers,
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
+            response.cookies.set(name, value, options)
+          })
         },
-      })
-      response.cookies.delete({ name, ...options })
+      },
     }
   )
 
