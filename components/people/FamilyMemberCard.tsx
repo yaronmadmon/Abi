@@ -73,20 +73,20 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
   }
 
   const handleCall = () => {
-    if (phone) {
-      window.location.href = `tel:${phone}`
+    if (member.phone) {
+      window.location.href = `tel:${member.phone}`
     }
   }
 
   const handleText = () => {
-    if (phone) {
-      window.location.href = `sms:${phone}`
+    if (member.phone) {
+      window.location.href = `sms:${member.phone}`
     }
   }
 
   const handleEmail = () => {
-    if (email) {
-      window.location.href = `mailto:${email}`
+    if (member.email) {
+      window.location.href = `mailto:${member.email}`
     }
   }
 
@@ -220,19 +220,23 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               </div>
 
-              {/* Contact Info - Clean display */}
+              {/* Contact Info - Always show if exists */}
               {(member.phone || member.email) && (
-                <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-1.5">
+                <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-2">
                   {member.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-gray-400" strokeWidth={2} />
-                      <span className="text-sm text-gray-700">{member.phone}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 flex-1">
+                        <Phone className="w-4 h-4 text-gray-400" strokeWidth={2} />
+                        <span className="text-sm text-gray-700">{member.phone}</span>
+                      </div>
                     </div>
                   )}
                   {member.email && (
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-gray-400" strokeWidth={2} />
-                      <span className="text-sm text-gray-700">{member.email}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 flex-1">
+                        <Mail className="w-4 h-4 text-gray-400" strokeWidth={2} />
+                        <span className="text-sm text-gray-700">{member.email}</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -246,23 +250,23 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               )}
 
-              {/* Quick Actions */}
+              {/* Quick Actions - Always visible if contact info exists */}
               {(member.phone || member.email) && (
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-3">
                   {member.phone && (
                     <>
                       <button
                         onClick={handleCall}
-                        className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2"
-                        title="Call"
+                        className="flex-1 px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                        title={`Call ${member.phone}`}
                       >
                         <Phone className="w-4 h-4" strokeWidth={2} />
                         <span className="text-sm font-medium">Call</span>
                       </button>
                       <button
                         onClick={handleText}
-                        className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors flex items-center justify-center gap-2"
-                        title="Text"
+                        className="flex-1 px-4 py-2.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 active:bg-green-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                        title={`Text ${member.phone}`}
                       >
                         <MessageSquare className="w-4 h-4" strokeWidth={2} />
                         <span className="text-sm font-medium">Text</span>
@@ -272,8 +276,8 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   {member.email && (
                     <button
                       onClick={handleEmail}
-                      className="flex-1 px-3 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
-                      title="Email"
+                      className={`px-4 py-2.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 active:bg-purple-200 transition-colors flex items-center justify-center gap-2 shadow-sm ${member.phone ? 'flex-1' : 'flex-1'}`}
+                      title={`Email ${member.email}`}
                     >
                       <Mail className="w-4 h-4" strokeWidth={2} />
                       <span className="text-sm font-medium">Email</span>
