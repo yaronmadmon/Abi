@@ -42,6 +42,11 @@ class AppointmentsHandler implements ModuleHandler {
     // Save appointments
     appointments.push(appointment);
     localStorage.setItem("appointments", JSON.stringify(appointments));
+    
+    // Trigger custom event for badge updates
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('appointmentsUpdated'));
+    }
   }
 }
 

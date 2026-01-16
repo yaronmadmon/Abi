@@ -7,6 +7,9 @@ import ToastContainer from '@/components/feedback/ToastContainer'
 import MockDataInitializer from '@/components/MockDataInitializer'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import ThemeToggles from '@/components/ThemeToggles'
+import MobilePreviewFrame from '@/components/preview/MobilePreviewFrame'
+import MobileAppShell from '@/components/preview/MobileAppShell'
+import DesktopLayout from '@/components/preview/DesktopLayout'
 
 export const metadata: Metadata = {
   title: 'AI Home Assistant',
@@ -22,25 +25,19 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen">
         <ThemeProvider>
-          <div 
-            className="sticky top-0 z-40 backdrop-blur-xl px-6 py-3 transition-colors"
-            style={{
-              backgroundColor: 'var(--background)',
-              borderBottom: '1px solid var(--border-color)',
-            }}
-          >
-            <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <GlobalSearchBar />
-              </div>
-              <ThemeToggles />
-            </div>
-          </div>
-          {children}
-          <BottomNavClient />
-          <VoiceAssistantWrapper />
-          <ToastContainer />
-          <MockDataInitializer />
+          <MobilePreviewFrame enablePreview={true}>
+            {/* Mobile App Shell - Replaces desktop layout in mobile preview */}
+            <MobileAppShell>
+              {children}
+            </MobileAppShell>
+            {/* Desktop Layout - Only renders when NOT in mobile preview */}
+            <DesktopLayout>
+              {children}
+            </DesktopLayout>
+            <VoiceAssistantWrapper />
+            <ToastContainer />
+            <MockDataInitializer />
+          </MobilePreviewFrame>
         </ThemeProvider>
       </body>
     </html>

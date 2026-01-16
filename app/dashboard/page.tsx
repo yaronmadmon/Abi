@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckSquare, UtensilsCrossed, ShoppingCart, Calendar } from 'lucide-react'
+import { CheckSquare, UtensilsCrossed, ShoppingCart, Calendar, FileText } from 'lucide-react'
 import Link from 'next/link'
 import type { HomeProfile, Task } from '@/types/home'
 
@@ -78,6 +78,13 @@ export default function DashboardPage() {
       href: '/dashboard/weekly',
       Icon: Calendar,
       color: 'from-purple-500 to-purple-600',
+    },
+    {
+      title: 'Notes',
+      description: 'Your notes and thoughts',
+      href: '/dashboard/notes',
+      Icon: FileText,
+      color: 'from-gray-500 to-gray-600',
     },
   ]
 

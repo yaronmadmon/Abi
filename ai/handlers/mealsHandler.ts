@@ -33,6 +33,11 @@ class MealsHandler implements ModuleHandler {
     // Save meals
     meals.push(meal);
     localStorage.setItem("meals", JSON.stringify(meals));
+    
+    // Trigger custom event for updates
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('mealsUpdated'));
+    }
   }
 }
 

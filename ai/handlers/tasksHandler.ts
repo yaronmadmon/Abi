@@ -42,6 +42,9 @@ class TasksHandler implements ModuleHandler {
       tasks.push(task);
       window.localStorage.setItem("tasks", JSON.stringify(tasks));
       
+      // Trigger custom event for badge updates
+      window.dispatchEvent(new Event('tasksUpdated'));
+      
       console.log('✅ Task created successfully:', task.id, task.title);
     } catch (error) {
       console.error('❌ Error creating task:', error);

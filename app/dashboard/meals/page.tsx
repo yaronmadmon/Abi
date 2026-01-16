@@ -63,7 +63,7 @@ export default function MealsPage() {
       addMeal(payload.name || 'New meal', day, mealType)
       // Reload meals to show the new one
       loadMeals()
-      showToast('Meal added', 'success')
+      // Note: Confirmation already shown by AIInputBar
     }
   }
 
@@ -94,7 +94,7 @@ export default function MealsPage() {
           <div className="w-12"></div>
         </div>
 
-        <AIInputBar onIntent={handleAIIntent} />
+        <AIInputBar onIntent={handleAIIntent} context="meal" />
 
         {!showAddForm ? (
           <button

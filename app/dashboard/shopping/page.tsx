@@ -80,7 +80,7 @@ export default function ShoppingPage() {
       })
       // Reload items to show the new ones
       loadItems()
-      showToast(`${items.length === 1 ? 'Item' : 'Items'} added`, 'success')
+      // Note: Confirmation already shown by AIInputBar
     }
   }
 
@@ -110,7 +110,7 @@ export default function ShoppingPage() {
           <div className="w-12"></div>
         </div>
 
-        <AIInputBar onIntent={handleAIIntent} />
+        <AIInputBar onIntent={handleAIIntent} context="shopping" />
 
         {!showAddForm ? (
           <button

@@ -32,6 +32,11 @@ export default function HomePage() {
   const handleAIIntent = (route: string, payload: any) => {
     if (route === 'tasks') {
       loadTasks()
+    } else if (route === 'notes' && payload?.id) {
+      // Navigate to notes list page when note is created
+      if (typeof window !== 'undefined') {
+        window.location.href = '/dashboard/notes'
+      }
     }
   }
 
@@ -85,8 +90,8 @@ export default function HomePage() {
           </SummaryCard>
         </div>
 
-        {/* AI Input */}
-        <AIInputBar onIntent={handleAIIntent} />
+        {/* AI Input - defaults to task if ambiguous */}
+        <AIInputBar onIntent={handleAIIntent} context="task" />
 
         {/* Full Task List */}
         <div className="space-y-4">

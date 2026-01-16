@@ -54,7 +54,7 @@ export default function TasksPage() {
     saveTasks([...tasks, task])
     setNewTaskTitle('')
     setShowAddForm(false)
-    showToast('Task added', 'success')
+    showToast('Added to To-Dos', 'success')
   }
 
   const toggleTask = (id: string) => {
@@ -112,7 +112,7 @@ export default function TasksPage() {
         loadTasks()
       }
       setTimeout(reloadTasks, 100)
-      showToast('Reminder added', 'success')
+      // Note: Confirmation already shown by AIInputBar, no need to duplicate
     }
   }
   
@@ -156,7 +156,7 @@ export default function TasksPage() {
           <div className="w-12"></div>
         </div>
 
-        <AIInputBar onIntent={handleAIIntent} />
+        <AIInputBar onIntent={handleAIIntent} context="task" />
 
         {!showAddForm ? (
           <button

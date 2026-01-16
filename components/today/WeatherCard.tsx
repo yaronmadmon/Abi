@@ -40,7 +40,10 @@ export default function WeatherCard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lon: number } | null>(null)
+  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lon: number; name?: string } | null>(null)
+  const [locationName, setLocationName] = useState<string | null>(null)
+  const [showLocationInput, setShowLocationInput] = useState(false)
+  const [manualLocation, setManualLocation] = useState('')
 
   useEffect(() => {
     loadWeather()
@@ -54,22 +57,59 @@ export default function WeatherCard() {
       setLoading(true)
       setError(null)
 
-      // Try to get user's location
+      // Check if user has a saved location preference
+      const savedLocation = localStorage.getItem('weatherLocation')
+      if (savedLocation) {
+        try {
+          const { lat, lon, name } = JSON.parse(savedLocation)
+          await fetchWeather(lat, lon, false, name)
+          return
+        } catch (e) {
+          console.error('Error loading saved location:', e)
+        }
+      }
+
+      // Try to get user's location with better options
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords
+            console.log('📍 Location detected:', latitude, longitude)
             await fetchWeather(latitude, longitude)
           },
-          async () => {
-            // If geolocation fails, use default location (can be configured)
-            // Default to a major city (e.g., New York)
-            await fetchWeather(40.7128, -74.0060)
+          async (error) => {
+            console.warn('Geolocation error:', error.message)
+            // If geolocation fails, try to get location from IP or use a sensible default
+            // For now, we'll show an error and let user know they can set location manually
+            setError('Location access denied. Using default location.')
+            // Try to get approximate location from IP via a geolocation service
+            try {
+              const ipResponse = await fetch('https://ipapi.co/json/')
+              if (ipResponse.ok) {
+                const ipData = await ipResponse.json()
+                if (ipData.latitude && ipData.longitude) {
+                  console.log('📍 Using IP-based location:', ipData.latitude, ipData.longitude)
+                  await fetchWeather(ipData.latitude, ipData.longitude, false, ipData.city || ipData.region)
+                  return
+                }
+              }
+            } catch (ipError) {
+              console.error('IP geolocation failed:', ipError)
+            }
+            // Final fallback - but we should let user know
+            setError('Unable to detect location. Please allow location access or set a location manually.')
+            await fetchWeather(40.7128, -74.0060, false, 'New York, NY')
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 minutes
           }
         )
       } else {
         // Fallback to default location
-        await fetchWeather(40.7128, -74.0060)
+        setError('Geolocation not supported. Using default location.')
+        await fetchWeather(40.7128, -74.0060, false, 'New York, NY')
       }
     } catch (err) {
       console.error('Weather error:', err)
@@ -78,7 +118,7 @@ export default function WeatherCard() {
     }
   }
 
-  const fetchWeather = async (lat: number, lon: number, includeForecast: boolean = false) => {
+  const fetchWeather = async (lat: number, lon: number, includeForecast: boolean = false, locationName?: string) => {
     try {
       // Use our API route to fetch weather (proxies to OpenWeatherMap or wttr.in)
       const response = await fetch(
@@ -86,7 +126,8 @@ export default function WeatherCard() {
       )
 
       if (!response.ok) {
-        throw new Error('Weather API error')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Weather API error')
       }
 
       const data = await response.json()
@@ -106,10 +147,17 @@ export default function WeatherCard() {
       })
       
       // Store location for forecast fetching
-      setCurrentLocation({ lat, lon })
-    } catch (err) {
+      const location = { lat, lon, name: locationName || data.location || null }
+      setCurrentLocation(location)
+      setLocationName(locationName || data.location || null)
+      
+      // Clear error if we successfully got weather
+      if (error) {
+        setError(null)
+      }
+    } catch (err: any) {
       console.error('Weather fetch error:', err)
-      setError('Unable to load weather data')
+      setError(err.message || 'Unable to load weather data')
     } finally {
       setLoading(false)
     }
@@ -121,6 +169,43 @@ export default function WeatherCard() {
       fetchWeather(currentLocation.lat, currentLocation.lon, true)
     }
     setIsExpanded(!isExpanded)
+  }
+
+  const handleManualLocation = async () => {
+    if (!manualLocation.trim()) return
+    
+    try {
+      setLoading(true)
+      setError(null)
+      
+      // Use our geocoding API route
+      const geoResponse = await fetch(
+        `/api/weather/geocode?q=${encodeURIComponent(manualLocation.trim())}`
+      )
+      
+      if (!geoResponse.ok) {
+        throw new Error('Location not found')
+      }
+      
+      const geoData = await geoResponse.json()
+      if (!geoData || geoData.length === 0) {
+        throw new Error('Location not found. Try "City, Country" format.')
+      }
+      
+      const { lat, lon, name, state, country } = geoData[0]
+      const locationDisplay = state ? `${name}, ${state}, ${country}` : `${name}, ${country}`
+      
+      // Save location preference
+      localStorage.setItem('weatherLocation', JSON.stringify({ lat, lon, name: locationDisplay }))
+      
+      await fetchWeather(lat, lon, false, locationDisplay)
+      setShowLocationInput(false)
+      setManualLocation('')
+    } catch (err: any) {
+      console.error('Location search error:', err)
+      setError(err.message || 'Could not find location')
+      setLoading(false)
+    }
   }
 
   const getWeatherIcon = (condition: string) => {
@@ -149,30 +234,119 @@ export default function WeatherCard() {
   return (
     <div className="glass-card mb-4 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ maxHeight: isExpanded ? '600px' : 'none' }}>
       <div className="p-5">
-        <button
-          onClick={handleExpand}
-          className="w-full flex items-center justify-between mb-3 group"
-        >
-          <h2 className="text-lg font-semibold text-gray-900">Weather</h2>
-          <div className="flex items-center gap-2">
-            {loading && (
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-            )}
-            {!loading && (
-              <div className="text-gray-400 group-hover:text-gray-600 transition-colors">
-                {isExpanded ? (
-                  <ChevronUp className="w-5 h-5" strokeWidth={2} />
-                ) : (
-                  <ChevronDown className="w-5 h-5" strokeWidth={2} />
-                )}
-              </div>
-            )}
-          </div>
-        </button>
+        <div className="mb-3">
+          <button
+            onClick={handleExpand}
+            className="w-full flex items-center justify-between group"
+          >
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-gray-900">Weather</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              {loading && (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+              )}
+              {!loading && (
+                <div className="text-gray-400 group-hover:text-gray-600 transition-colors">
+                  {isExpanded ? (
+                    <ChevronUp className="w-5 h-5" strokeWidth={2} />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" strokeWidth={2} />
+                  )}
+                </div>
+              )}
+            </div>
+          </button>
+          {locationName && (
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-xs text-gray-500">{locationName}</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowLocationInput(true)
+                }}
+                className="text-xs text-blue-600 hover:text-blue-700 underline"
+                title="Change location"
+              >
+                Change
+              </button>
+            </div>
+          )}
+          {error && !weather && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowLocationInput(true)
+              }}
+              className="text-xs text-blue-600 hover:text-blue-700 underline mt-1"
+            >
+              Set location manually
+            </button>
+          )}
+        </div>
 
-        {error ? (
-          <p className="text-sm text-gray-500">{error}</p>
-        ) : weather ? (
+        {showLocationInput && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg space-y-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Enter location (e.g., "New York, NY" or "London, UK")
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={manualLocation}
+                onChange={(e) => setManualLocation(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleManualLocation()
+                  }
+                }}
+                placeholder="City, State/Country"
+                className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                autoFocus
+              />
+              <button
+                onClick={handleManualLocation}
+                disabled={!manualLocation.trim() || loading}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                Set
+              </button>
+              <button
+                onClick={() => {
+                  setShowLocationInput(false)
+                  setManualLocation('')
+                }}
+                className="px-3 py-2 text-gray-600 hover:text-gray-800 text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {error && !weather ? (
+          <div className="space-y-2">
+            <p className="text-sm text-red-600">{error}</p>
+            <div className="flex gap-3">
+              <button
+                onClick={loadWeather}
+                className="text-xs text-blue-600 hover:text-blue-700 underline"
+              >
+                Try again
+              </button>
+              <button
+                onClick={() => setShowLocationInput(true)}
+                className="text-xs text-blue-600 hover:text-blue-700 underline"
+              >
+                Set location manually
+              </button>
+            </div>
+          </div>
+        ) : error && weather ? (
+          <p className="text-xs text-amber-600 mb-2">{error}</p>
+        ) : null}
+        
+        {weather ? (
           <div className="space-y-3">
             {/* Current Weather - Always Visible */}
             <div className="flex items-center justify-between">

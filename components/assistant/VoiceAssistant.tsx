@@ -348,7 +348,8 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
+        className="fixed bottom-20 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
+        style={{ bottom: 'calc(64px + 1rem)' }}
         title="Open Assistant"
       >
         <Mic className="w-6 h-6" strokeWidth={1.5} />
@@ -357,7 +358,8 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
   }
 
   return (
-    <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col max-h-[600px]">
+    <div className="fixed right-6 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col max-h-[600px]"
+         style={{ bottom: 'calc(64px + 1rem)' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">

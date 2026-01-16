@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import NoteCreateSheet from './NoteCreateSheet'
+import { useRouter } from 'next/navigation'
 import AppointmentCreateSheet from './AppointmentCreateSheet'
 import ThoughtCreateSheet from './ThoughtCreateSheet'
 import AIInputBar from '../AIInputBar'
@@ -14,6 +14,7 @@ interface QuickCaptureSheetProps {
 }
 
 export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptureSheetProps) {
+  const router = useRouter()
   const [showNativeForm, setShowNativeForm] = useState(true)
   const [showAIFallback, setShowAIFallback] = useState(false)
 
@@ -33,34 +34,34 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
 
   if (!isOpen) return null
 
-  // Handle native form saves
-  const handleNoteSave = (note: { title: string; body: string }) => {
+  // Handle note creation - navigate to full-screen editor
+  const handleNoteCreate = () => {
     try {
-      console.log('💾 Saving note:', note);
-      
-      // Save note to localStorage
-      const stored = localStorage.getItem('notes') || '[]'
-      const notes = JSON.parse(stored)
+      // Create new note and navigate to full-screen editor
       const newNote = {
         id: `note-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        ...note,
+        title: '',
+        body: '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        pinned: false,
       }
+      
+      // Save to localStorage
+      const stored = localStorage.getItem('notes') || '[]'
+      const notes = JSON.parse(stored)
       notes.push(newNote)
       localStorage.setItem('notes', JSON.stringify(notes))
       
-      console.log('✅ Note saved successfully:', newNote.id);
-      console.log('📝 Total notes:', notes.length);
+      // Trigger update event
+      window.dispatchEvent(new Event('notesUpdated'))
       
-      // Trigger storage event so other components can update
-      window.dispatchEvent(new Event('storage'));
-      
-      showToast('Note saved', 'success')
+      // Navigate to full-screen editor
       onClose()
+      router.push(`/dashboard/notes/${newNote.id}`)
     } catch (error) {
-      console.error('❌ Failed to save note:', error);
-      showToast('Couldn\'t save note', 'error')
+      console.error('❌ Failed to create note:', error)
+      showToast('Couldn\'t create note', 'error')
     }
   }
 
@@ -122,9 +123,11 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
     }, 300)
   }
 
-  // Render native forms for specific types
+  // For notes, create and navigate to full-screen editor (Apple Notes style)
   if (type === 'note' && showNativeForm) {
-    return <NoteCreateSheet isOpen={isOpen} onClose={onClose} onSave={handleNoteSave} />
+    // Create note immediately and navigate to editor
+    handleNoteCreate()
+    return null
   }
 
   if (type === 'appointment' && showNativeForm) {
@@ -147,12 +150,17 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
           </div>
           <div className="px-6 py-4 border-b border-gray-100">
             <h2 className="text-xl font-semibold text-gray-900">
-              {type === 'task' ? 'Quick Task' : 'Quick Reminder'}
+              {type === 'task' ? 'Add a To-Do' : type === 'reminder' ? 'Add a Reminder' : type === 'appointment' ? 'Add an Appointment' : type === 'note' ? 'Add a Note' : 'Quick Capture'}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">Describe what you need</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {type === 'task' ? 'What needs to be done?' : type === 'reminder' ? 'What should I remind you about?' : 'Describe what you need'}
+            </p>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
-            <AIInputBar onIntent={type === 'task' ? handleTaskIntent : handleReminderIntent} />
+            <AIInputBar 
+              onIntent={type === 'task' ? handleTaskIntent : handleReminderIntent} 
+              context={type === 'task' ? 'task' : 'reminder'} 
+            />
           </div>
         </div>
       </div>

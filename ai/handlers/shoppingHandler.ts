@@ -35,6 +35,11 @@ class ShoppingHandler implements ModuleHandler {
 
     // Save items
     localStorage.setItem("shoppingItems", JSON.stringify(items));
+    
+    // Trigger custom event for updates
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('shoppingUpdated'));
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Calendar, Home, UtensilsCrossed, Wallet, Users, Folder } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useMobilePreview } from '@/contexts/MobilePreviewContext'
 
 interface NavItem {
   href: string
@@ -22,17 +23,22 @@ const navItems: NavItem[] = [
 
 export default function BottomNavClient() {
   const pathname = usePathname()
+  const { isMobilePreview } = useMobilePreview()
+
+  // In mobile preview, use absolute positioning relative to phone container
+  // In desktop, use fixed positioning relative to viewport
+  const positionClass = isMobilePreview ? 'absolute bottom-0 left-0 right-0' : 'fixed bottom-0 left-0 right-0'
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 backdrop-blur-xl shadow-soft-lg z-50 transition-colors" 
+      className={`${positionClass} backdrop-blur-xl shadow-soft-lg z-50 transition-colors`} 
       style={{ 
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         backgroundColor: 'var(--card-bg)',
         borderTop: '1px solid var(--border-color)',
       }}
     >
-      <div className="flex items-center justify-around h-16 max-w-2xl mx-auto px-4">
+      <div className={`flex items-center justify-around h-16 px-4 ${isMobilePreview ? 'w-full' : 'max-w-2xl mx-auto'}`}>
         {navItems.map((item) => {
           const isActive = pathname === item.href || (pathname?.startsWith(item.href + '/') && item.href !== '/today')
           return (

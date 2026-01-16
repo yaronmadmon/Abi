@@ -4,16 +4,25 @@ import { useState, useEffect, useRef } from 'react'
 import { Mic, Square, Image as ImageIcon, X } from 'lucide-react'
 import type { AIIntent } from '@/ai/schemas/intentSchema'
 import { routeIntent } from '@/ai/aiRouter'
+import { tasksHandler } from '@/ai/handlers/tasksHandler'
+import { remindersHandler } from '@/ai/handlers/remindersHandler'
+import { shoppingHandler } from '@/ai/handlers/shoppingHandler'
+import { mealsHandler } from '@/ai/handlers/mealsHandler'
+import { appointmentsHandler } from '@/ai/handlers/appointmentsHandler'
+import { showToast } from './feedback/ToastContainer'
 import AIPen from './AIPen'
+
+type InputContext = 'task' | 'reminder' | 'note' | 'shopping' | 'meal' | 'appointment' | null
 
 interface AIInputBarProps {
   onIntent: (action: string, payload: any) => void
   onError?: (error: string) => void
   mode?: 'text' | 'conversation' // Mode prop
   onModeChange?: (mode: 'text' | 'conversation') => void
+  context?: InputContext // Context for direct creation (task, reminder, note)
 }
 
-export default function AIInputBar({ onIntent, onError, mode = 'text', onModeChange }: AIInputBarProps) {
+export default function AIInputBar({ onIntent, onError, mode = 'text', onModeChange, context = null }: AIInputBarProps) {
   const [input, setInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [isListening, setIsListening] = useState(false)
@@ -27,6 +36,7 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
   
   const recognitionRef = useRef<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Convert file to base64
   const handleImageSelect = async (file: File) => {
@@ -62,6 +72,86 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
     setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
+  // Direct creation function - bypasses AI
+  const createDirectly = async (text: string): Promise<boolean> => {
+    if (!context || !text.trim()) return false
+
+    try {
+      if (context === 'task') {
+        // Create task directly
+        await tasksHandler.create({
+          title: text.trim(),
+          category: 'other',
+        })
+        showToast('To-Do added', 'success')
+        onIntent('tasks', { title: text.trim() })
+        return true
+      } else if (context === 'reminder') {
+        // Create reminder directly
+        await remindersHandler.create({
+          title: text.trim(),
+          date: new Date().toISOString().split('T')[0],
+        })
+        showToast('Reminder added', 'success')
+        onIntent('reminders', { title: text.trim() })
+        return true
+      } else if (ctx === 'note') {
+        // Create note directly
+        const stored = localStorage.getItem('notes') || '[]'
+        const notes = JSON.parse(stored)
+        const newNote = {
+          id: `note-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          title: text.trim() || 'Untitled Note',
+          body: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+        notes.push(newNote)
+        localStorage.setItem('notes', JSON.stringify(notes))
+        
+        // Trigger update event
+        window.dispatchEvent(new Event('notesUpdated'))
+        
+        showToast('Note created', 'success')
+        onIntent('notes', newNote)
+        // Note: Navigation handled by parent component if needed
+        return true
+      } else if (context === 'shopping') {
+        // Create shopping item directly
+        await shoppingHandler.create({
+          items: [text.trim()],
+          category: 'other',
+        })
+        showToast('Added to Shopping List', 'success')
+        onIntent('shopping', { items: [text.trim()] })
+        return true
+      } else if (ctx === 'meal') {
+        // Create meal directly
+        await mealsHandler.create({
+          name: text.trim(),
+          day: 'monday',
+          mealType: 'dinner',
+        })
+        showToast('Meal added', 'success')
+        onIntent('meals', { name: text.trim() })
+        return true
+      } else if (context === 'appointment') {
+        // Create appointment directly (default to today)
+        await appointmentsHandler.create({
+          title: text.trim(),
+          date: new Date().toISOString().split('T')[0],
+        })
+        showToast('Appointment created', 'success')
+        onIntent('appointments', { title: text.trim() })
+        return true
+      }
+    } catch (error) {
+      console.error('Direct creation error:', error)
+      onError?.('Failed to create item')
+    }
+    return false
+  }
+
   const handleSubmit = async (e: React.FormEvent, textOverride?: string) => {
     if (e && e.preventDefault) {
       e.preventDefault()
@@ -72,10 +162,67 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
 
     const currentInput = inputText || (images.length > 0 ? 'Analyze this image' : '')
     setIsProcessing(true)
-
+    
     try {
+      // PART 1: TEXT-ONLY CREATION (NON-NEGOTIABLE)
+      // If we have a context, create directly first, then optionally enhance with AI
+      // If no context but we have text, default to task creation (global input behavior)
+      const effectiveContext = context || (inputText ? 'task' : null)
+      if (effectiveContext && inputText) {
+        const created = await createDirectly(inputText)
+        if (created) {
+          // Clear and reset
+          setClarification(null)
+          setConversationContext('')
+          setInput('')
+          setImages([])
+          imagePreviews.forEach(url => URL.revokeObjectURL(url))
+          setImagePreviews([])
+          setIsProcessing(false)
+          
+          // Focus back on input for fast entry
+          setTimeout(() => {
+            inputRef.current?.focus()
+          }, 50)
+          
+          // PART 2: AI ENHANCEMENT (OPTIONAL, NON-BLOCKING)
+          // Optionally enhance with AI in the background (don't block)
+          if (images.length === 0) {
+            // Only enhance if no images (images require AI)
+            // Run in background without blocking
+            fetch('/api/ai/classify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                input: currentInput,
+                context: conversationContext || undefined,
+                images: undefined,
+                conversationalMode: false,
+              }),
+            })
+              .then(response => response.ok ? response.json() : null)
+              .then(data => {
+                if (data?.intent) {
+                  const intent: AIIntent = data.intent
+                  // If AI suggests enhancements (like date/time), log but don't block
+                  if (intent.type !== 'clarification' && intent.type !== 'unknown' && intent.payload) {
+                    console.log('✨ AI enhancement available:', intent.payload)
+                  }
+                }
+              })
+              .catch(error => {
+                // Silently fail - item is already created
+                console.log('AI enhancement failed (non-blocking):', error)
+              })
+          }
+          
+          return
+        }
+      }
+
+      // PART 3: AI ROUTING (when no context or context creation failed)
       // Step 1: Send text + images to /api/ai/classify
-      const context = clarification
+      const aiContext = clarification
         ? `${clarification.context}\nUser clarification: ${currentInput}`
         : conversationContext
 
@@ -84,7 +231,7 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           input: currentInput,
-          context: context || undefined,
+          context: aiContext || undefined,
           images: images.length > 0 ? images : undefined,
           conversationalMode: mode === 'conversation', // Pass mode to API
         }),
@@ -127,22 +274,43 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
           return
         }
         
+        // In text mode with context, create anyway if we have text
+        if (mode === 'text' && context && inputText) {
+          // Try direct creation even if AI is confused
+          const created = await createDirectly(inputText)
+          if (created) {
+            setClarification(null)
+            setConversationContext('')
+            setInput('')
+            setImages([])
+            imagePreviews.forEach(url => URL.revokeObjectURL(url))
+            setImagePreviews([])
+            setIsProcessing(false)
+            setTimeout(() => {
+              inputRef.current?.focus()
+            }, 50)
+            return
+          }
+        }
+        
         // In text mode, try to infer and proceed if possible
         if (mode === 'text' && intent.payload) {
           // If we have payload, proceed anyway (GPT inferred what it could)
           console.log('📋 Proceeding with inferred data in text mode')
         } else if (mode === 'text') {
-          // In text mode, show clarification but don't block
-          setClarification({
-            question: intent.followUpQuestion || 'Could you provide more details?',
-            context: conversationContext || currentInput,
-          })
-          setConversationContext(conversationContext ? `${conversationContext}\n${currentInput}` : currentInput)
-          setInput('')
-          setImages([])
-          setImagePreviews([])
-          setIsProcessing(false)
-          return
+          // In text mode, show clarification but don't block if we have context
+          if (!effectiveContext) {
+            setClarification({
+              question: intent.followUpQuestion || 'Could you provide more details?',
+              context: conversationContext || currentInput,
+            })
+            setConversationContext(conversationContext ? `${conversationContext}\n${currentInput}` : currentInput)
+            setInput('')
+            setImages([])
+            setImagePreviews([])
+            setIsProcessing(false)
+            return
+          }
         }
       }
 
@@ -163,6 +331,23 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
         // Call the handler with route and payload
         console.log('✅ Calling onIntent with:', routerResult.route, routerResult.payload);
         onIntent(routerResult.route, routerResult.payload)
+        
+        // Show confirmation - clear, non-navigating messages
+        const confirmations: Record<string, string> = {
+          tasks: 'Added to To-Dos',
+          reminders: 'Reminder created',
+          notes: 'Note created',
+          appointments: 'Appointment created',
+          shopping: 'Added to Shopping List',
+          meals: 'Meal added',
+        }
+        const message = confirmations[routerResult.route] || 'Item created'
+        showToast(message, 'success')
+        
+        // Focus back on input
+        setTimeout(() => {
+          inputRef.current?.focus()
+        }, 50)
       } else {
         console.error('❌ Router failed:', routerResult.error);
         onError?.(routerResult.error || 'Failed to process request')
@@ -326,6 +511,7 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
             <div className="glass-card p-3 flex gap-2.5 items-center shadow-soft-lg">
               <div className="flex-1 relative min-w-0">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -334,6 +520,18 @@ export default function AIInputBar({ onIntent, onError, mode = 'text', onModeCha
                       ? "Answer the question above..."
                       : mode === 'conversation'
                       ? "Talk to your assistant..."
+                      : context === 'task'
+                      ? "Add a To-Do"
+                      : context === 'reminder'
+                      ? "Add a Reminder"
+                      : context === 'note'
+                      ? "Add a Note"
+                      : context === 'shopping'
+                      ? "Add to Shopping List"
+                      : context === 'meal'
+                      ? "Add a Meal"
+                      : context === 'appointment'
+                      ? "Add an Appointment"
                       : "Tell me what you need..."
                   }
                   className="w-full px-3.5 py-2.5 pr-32 text-[15px] leading-normal rounded-lg border-0 focus:outline-none focus:ring-0 bg-transparent placeholder:text-gray-400 text-gray-900"

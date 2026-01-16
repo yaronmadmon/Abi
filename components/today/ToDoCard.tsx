@@ -14,8 +14,17 @@ export default function ToDoCard() {
         const stored = localStorage.getItem('tasks')
         if (stored) {
           const tasks: Task[] = JSON.parse(stored)
-          const incomplete = tasks.filter((task) => !task.completed)
-          setIncompleteCount(incomplete.length)
+          const today = new Date().toISOString().split('T')[0]
+          // Count active tasks: overdue, due today, or upcoming
+          const activeTasks = tasks.filter((task) => {
+            if (task.completed) return false
+            if (!task.dueDate) return false
+            // Include overdue, due today, or upcoming (next 7 days)
+            const taskDate = task.dueDate
+            const daysDiff = Math.floor((new Date(taskDate).getTime() - new Date(today).getTime()) / (1000 * 60 * 60 * 24))
+            return taskDate < today || taskDate === today || (daysDiff > 0 && daysDiff <= 7)
+          })
+          setIncompleteCount(activeTasks.length)
         } else {
           setIncompleteCount(0)
         }
@@ -29,7 +38,7 @@ export default function ToDoCard() {
 
     // Listen for storage changes
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'tasks') {
+      if (e.key === 'tasks' || e.key === 'appointments') {
         loadCount()
       }
     }
@@ -40,10 +49,12 @@ export default function ToDoCard() {
       loadCount()
     }
     window.addEventListener('tasksUpdated', handleCustomStorage)
+    window.addEventListener('appointmentsUpdated', handleCustomStorage)
 
     return () => {
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('tasksUpdated', handleCustomStorage)
+      window.removeEventListener('appointmentsUpdated', handleCustomStorage)
     }
   }, [])
 

@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Save, Sparkles } from 'lucide-react'
-import AIInputBar from '../AIInputBar'
+import { X, Save } from 'lucide-react'
 import AIPen from '../AIPen'
 import { showToast } from '../feedback/ToastContainer'
 
@@ -23,7 +22,6 @@ interface NoteCreateSheetProps {
 export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateSheetProps) {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [showAIAssist, setShowAIAssist] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   // Reset form when opened
@@ -72,16 +70,6 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
     onClose()
   }
 
-  const handleAIAssist = (route: string, payload: any) => {
-    // AI can suggest title or body, but doesn't block
-    if (payload.title && !title) {
-      setTitle(payload.title)
-    }
-    if (payload.body && !body) {
-      setBody(payload.body)
-    }
-    // Don't auto-close - let user review and edit
-  }
 
   return (
     <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[100] flex items-end">
@@ -94,37 +82,17 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
         {/* Header - Compact */}
         <div className="px-4 py-2.5 border-b border-gray-100/50 flex items-center justify-between">
           <h2 className="text-base font-medium text-gray-700">New Note</h2>
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setShowAIAssist(!showAIAssist)}
-              className={`p-1.5 rounded-md transition-colors ${
-                showAIAssist
-                  ? 'bg-blue-100 text-blue-600'
-                  : 'bg-transparent text-gray-400 hover:text-gray-600'
-              }`}
-              title="AI Assist"
-            >
-              <Sparkles className="w-4 h-4" strokeWidth={1.5} />
-            </button>
-            <button
-              onClick={onClose}
-              className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <X className="w-4 h-4" strokeWidth={2} />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-4 h-4" strokeWidth={2} />
+          </button>
         </div>
 
         {/* Content - Apple Notes style: constrained width, natural margins */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-4 py-4">
-            {showAIAssist && (
-              <div className="mb-3 p-3 bg-blue-50/50 border border-blue-200/50 rounded-lg">
-                <p className="text-xs text-blue-700 mb-2">AI Assist: Describe what you want to note</p>
-                <AIInputBar onIntent={handleAIAssist} />
-              </div>
-            )}
-
             <div className="space-y-3">
               {/* Title - Larger, single line */}
               <div className="relative">

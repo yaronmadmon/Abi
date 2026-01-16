@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Calendar, Clock, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { Calendar, Clock, ChevronLeft, ChevronRight, MapPin, User, CheckSquare, X } from 'lucide-react'
 
 interface Appointment {
   id: string
@@ -10,6 +9,7 @@ interface Appointment {
   date?: string
   time?: string
   location?: string
+  forWho?: string
 }
 
 interface Task {
@@ -19,16 +19,47 @@ interface Task {
   completed: boolean
 }
 
+type CalendarEvent = Appointment | Task
+
 export default function CalendarCard() {
-  const [upcomingEvents, setUpcomingEvents] = useState<(Appointment | Task)[]>([])
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [pendingCount, setPendingCount] = useState(0)
+  
+  const cardRef = useRef<HTMLDivElement>(null)
+  const touchStartX = useRef<number | null>(null)
+  const touchEndX = useRef<number | null>(null)
 
   useEffect(() => {
     loadCalendarData()
     // Refresh every minute
     const interval = setInterval(loadCalendarData, 60 * 1000)
-    return () => clearInterval(interval)
+    
+    // Listen for updates from other components
+    const handleTasksUpdate = () => loadCalendarData()
+    const handleAppointmentsUpdate = () => loadCalendarData()
+    
+    window.addEventListener('tasksUpdated', handleTasksUpdate)
+    window.addEventListener('appointmentsUpdated', handleAppointmentsUpdate)
+    
+    // Also listen for storage events (cross-tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'tasks' || e.key === 'appointments') {
+        loadCalendarData()
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('tasksUpdated', handleTasksUpdate)
+      window.removeEventListener('appointmentsUpdated', handleAppointmentsUpdate)
+      window.removeEventListener('storage', handleStorageChange)
+    }
   }, [])
 
   const loadCalendarData = () => {
@@ -40,59 +71,29 @@ export default function CalendarCard() {
       const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
       // Load appointments
-      const appointments: Appointment[] = JSON.parse(localStorage.getItem('appointments') || '[]')
+      const loadedAppointments: Appointment[] = JSON.parse(localStorage.getItem('appointments') || '[]')
+      setAppointments(loadedAppointments)
       
       // Load tasks
-      const tasks: Task[] = JSON.parse(localStorage.getItem('tasks') || '[]')
+      const loadedTasks: Task[] = JSON.parse(localStorage.getItem('tasks') || '[]')
+      setTasks(loadedTasks)
       
-      // Combine and filter upcoming events
-      const events: (Appointment | Task)[] = []
+      // Count active items (overdue, due today, upcoming)
+      const allTasks = loadedTasks.filter(task => !task.completed && task.dueDate)
+      const overdueTasks = allTasks.filter(task => task.dueDate && task.dueDate < today)
+      const todayTasks = allTasks.filter(task => task.dueDate === today)
+      const upcomingTasks = allTasks.filter(task => task.dueDate === tomorrowStr || (task.dueDate && task.dueDate > today))
       
-      // Add today's appointments
-      appointments
-        .filter(apt => apt.date === today || apt.date === tomorrowStr)
-        .sort((a, b) => {
-          const timeA = a.time || '00:00'
-          const timeB = b.time || '00:00'
-          return timeA.localeCompare(timeB)
-        })
-        .forEach(apt => events.push(apt))
+      const allAppointments = loadedAppointments.filter(apt => apt.date)
+      const overdueAppointments = allAppointments.filter(apt => apt.date && apt.date < today)
+      const todayAppointments = allAppointments.filter(apt => apt.date === today)
+      const upcomingAppointments = allAppointments.filter(apt => apt.date === tomorrowStr || (apt.date && apt.date > today))
       
-      // Add today's and tomorrow's tasks
-      tasks
-        .filter(task => !task.completed && (task.dueDate === today || task.dueDate === tomorrowStr))
-        .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''))
-        .slice(0, 3)
-        .forEach(task => events.push(task))
-      
-      // Sort all events by date and time
-      events.sort((a, b) => {
-        const dateA = 'date' in a ? a.date : ('dueDate' in a ? a.dueDate : today)
-        const dateB = 'date' in b ? b.date : ('dueDate' in b ? b.dueDate : today)
-        if (dateA !== dateB) {
-          return (dateA || '').localeCompare(dateB || '')
-        }
-        const timeA = 'time' in a ? (a.time || '00:00') : '00:00'
-        const timeB = 'time' in b ? (b.time || '00:00') : '00:00'
-        return timeA.localeCompare(timeB)
-      })
-
-      const displayedEvents = events.slice(0, 3)
-      setUpcomingEvents(displayedEvents)
-      
-      // Count all pending events (not just displayed)
-      // Reuse the existing `today` and `tomorrowStr` variables defined above
-      // Count today's incomplete tasks
-      const todayTasks = tasks.filter(
-        task => !task.completed && task.dueDate === today
+      // Count all active items (overdue + due today + upcoming)
+      setPendingCount(
+        overdueTasks.length + todayTasks.length + upcomingTasks.length +
+        overdueAppointments.length + todayAppointments.length + upcomingAppointments.length
       )
-      
-      // Count today's and tomorrow's appointments
-      const upcomingAppointments = appointments.filter(
-        apt => apt.date === today || apt.date === tomorrowStr
-      )
-      
-      setPendingCount(todayTasks.length + upcomingAppointments.length)
     } catch (err) {
       console.error('Error loading calendar data:', err)
     } finally {
@@ -100,6 +101,138 @@ export default function CalendarCard() {
     }
   }
 
+  // Get events for a specific date
+  const getEventsForDate = (date: Date): CalendarEvent[] => {
+    const dateStr = date.toISOString().split('T')[0]
+    const dayEvents: CalendarEvent[] = []
+    
+    // Add appointments
+    appointments.forEach(apt => {
+      if (apt.date === dateStr) {
+        dayEvents.push(apt)
+      }
+    })
+    
+    // Add tasks (including reminders which have IDs starting with "reminder-")
+    tasks.forEach(task => {
+      if (!task.completed && task.dueDate === dateStr) {
+        dayEvents.push(task)
+      }
+    })
+    
+    // Sort by time (appointments first, then tasks)
+    dayEvents.sort((a, b) => {
+      const timeA = 'time' in a ? (a.time || '00:00') : '23:59'
+      const timeB = 'time' in b ? (b.time || '00:00') : '23:59'
+      return timeA.localeCompare(timeB)
+    })
+    
+    return dayEvents
+  }
+
+  // Check if date is today
+  const isToday = (date: Date): boolean => {
+    const today = new Date()
+    return date.toDateString() === today.toDateString()
+  }
+
+  // Calendar grid generation
+  const year = currentDate.getFullYear()
+  const month = currentDate.getMonth()
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+  const daysInMonth = lastDay.getDate()
+  const startingDayOfWeek = firstDay.getDay()
+
+  const calendarDays = useMemo(() => {
+    const days: (Date | null)[] = []
+    
+    // Add empty cells for days before month starts
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null)
+    }
+    
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(new Date(year, month, day))
+    }
+    
+    return days
+  }, [year, month, startingDayOfWeek, daysInMonth])
+
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December']
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+  // Navigation
+  const goToPreviousMonth = () => {
+    setCurrentDate(new Date(year, month - 1, 1))
+  }
+
+  const goToNextMonth = () => {
+    setCurrentDate(new Date(year, month + 1, 1))
+  }
+
+  const goToToday = () => {
+    const today = new Date()
+    setCurrentDate(today)
+    if (isExpanded && selectedDate) {
+      setSelectedDate(today)
+      const events = getEventsForDate(today)
+      // Keep expanded if there are events, otherwise collapse
+      if (events.length === 0) {
+        setIsExpanded(false)
+        setSelectedDate(null)
+      }
+    }
+  }
+
+  // Handle day click
+  const handleDayClick = (date: Date) => {
+    const events = getEventsForDate(date)
+    setSelectedDate(date)
+    setIsExpanded(true)
+  }
+
+  // Handle collapse
+  const handleCollapse = () => {
+    setIsExpanded(false)
+    setSelectedDate(null)
+  }
+
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return
+    
+    const diff = touchStartX.current - touchEndX.current
+    const minSwipeDistance = 50
+    
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0) {
+        // Swipe left - next month
+        goToNextMonth()
+      } else {
+        // Swipe right - previous month
+        goToPreviousMonth()
+      }
+    }
+    
+    touchStartX.current = null
+    touchEndX.current = null
+  }
+
+  // Get selected date events
+  const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : []
+
+  // Format time
   const formatTime = (time?: string) => {
     if (!time) return ''
     try {
@@ -113,87 +246,260 @@ export default function CalendarCard() {
     }
   }
 
-  const formatDate = (date?: string) => {
-    if (!date) return 'Today'
-    const eventDate = new Date(date)
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+  // Count events for a day (for indicators)
+  const getEventCount = (date: Date): number => {
+    return getEventsForDate(date).length
+  }
 
-    if (date === today.toISOString().split('T')[0]) {
-      return 'Today'
-    } else if (date === tomorrow.toISOString().split('T')[0]) {
-      return 'Tomorrow'
-    } else {
-      return eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-    }
+  if (loading) {
+    return (
+      <div className="glass-card p-5 mb-4">
+        <div className="flex items-center justify-center py-8">
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <Link 
-      href="/home/calendar"
-      className="glass-card p-5 mb-4 card-press block"
+    <div
+      ref={cardRef}
+      className="glass-card p-5 mb-4 relative overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
+      {/* Header */}
       <div className="flex items-center justify-between mb-3 relative">
         <h2 className="text-lg font-semibold text-gray-900">Calendar</h2>
         <div className="flex items-center gap-2">
-          {pendingCount > 0 && (
-            <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto' }}>
+          {pendingCount > 0 && !isExpanded && (
+            <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto', marginLeft: 'auto' }}>
               {pendingCount > 99 ? '99+' : pendingCount}
             </div>
           )}
-          <span className="text-sm text-blue-600 font-medium flex items-center gap-1">
-            View all
-            <ChevronRight className="w-3.5 h-3.5" strokeWidth={2} />
-          </span>
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-4">
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-        </div>
-      ) : upcomingEvents.length === 0 ? (
-        <div className="text-center py-4">
-          <Calendar className="w-8 h-8 text-gray-300 mx-auto mb-2" strokeWidth={1} />
-          <p className="text-sm text-gray-500">No upcoming events</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {upcomingEvents.map((event, index) => {
-            const isAppointment = 'time' in event
-            const eventDate = formatDate('date' in event ? event.date : ('dueDate' in event ? event.dueDate : undefined))
-            const eventTime = isAppointment ? formatTime((event as Appointment).time) : null
-
-            return (
-              <div
-                key={event.id || index}
-                className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50/50 transition-colors"
+      {/* Monthly Calendar View */}
+      {!isExpanded && (
+        <div className="animate-fade-in">
+          {/* Month Navigation */}
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={goToPreviousMonth}
+              className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+              aria-label="Previous month"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-600" strokeWidth={2} />
+            </button>
+            
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-gray-900">
+                {monthNames[month]} {year}
+              </h3>
+              <button
+                onClick={goToToday}
+                className="px-2.5 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
               >
-                <div className="mt-0.5">
-                  {isAppointment ? (
-                    <Calendar className="w-4 h-4 text-blue-500" strokeWidth={1.5} />
-                  ) : (
-                    <Clock className="w-4 h-4 text-orange-500" strokeWidth={1.5} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-                    <span>{eventDate}</span>
-                    {eventTime && (
-                      <>
-                        <span>•</span>
-                        <span>{eventTime}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
+                Today
+              </button>
+            </div>
+            
+            <button
+              onClick={goToNextMonth}
+              className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+              aria-label="Next month"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-600" strokeWidth={2} />
+            </button>
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1">
+            {/* Day headers */}
+            {dayNames.map(day => (
+              <div key={day} className="text-center text-[10px] font-medium text-gray-500 py-1">
+                {day}
               </div>
-            )
-          })}
+            ))}
+
+            {/* Calendar days */}
+            {calendarDays.map((date, index) => {
+              if (!date) {
+                return <div key={`empty-${index}`} className="aspect-square" />
+              }
+
+              const isTodayDate = isToday(date)
+              const isCurrentMonth = date.getMonth() === month
+              const eventCount = getEventCount(date)
+
+              return (
+                <button
+                  key={date.toISOString()}
+                  onClick={() => handleDayClick(date)}
+                  className={`aspect-square p-1 rounded-lg transition-all duration-150 text-center relative ${
+                    isTodayDate
+                      ? 'bg-blue-500 text-white font-semibold'
+                      : isCurrentMonth
+                      ? 'hover:bg-gray-100/50 text-gray-900'
+                      : 'text-gray-400 hover:bg-gray-50/50'
+                  }`}
+                >
+                  <div className={`text-xs ${isTodayDate ? 'text-white' : 'text-gray-700'}`}>
+                    {date.getDate()}
+                  </div>
+                  {/* Event indicators */}
+                  {eventCount > 0 && (
+                    <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-0.5 justify-center">
+                      {eventCount <= 3 ? (
+                        // Show individual dots for up to 3 events
+                        Array.from({ length: Math.min(eventCount, 3) }).map((_, i) => {
+                          const events = getEventsForDate(date)
+                          const event = events[i]
+                          const isAppointment = 'time' in event
+                          const isReminder = 'id' in event && event.id.startsWith('reminder-')
+                          
+                          return (
+                            <div
+                              key={i}
+                              className={`w-1 h-1 rounded-full ${
+                                isTodayDate
+                                  ? 'bg-white/80'
+                                  : isAppointment
+                                  ? 'bg-blue-500'
+                                  : isReminder
+                                  ? 'bg-purple-500'
+                                  : 'bg-orange-500'
+                              }`}
+                            />
+                          )
+                        })
+                      ) : (
+                        // Show number for 4+ events
+                        <div
+                          className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
+                            isTodayDate
+                              ? 'bg-white/30 text-white'
+                              : 'bg-gray-200 text-gray-700'
+                          }`}
+                        >
+                          {eventCount}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
-    </Link>
+
+      {/* Daily Agenda View */}
+      {isExpanded && selectedDate && (
+        <div className="animate-slide-up">
+          {/* Daily Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">
+                {selectedDate.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'long', 
+                  day: 'numeric',
+                  year: selectedDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                })}
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {selectedDateEvents.length === 0 
+                  ? 'No events scheduled' 
+                  : `${selectedDateEvents.length} ${selectedDateEvents.length === 1 ? 'event' : 'events'}`
+                }
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToToday}
+                className="px-2.5 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+              >
+                Today
+              </button>
+              <button
+                onClick={handleCollapse}
+                className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4 text-gray-600" strokeWidth={2} />
+              </button>
+            </div>
+          </div>
+
+          {/* Agenda List */}
+          <div className="max-h-[400px] overflow-y-auto scrollbar-hide">
+            {selectedDateEvents.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Calendar className="w-8 h-8 text-gray-300 mx-auto mb-2" strokeWidth={1} />
+                <p className="text-sm">No events scheduled for this day</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {selectedDateEvents.map((event) => {
+                  const isAppointment = 'time' in event
+                  const isReminder = 'id' in event && event.id.startsWith('reminder-')
+                  
+                  return (
+                    <div
+                      key={event.id}
+                      className="p-3 rounded-lg bg-white/50 border border-gray-100/50 hover:bg-white/70 transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 flex-shrink-0">
+                          {isAppointment ? (
+                            <Calendar className="w-4 h-4 text-blue-500" strokeWidth={2} />
+                          ) : isReminder ? (
+                            <Clock className="w-4 h-4 text-purple-500" strokeWidth={2} />
+                          ) : (
+                            <CheckSquare className="w-4 h-4 text-orange-500" strokeWidth={2} />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 mb-1">{event.title}</h4>
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                            {'time' in event && event.time && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" strokeWidth={1.5} />
+                                <span>{formatTime(event.time)}</span>
+                              </div>
+                            )}
+                            {'location' in event && event.location && (
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3" strokeWidth={1.5} />
+                                <span className="truncate">{event.location}</span>
+                              </div>
+                            )}
+                            {'forWho' in event && event.forWho && (
+                              <div className="flex items-center gap-1">
+                                <User className="w-3 h-3" strokeWidth={1.5} />
+                                <span>{event.forWho}</span>
+                              </div>
+                            )}
+                            {isReminder && (
+                              <span className="text-purple-600 font-medium">Reminder</span>
+                            )}
+                            {!isAppointment && !isReminder && (
+                              <span className="text-orange-600 font-medium">To-Do</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

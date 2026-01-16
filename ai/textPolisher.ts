@@ -15,7 +15,7 @@ const getOpenAIClient = () => {
   return new OpenAI({ apiKey });
 };
 
-export type PolishStyle = "polish" | "shorten" | "friendlier" | "professional";
+export type PolishStyle = "polish" | "shorten" | "friendlier" | "professional" | "clarify" | "checklist";
 
 /**
  * Polish text using GPT
@@ -39,6 +39,8 @@ export async function polishText(
       shorten: "Make this text more concise while preserving all important information and meaning.",
       friendlier: "Rewrite this text to be warmer, friendlier, and more conversational while keeping the same meaning.",
       professional: "Rewrite this text to be more professional and formal while keeping the same meaning.",
+      clarify: "Rewrite this text to be clearer and easier to understand while keeping the same meaning.",
+      checklist: "Convert this text into a checklist format with bullet points. Each item should be actionable and clear.",
     };
 
     const systemPrompt = `You are a text polishing assistant. Your job is to improve text based on the user's request.

@@ -250,24 +250,24 @@ body::before {
                 box-shadow 0.1s ease;
   }
   
-  /* Pending count badge */
+  /* Pending count badge - Calm, muted, informative */
   .pending-badge {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
-    min-width: 1.5rem;
-    height: 1.5rem;
-    padding: 0 0.375rem;
-    background: #FF3B30; /* Calm red, Apple-like */
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.25rem;
+    background: #8B2E2E; /* Muted dark red - calm and informative */
     color: white;
-    border-radius: 0.75rem;
+    border-radius: 0.625rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     font-weight: 600;
     line-height: 1;
-    box-shadow: 0 2px 4px rgba(255, 59, 48, 0.3);
+    box-shadow: 0 1px 2px rgba(139, 46, 46, 0.2);
     z-index: 10;
   }
   
@@ -297,7 +297,7 @@ body::before {
 
   /* Smooth animations */
   .animate-fade-in {
-    animation: fadeIn 200ms ease-in-out;
+    animation: fadeIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .animate-slide-up {
@@ -319,5 +319,66 @@ body::before {
   /* Page bottom padding to account for bottom nav (64px) + input bar (80px) + spacing */
   .page-with-bottom-nav {
     padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ContentEditable placeholder */
+  [contenteditable][data-placeholder]:empty:before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+    pointer-events: none;
+  }
+  
+  [contenteditable][data-placeholder]:not(:focus):empty:before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+    pointer-events: none;
+  }
+
+  /* Fix empty block elements in contentEditable (prevents square placeholders) */
+  [contenteditable] div:empty,
+  [contenteditable] p:empty {
+    min-height: 1.5em;
+  }
+
+  /* Mobile Preview Layout Overrides - Removes desktop constraints when inside mobile preview */
+  .mobile-content-wrapper {
+    width: 100%;
+  }
+
+  /* Remove desktop centering and max-width constraints in mobile preview */
+  .mobile-content-wrapper > * {
+    max-width: 100% !important;
+  }
+
+  /* Remove max-w-2xl specifically */
+  .mobile-content-wrapper .max-w-2xl {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Remove desktop padding from page containers */
+  .mobile-content-wrapper > div[class*="min-h-screen"],
+  .mobile-content-wrapper > div[class*="p-6"]:not(.glass-card):not([class*="px-"]) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* Remove page-with-bottom-nav padding in mobile (handled by shell) */
+  .mobile-content-wrapper .page-with-bottom-nav {
+    padding-bottom: 0 !important;
+  }
+
+  /* Ensure single column layout - disable grids */
+  .mobile-content-wrapper .grid {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Stack cards vertically with consistent spacing */
+  .mobile-content-wrapper > div > div[class*="space-y"] {
+    display: flex;
+    flex-direction: column;
   }
 }
