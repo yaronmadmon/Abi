@@ -46,6 +46,32 @@ export default function FinancePage() {
             )}
           </SummaryCard>
 
+          <SummaryCard
+            title="Budget"
+            subtitle="Monthly overview"
+            icon="💰"
+            href="/finance/budget"
+          >
+            <p className="text-sm text-gray-500">Track your spending</p>
+          </SummaryCard>
+
+          <SummaryCard
+            title="Subscriptions"
+            subtitle="Active services"
+            icon="🔄"
+            href="/finance/subscriptions"
+          >
+            <p className="text-sm text-gray-500">Manage your subscriptions</p>
+          </SummaryCard>
+
+          <SummaryCard
+            title="Transactions"
+            subtitle="Recent activity"
+            icon="💸"
+            href="/finance/transactions"
+          >
+            <p className="text-sm text-gray-500">View transaction history</p>
+          </SummaryCard>
         </div>
 
       </div>
