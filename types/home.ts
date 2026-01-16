@@ -51,6 +51,7 @@ export interface FamilyMember {
   name: string
   relationship?: string // e.g., "spouse", "child", "parent"
   age?: number
+  birthday?: string // YYYY-MM-DD format
   notes?: string
   photo?: string // Base64 data URL
   phone?: string

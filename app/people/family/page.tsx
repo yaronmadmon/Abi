@@ -15,6 +15,7 @@ export default function FamilyPage() {
   const [newName, setNewName] = useState('')
   const [newRelationship, setNewRelationship] = useState('')
   const [newAge, setNewAge] = useState('')
+  const [newBirthday, setNewBirthday] = useState('')
   const [newNotes, setNewNotes] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newEmail, setNewEmail] = useState('')
@@ -66,6 +67,7 @@ export default function FamilyPage() {
       name: newName.trim(),
       relationship: newRelationship.trim() || undefined,
       age: newAge ? parseInt(newAge) : undefined,
+      birthday: newBirthday.trim() || undefined,
       notes: newNotes.trim() || undefined,
       phone: newPhone.trim() || undefined,
       email: newEmail.trim() || undefined,
@@ -78,6 +80,7 @@ export default function FamilyPage() {
     setNewName('')
     setNewRelationship('')
     setNewAge('')
+    setNewBirthday('')
     setNewNotes('')
     setNewPhone('')
     setNewEmail('')
@@ -192,6 +195,18 @@ export default function FamilyPage() {
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+                <div>
+                  <label htmlFor="birthday" className="block text-sm font-medium text-gray-700 mb-1">
+                    Birthday (optional)
+                  </label>
+                  <input
+                    id="birthday"
+                    type="date"
+                    value={newBirthday}
+                    onChange={(e) => setNewBirthday(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
@@ -255,6 +270,7 @@ export default function FamilyPage() {
                     setNewName('')
                     setNewRelationship('')
                     setNewAge('')
+                    setNewBirthday('')
                     setNewNotes('')
                     setNewPhone('')
                     setNewEmail('')

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Phone, Mail, MessageSquare, Edit2, Save, X, Camera, User, Trash2 } from 'lucide-react'
+import { Phone, Mail, MessageSquare, Edit2, Save, X, Camera, User, Trash2, Calendar } from 'lucide-react'
 import type { FamilyMember } from '@/types/home'
 import { showToast } from '../feedback/ToastContainer'
 
@@ -16,6 +16,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
   const [name, setName] = useState(member.name)
   const [relationship, setRelationship] = useState(member.relationship || '')
   const [age, setAge] = useState(member.age?.toString() || '')
+  const [birthday, setBirthday] = useState(member.birthday || '')
   const [notes, setNotes] = useState(member.notes || '')
   const [phone, setPhone] = useState(member.phone || '')
   const [email, setEmail] = useState(member.email || '')
@@ -48,6 +49,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         name: name.trim(),
         relationship: relationship.trim() || undefined,
         age: age ? parseInt(age) : undefined,
+        birthday: birthday.trim() || undefined,
         notes: notes.trim() || undefined,
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
@@ -65,6 +67,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
     setName(member.name)
     setRelationship(member.relationship || '')
     setAge(member.age?.toString() || '')
+    setBirthday(member.birthday || '')
     setNotes(member.notes || '')
     setPhone(member.phone || '')
     setEmail(member.email || '')
@@ -155,13 +158,22 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
-              <input
-                type="number"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="Age (optional)"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  placeholder="Age (optional)"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+                <input
+                  type="date"
+                  value={birthday}
+                  onChange={(e) => setBirthday(e.target.value)}
+                  placeholder="Birthday (optional)"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -194,9 +206,17 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   {member.relationship && (
                     <p className="text-sm text-gray-600 capitalize mb-1">{member.relationship}</p>
                   )}
-                  {member.age && (
-                    <p className="text-sm text-gray-500">{member.age} years old</p>
-                  )}
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    {member.age && (
+                      <span>{member.age} years old</span>
+                    )}
+                    {member.birthday && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" strokeWidth={2} />
+                        <span>{new Date(member.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
