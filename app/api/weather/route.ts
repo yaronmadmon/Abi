@@ -63,8 +63,15 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('Weather API error:', error)
+    const errorMessage = error?.message || 'Unknown error'
+    const errorDetails = error?.response?.statusText || error?.statusText || 'No details'
+    
     return NextResponse.json(
-      { error: 'Failed to fetch weather data' },
+      { 
+        error: 'Failed to fetch weather data',
+        details: errorMessage,
+        apiKeyPresent: !!process.env.OPENWEATHER_API_KEY || !!process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY
+      },
       { status: 500 }
     )
   }
