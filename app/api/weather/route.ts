@@ -42,15 +42,20 @@ export async function GET(request: NextRequest) {
     }
 
     // Use OpenWeatherMap if API key is available
+    console.log('🌤️ Fetching weather with OpenWeather API key:', API_KEY ? 'Present' : 'Missing')
+    
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`
     )
 
     if (!response.ok) {
-      throw new Error('Weather API error')
+      const errorData = await response.text()
+      console.error('OpenWeather API error:', response.status, errorData)
+      throw new Error(`OpenWeather API error: ${response.status} - ${errorData}`)
     }
 
     const data = await response.json()
+    console.log('✅ Weather data received:', data.name, data.weather[0].main)
 
     return NextResponse.json({
       temperature: Math.round(data.main.temp),
