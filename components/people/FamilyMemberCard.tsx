@@ -44,11 +44,18 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
 
   const handleSave = () => {
     try {
+      // Validate name is not empty
+      const trimmedName = name.trim()
+      if (!trimmedName) {
+        showToast('Name is required', 'error')
+        return
+      }
+
       // Validate and parse age
       let parsedAge: number | undefined = undefined
       if (age && age.trim()) {
         const ageNum = parseInt(age.trim())
-        if (!isNaN(ageNum) && ageNum > 0) {
+        if (!isNaN(ageNum) && ageNum > 0 && ageNum <= 150) {
           parsedAge = ageNum
         }
       }
@@ -63,9 +70,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         }
       }
 
-      onUpdate({
+      // Prepare updated member
+      const updatedMember: FamilyMember = {
         ...member,
-        name: name.trim(),
+        name: trimmedName,
         relationship: relationship.trim() || undefined,
         age: parsedAge,
         birthday: validBirthday,
@@ -74,12 +82,16 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         email: email.trim() || undefined,
         photo: photo || undefined,
         updatedAt: new Date().toISOString(),
-      })
+      }
+
+      console.log('Saving member:', updatedMember.id, updatedMember.name)
+      
+      // Call onUpdate with the updated member
+      onUpdate(updatedMember)
       setIsEditing(false)
-      // Don't show toast here - onUpdate will handle it
     } catch (error) {
-      console.error('Error updating family member:', error)
-      showToast('Couldn\'t update family member', 'error')
+      console.error('Error in handleSave:', error)
+      showToast(`Couldn't update: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error')
     }
   }
 
