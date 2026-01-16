@@ -102,7 +102,7 @@ export default function DashboardPage() {
               <Link
                 key={module.title}
                 href={module.href}
-                className="glass-card p-6 hover:shadow-soft-lg transition-all duration-200 active:scale-95 relative"
+                className="glass-card p-6 hover:shadow-soft-lg transition-all duration-200 card-press relative"
               >
                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${module.color} flex items-center justify-center mb-4 shadow-soft`}>
                   <module.Icon className="w-7 h-7 text-white" strokeWidth={1.5} />
@@ -112,7 +112,7 @@ export default function DashboardPage() {
                 </h2>
                 <p className="text-gray-600">{module.description}</p>
                 {isTodo && incompleteTodoCount > 0 && (
-                  <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shadow-soft">
+                  <div className="pending-badge">
                     {incompleteTodoCount > 99 ? '99+' : incompleteTodoCount}
                   </div>
                 )}

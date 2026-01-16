@@ -22,6 +22,7 @@ interface Task {
 export default function CalendarCard() {
   const [upcomingEvents, setUpcomingEvents] = useState<(Appointment | Task)[]>([])
   const [loading, setLoading] = useState(true)
+  const [pendingCount, setPendingCount] = useState(0)
 
   useEffect(() => {
     loadCalendarData()
@@ -76,7 +77,27 @@ export default function CalendarCard() {
         return timeA.localeCompare(timeB)
       })
 
-      setUpcomingEvents(events.slice(0, 3))
+      const displayedEvents = events.slice(0, 3)
+      setUpcomingEvents(displayedEvents)
+      
+      // Count all pending events (not just displayed)
+      const now = new Date()
+      const today = now.toISOString().split('T')[0]
+      const tomorrow = new Date(now)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const tomorrowStr = tomorrow.toISOString().split('T')[0]
+      
+      // Count today's incomplete tasks
+      const todayTasks = tasks.filter(
+        task => !task.completed && task.dueDate === today
+      )
+      
+      // Count today's and tomorrow's appointments
+      const upcomingAppointments = appointments.filter(
+        apt => apt.date === today || apt.date === tomorrowStr
+      )
+      
+      setPendingCount(todayTasks.length + upcomingAppointments.length)
     } catch (err) {
       console.error('Error loading calendar data:', err)
     } finally {
@@ -114,16 +135,23 @@ export default function CalendarCard() {
   }
 
   return (
-    <div className="glass-card p-5 mb-4">
-      <div className="flex items-center justify-between mb-3">
+    <Link 
+      href="/home/calendar"
+      className="glass-card p-5 mb-4 card-press block"
+    >
+      <div className="flex items-center justify-between mb-3 relative">
         <h2 className="text-lg font-semibold text-gray-900">Calendar</h2>
-        <Link 
-          href="/home/calendar"
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-        >
-          View all
-          <ChevronRight className="w-3.5 h-3.5" strokeWidth={2} />
-        </Link>
+        <div className="flex items-center gap-2">
+          {pendingCount > 0 && (
+            <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto' }}>
+              {pendingCount > 99 ? '99+' : pendingCount}
+            </div>
+          )}
+          <span className="text-sm text-blue-600 font-medium flex items-center gap-1">
+            View all
+            <ChevronRight className="w-3.5 h-3.5" strokeWidth={2} />
+          </span>
+        </div>
       </div>
 
       {loading ? (
@@ -171,6 +199,6 @@ export default function CalendarCard() {
           })}
         </div>
       )}
-    </div>
+    </Link>
   )
 }

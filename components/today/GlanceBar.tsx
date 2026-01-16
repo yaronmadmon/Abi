@@ -44,7 +44,7 @@ export default function GlanceBar() {
     <div className="glass-card p-3 mb-4">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between text-left"
+        className="w-full flex items-center justify-between text-left card-press"
       >
         <div className="flex items-center gap-2 flex-1">
           <Sun className="w-4 h-4 text-[#4a5568]" strokeWidth={1.5} />

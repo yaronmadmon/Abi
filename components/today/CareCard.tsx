@@ -36,7 +36,7 @@ export default function CareCard() {
             className={`text-xs font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
               isActive
                 ? 'bg-gray-200 text-gray-500'
-                : 'bg-white/80 text-purple-700 hover:bg-white active:scale-95'
+                : 'bg-white/80 text-purple-700 hover:bg-white card-press'
             }`}
           >
             {isActive ? 'Taking a moment...' : 'Take 2 minutes'}

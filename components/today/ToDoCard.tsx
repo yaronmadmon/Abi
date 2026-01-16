@@ -50,7 +50,7 @@ export default function ToDoCard() {
   return (
     <Link
       href="/dashboard/tasks"
-      className="glass-card p-5 hover:shadow-soft-lg transition-all duration-200 active:scale-95 relative"
+      className="glass-card p-5 hover:shadow-soft-lg transition-all duration-200 card-press relative"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -70,7 +70,7 @@ export default function ToDoCard() {
         </div>
       </div>
       {incompleteCount > 0 && (
-        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shadow-soft">
+        <div className="pending-badge">
           {incompleteCount > 99 ? '99+' : incompleteCount}
         </div>
       )}

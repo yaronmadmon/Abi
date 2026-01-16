@@ -51,7 +51,7 @@ export default function TodayPage() {
           <div className="glass-card p-5 mb-4">
             <button
               onClick={() => setShowPlanSheet(true)}
-              className="w-full flex items-center justify-between text-left group"
+              className="w-full flex items-center justify-between text-left group card-press"
             >
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
