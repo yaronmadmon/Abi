@@ -83,25 +83,75 @@ export async function POST(request: NextRequest) {
 
 /**
  * Convert GPT reasoning result to AIIntent format
+ * PROACTIVE: Executes if we have minimum required data, even if some fields are missing
  */
 function convertReasoningToIntent(
   reasoning: any,
   rawInput: string
 ): AIIntent {
-  // If clarification is needed (missing_fields has entries)
+  // PROACTIVE RULE: If we have data AND minimum required fields, execute immediately
+  // Only ask for clarification if data is missing AND execution would fail
+  
+  // Check if we have minimum data to execute
+  const hasMinimumData = reasoning.data && hasRequiredFields(reasoning.action, reasoning.data);
+  
+  // If we have minimum data, execute even if missing_fields has entries (those are optional fields)
+  if (hasMinimumData && reasoning.action !== 'clarification' && reasoning.action !== 'unknown') {
+    // Execute with what we have - missing_fields are just optional fields
+    const actionToType: Record<string, AIIntent['type']> = {
+      'create_task': 'task',
+      'create_meal': 'meal',
+      'create_shopping': 'shopping',
+      'create_reminder': 'reminder',
+      'create_appointment': 'appointment',
+      'create_family': 'family',
+      'create_pet': 'pet',
+    };
+
+    const intentType = actionToType[reasoning.action] || 'unknown';
+    
+    return {
+      type: intentType,
+      confidence: reasoning.confidence || 0.8,
+      raw: rawInput,
+      payload: reasoning.data || undefined,
+    };
+  }
+  
+  // Only ask for clarification if we truly can't execute
   if (reasoning.missing_fields && reasoning.missing_fields.length > 0) {
-    // Use the first missing field as the specific question
-    // GPT should provide specific questions, not generic ones
     const question = reasoning.missing_fields[0];
     
-    // NEVER use generic fallback - if GPT didn't provide a question, generate one with GPT
-    if (!question || question === 'Could you provide more details?') {
-      // This shouldn't happen if GPT is working correctly, but handle gracefully
+    // Never use generic questions
+    if (!question || question.toLowerCase().includes('can you clarify') || question.toLowerCase().includes('provide more details')) {
+      // If GPT gave generic question, make it specific or execute anyway
+      if (reasoning.data && reasoning.action !== 'clarification' && reasoning.action !== 'unknown') {
+        // Try to execute with what we have
+        const actionToType: Record<string, AIIntent['type']> = {
+          'create_task': 'task',
+          'create_meal': 'meal',
+          'create_shopping': 'shopping',
+          'create_reminder': 'reminder',
+          'create_appointment': 'appointment',
+          'create_family': 'family',
+          'create_pet': 'pet',
+        };
+        const intentType = actionToType[reasoning.action];
+        if (intentType) {
+          return {
+            type: intentType,
+            confidence: reasoning.confidence || 0.7,
+            raw: rawInput,
+            payload: reasoning.data,
+          };
+        }
+      }
+      
       return {
         type: 'unknown',
         confidence: 0.3,
         raw: rawInput,
-        followUpQuestion: 'I need a bit more information to help you. Could you tell me more?',
+        followUpQuestion: 'I\'m not quite sure what you need. Could you tell me more?',
       };
     }
     
@@ -148,11 +198,37 @@ function convertReasoningToIntent(
 
   const intentType = actionToType[reasoning.action] || 'unknown';
 
-  // Return intent with payload
+  // Return intent with payload - execute immediately
   return {
     type: intentType,
     confidence: reasoning.confidence || 0.8,
     raw: rawInput,
     payload: reasoning.data || undefined,
   };
+}
+
+/**
+ * Check if we have minimum required fields to execute an action
+ */
+function hasRequiredFields(action: string, data: any): boolean {
+  if (!data) return false;
+  
+  switch (action) {
+    case 'create_task':
+      return !!(data.title && data.title.trim());
+    case 'create_meal':
+      return !!(data.name && data.name.trim());
+    case 'create_shopping':
+      return !!(data.items && Array.isArray(data.items) && data.items.length > 0);
+    case 'create_reminder':
+      return !!(data.title && data.title.trim());
+    case 'create_appointment':
+      return !!(data.title && data.title.trim());
+    case 'create_family':
+      return !!(data.name && data.name.trim());
+    case 'create_pet':
+      return !!(data.name && data.name.trim() && data.type);
+    default:
+      return false;
+  }
 }

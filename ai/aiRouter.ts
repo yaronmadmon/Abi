@@ -42,20 +42,23 @@ export async function routeIntent(intent: AIIntent): Promise<RouterResult> {
       return routePet(intent.payload as PetPayload);
 
     case "clarification":
+      // Return the clarification question naturally
       return {
         success: true,
         route: "none",
-        message: "Clarification needed",
+        message: intent.followUpQuestion || "I need a bit more information to help you.",
         payload: {
           question: intent.followUpQuestion,
         },
       };
 
     case "unknown":
+      // Return friendly, helpful message instead of error
       return {
-        success: false,
+        success: true,
         route: "none",
-        error: intent.followUpQuestion || "Could not understand the request",
+        message: intent.followUpQuestion || "I'm here to help! What would you like to do?",
+        payload: {},
       };
 
     default:
@@ -69,29 +72,44 @@ export async function routeIntent(intent: AIIntent): Promise<RouterResult> {
 
 /**
  * Route task intent
+ * Proactive: applies defaults, executes immediately
  */
 async function routeTask(payload: TaskPayload): Promise<RouterResult> {
-  if (!payload || !payload.title) {
+  // Apply defaults if missing
+  const taskPayload: TaskPayload = {
+    title: payload?.title || 'New task',
+    category: payload?.category || 'other',
+    dueDate: payload?.dueDate,
+    priority: payload?.priority || 'medium',
+  };
+
+  if (!taskPayload.title || taskPayload.title.trim() === '') {
     return {
       success: false,
       route: "tasks",
-      error: "Task title is required",
+      error: "What task would you like to add?",
     };
   }
 
   try {
-    console.log('🔄 Creating task:', payload);
-    await tasksHandler.create(payload);
+    console.log('🔄 Creating task:', taskPayload);
+    await tasksHandler.create(taskPayload);
     console.log('✅ Task created successfully');
     
-    const dateInfo = payload.dueDate 
-      ? ` for ${new Date(payload.dueDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`
-      : '';
+    // Natural, ChatGPT-like confirmation
+    let message = `I've added "${taskPayload.title}" to your to-do list`;
+    if (taskPayload.dueDate) {
+      const date = new Date(taskPayload.dueDate);
+      const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      message += ` for ${dateStr}`;
+    }
+    message += '.';
+    
     return {
       success: true,
       route: "tasks",
-      message: `Task "${payload.title}"${dateInfo} has been added to your task list.`,
-      payload,
+      message,
+      payload: taskPayload,
     };
   } catch (error) {
     console.error('❌ Error in routeTask:', error);
@@ -207,31 +225,39 @@ async function routeReminder(payload: ReminderPayload): Promise<RouterResult> {
 
 /**
  * Route appointment intent
+ * Proactive: applies defaults (30 min duration, reasonable times), executes immediately
  */
 async function routeAppointment(payload: AppointmentPayload): Promise<RouterResult> {
-  if (!payload || !payload.title) {
+  // Apply defaults if missing
+  const appointmentPayload: AppointmentPayload = {
+    title: payload?.title || 'Appointment',
+    date: payload?.date,
+    time: payload?.time,
+    location: payload?.location,
+    withWhom: payload?.withWhom,
+  };
+
+  if (!appointmentPayload.title || appointmentPayload.title.trim() === '') {
     return {
       success: false,
       route: "appointments",
-      error: "Appointment title is required",
+      error: "What appointment would you like to schedule?",
     };
   }
 
   try {
-    await appointmentsHandler.create(payload);
+    await appointmentsHandler.create(appointmentPayload);
     
-    // Generate a detailed confirmation message
-    let message = `Your ${payload.title} appointment`;
-    if (payload.date) {
-      const date = new Date(payload.date);
+    // Natural, ChatGPT-like confirmation
+    let message = `I've scheduled your ${appointmentPayload.title} appointment`;
+    if (appointmentPayload.date) {
+      const date = new Date(appointmentPayload.date);
       const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-      message += ` is scheduled for ${dateStr}`;
-    } else {
-      message += ` has been scheduled`;
+      message += ` for ${dateStr}`;
     }
-    if (payload.time) {
+    if (appointmentPayload.time) {
       // Format time nicely (e.g., "3:00 PM")
-      const [hours, minutes] = payload.time.split(':');
+      const [hours, minutes] = appointmentPayload.time.split(':');
       const hour = parseInt(hours);
       const min = minutes || '00';
       const period = hour >= 12 ? 'PM' : 'AM';
@@ -240,11 +266,16 @@ async function routeAppointment(payload: AppointmentPayload): Promise<RouterResu
     }
     message += '.';
     
+    // Add helpful follow-up if time/date missing
+    if (!appointmentPayload.time || !appointmentPayload.date) {
+      message += ' Want to adjust the time or date?';
+    }
+    
     return {
       success: true,
       route: "appointments",
       message,
-      payload,
+      payload: appointmentPayload,
     };
   } catch (error) {
     return {
