@@ -51,10 +51,23 @@ export default function FamilyPage() {
   }
 
   const saveFamily = (newFamily: FamilyMember[]) => {
-    localStorage.setItem('family', JSON.stringify(newFamily))
-    setFamily(newFamily)
-    // Trigger storage event
-    window.dispatchEvent(new Event('storage'))
+    try {
+      const jsonString = JSON.stringify(newFamily)
+      localStorage.setItem('family', jsonString)
+      setFamily(newFamily)
+      console.log('✅ Family saved successfully:', newFamily.length, 'members')
+      // Trigger storage event
+      window.dispatchEvent(new Event('storage'))
+    } catch (error) {
+      console.error('❌ Error saving family to localStorage:', error)
+      // Check if it's a quota exceeded error
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        showToast('Storage is full. Please clear some data.', 'error')
+      } else {
+        showToast('Failed to save family member', 'error')
+      }
+      throw error // Re-throw to be caught by caller
+    }
   }
 
   const addFamilyMember = () => {
@@ -92,23 +105,45 @@ export default function FamilyPage() {
   const updateFamilyMember = (updated: FamilyMember) => {
     try {
       // Validate the updated member
-      if (!updated.id || !updated.name || !updated.name.trim()) {
-        showToast('Invalid family member data', 'error')
+      if (!updated.id) {
+        console.error('Missing member ID')
+        showToast('Missing member ID', 'error')
+        return
+      }
+
+      if (!updated.name || !updated.name.trim()) {
+        console.error('Missing or empty name')
+        showToast('Name is required', 'error')
+        return
+      }
+
+      // Check if member exists
+      const memberExists = family.some((member) => member.id === updated.id)
+      if (!memberExists) {
+        console.error('Member not found:', updated.id)
+        showToast('Family member not found', 'error')
         return
       }
 
       // Find the member and update it
       const updatedFamily = family.map((member) => {
         if (member.id === updated.id) {
-          return {
+          const cleaned = {
             ...updated,
+            id: updated.id, // Ensure ID is preserved
             name: updated.name.trim(),
             relationship: updated.relationship?.trim() || undefined,
+            age: updated.age,
+            birthday: updated.birthday?.trim() || undefined,
             notes: updated.notes?.trim() || undefined,
             phone: updated.phone?.trim() || undefined,
             email: updated.email?.trim() || undefined,
-            birthday: updated.birthday?.trim() || undefined,
+            photo: updated.photo || undefined,
+            createdAt: updated.createdAt || member.createdAt, // Preserve creation date
+            updatedAt: new Date().toISOString(),
           }
+          console.log('Updating member:', cleaned)
+          return cleaned
         }
         return member
       })
@@ -117,7 +152,7 @@ export default function FamilyPage() {
       showToast('Family member updated', 'success')
     } catch (error) {
       console.error('Error updating family member:', error)
-      showToast('Couldn\'t update family member', 'error')
+      showToast(`Couldn't update family member: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error')
     }
   }
 
