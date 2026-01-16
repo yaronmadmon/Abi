@@ -220,10 +220,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               </div>
 
-              {/* Contact Info - Always show if exists */}
-              {(member.phone || member.email) && (
+              {/* Contact Info - Show if phone or email exists (check for truthy values) */}
+              {((member.phone && member.phone.trim()) || (member.email && member.email.trim())) && (
                 <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-2">
-                  {member.phone && (
+                  {member.phone && member.phone.trim() && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 flex-1">
                         <Phone className="w-4 h-4 text-gray-400" strokeWidth={2} />
@@ -231,7 +231,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                       </div>
                     </div>
                   )}
-                  {member.email && (
+                  {member.email && member.email.trim() && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 flex-1">
                         <Mail className="w-4 h-4 text-gray-400" strokeWidth={2} />
@@ -250,10 +250,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               )}
 
-              {/* Quick Actions - Always visible if contact info exists */}
-              {(member.phone || member.email) && (
+              {/* Quick Actions - Always visible if contact info exists (with proper checks) */}
+              {((member.phone && member.phone.trim()) || (member.email && member.email.trim())) && (
                 <div className="flex gap-2 mt-3">
-                  {member.phone && (
+                  {member.phone && member.phone.trim() && (
                     <>
                       <button
                         onClick={handleCall}
@@ -273,10 +273,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                       </button>
                     </>
                   )}
-                  {member.email && (
+                  {member.email && member.email.trim() && (
                     <button
                       onClick={handleEmail}
-                      className={`px-4 py-2.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 active:bg-purple-200 transition-colors flex items-center justify-center gap-2 shadow-sm ${member.phone ? 'flex-1' : 'flex-1'}`}
+                      className="flex-1 px-4 py-2.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 active:bg-purple-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
                       title={`Email ${member.email}`}
                     >
                       <Mail className="w-4 h-4" strokeWidth={2} />
