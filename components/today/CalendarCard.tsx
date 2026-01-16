@@ -55,24 +55,24 @@ export default function CalendarCard() {
           const timeB = b.time || '00:00'
           return timeA.localeCompare(timeB)
         })
-        .forEach(apt => events.push({ ...apt, type: 'appointment' }))
+        .forEach(apt => events.push(apt))
       
       // Add today's and tomorrow's tasks
       tasks
         .filter(task => !task.completed && (task.dueDate === today || task.dueDate === tomorrowStr))
         .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''))
         .slice(0, 3)
-        .forEach(task => events.push({ ...task, type: 'task' }))
+        .forEach(task => events.push(task))
       
       // Sort all events by date and time
       events.sort((a, b) => {
-        const dateA = a.date || today
-        const dateB = b.date || today
+        const dateA = 'date' in a ? a.date : ('dueDate' in a ? a.dueDate : today)
+        const dateB = 'date' in b ? b.date : ('dueDate' in b ? b.dueDate : today)
         if (dateA !== dateB) {
-          return dateA.localeCompare(dateB)
+          return (dateA || '').localeCompare(dateB || '')
         }
-        const timeA = (a as Appointment).time || '00:00'
-        const timeB = (b as Appointment).time || '00:00'
+        const timeA = 'time' in a ? (a.time || '00:00') : '00:00'
+        const timeB = 'time' in b ? (b.time || '00:00') : '00:00'
         return timeA.localeCompare(timeB)
       })
 
@@ -139,7 +139,7 @@ export default function CalendarCard() {
         <div className="space-y-2">
           {upcomingEvents.map((event, index) => {
             const isAppointment = 'time' in event
-            const eventDate = formatDate(event.date)
+            const eventDate = formatDate('date' in event ? event.date : ('dueDate' in event ? event.dueDate : undefined))
             const eventTime = isAppointment ? formatTime((event as Appointment).time) : null
 
             return (
