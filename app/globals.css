@@ -9,19 +9,21 @@
 /* Light Mode - Default */
 :root,
 :root.light-mode {
-  /* Colors */
-  --background: #FAFAF8;
+  /* Colors - Warmer, slightly darker background for better contrast */
+  --background: #F2F0ED; /* Warm light stone / sand tone */
   --foreground: #1a1a1a;
-  --card-bg: #FFFFFF;
-  --card-border: rgba(0, 0, 0, 0.06);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --card-bg: rgba(255, 255, 255, 0.75); /* Semi-transparent white for glass effect */
+  --card-bg-solid: rgba(255, 255, 255, 0.95); /* Fallback for browsers without backdrop-filter */
+  --card-border: rgba(255, 255, 255, 0.8); /* Subtle white border for glass edge */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --card-inner-highlight: rgba(255, 255, 255, 0.5); /* Inner highlight at top */
   --icon-color: #4a5568;
   --text-primary: #1a1a1a;
   --text-secondary: #4a5568;
   --text-tertiary: #718096;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --input-bg: #FFFFFF;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.9);
   --input-border: rgba(0, 0, 0, 0.1);
 }
 
@@ -45,18 +47,20 @@
 
 /* Evening Mode - Calmer colors, activated at 5 PM */
 :root.evening-mode {
-  --background: #F5F3F0;
+  --background: #F0EDE8; /* Slightly warmer, calmer tone */
   --foreground: #2d2d2d;
-  --card-bg: #FFFFFF;
-  --card-border: rgba(0, 0, 0, 0.04);
-  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  --card-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.03);
+  --card-bg: rgba(255, 255, 255, 0.7); /* More transparent for calmer feel */
+  --card-bg-solid: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(255, 255, 255, 0.7);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --card-inner-highlight: rgba(255, 255, 255, 0.4);
   --icon-color: #6b7280;
   --text-primary: #2d2d2d;
   --text-secondary: #6b7280;
   --text-tertiary: #9ca3af;
   --border-color: rgba(0, 0, 0, 0.06);
-  --input-bg: #FFFFFF;
+  --input-bg: rgba(255, 255, 255, 0.85);
   --input-border: rgba(0, 0, 0, 0.08);
 }
 
@@ -98,7 +102,8 @@ body.desktop-mode .max-w-6xl {
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  /* Warm background with subtle gradient for depth */
+  background: linear-gradient(135deg, var(--background) 0%, color-mix(in srgb, var(--background) 95%, #E8E6E3) 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -106,6 +111,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
 }
 
 /* Content container respects view mode */
@@ -120,7 +126,7 @@ body {
 
 /* Subtle edge fade / vignette overlay
    Creates a soft, premium edge fade that gently dissolves into the browser frame.
-   Extremely subtle - barely perceptible but creates depth and immersion.
+   Enhanced for better depth perception.
 */
 body::before {
   content: '';
@@ -131,14 +137,14 @@ body::before {
   bottom: 0;
   pointer-events: none;
   z-index: 9999;
-  /* Radial vignette: very subtle warm fade from edges */
+  /* Radial vignette: subtle warm fade from edges */
   background: radial-gradient(
-    ellipse 120% 120% at center,
+    ellipse 140% 140% at center,
     transparent 0%,
-    transparent 65%,
-    rgba(248, 246, 243, 0.015) 80%,
-    rgba(245, 243, 240, 0.025) 90%,
-    rgba(242, 240, 237, 0.035) 100%
+    transparent 60%,
+    rgba(235, 232, 228, 0.08) 80%,
+    rgba(230, 227, 223, 0.15) 90%,
+    rgba(225, 222, 218, 0.22) 100%
   );
   /* Ensures smooth rendering */
   will-change: opacity;
@@ -180,16 +186,57 @@ body::before {
 
 @layer utilities {
   .glass-card {
-    background-color: var(--card-bg);
-    border-radius: 1rem;
+    /* Modern iOS-style glass card */
+    background: var(--card-bg);
+    /* Fallback for browsers without backdrop-filter support */
+    background-color: var(--card-bg-solid);
+    /* Backdrop blur for frosted glass effect */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    border-radius: 1.25rem; /* Slightly more rounded for modern feel */
     box-shadow: var(--card-shadow);
     border: 1px solid var(--card-border);
-    transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+    
+    /* Inner highlight at top for glossy effect */
+    position: relative;
+    overflow: hidden;
+    
+    transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.2s ease, 
+                background-color 0.3s ease, 
+                border-color 0.3s ease;
     padding: var(--card-padding, 1.25rem);
+  }
+  
+  /* Inner highlight overlay for glossy top edge */
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--card-inner-highlight) 20%,
+      var(--card-inner-highlight) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  /* Ensure content is above the highlight */
+  .glass-card > * {
+    position: relative;
+    z-index: 2;
   }
   
   .glass-card:hover {
     box-shadow: var(--card-shadow-hover);
+    transform: translateY(-1px); /* Subtle lift on hover */
   }
   
   .btn-primary {
