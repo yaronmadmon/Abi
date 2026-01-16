@@ -40,10 +40,27 @@ function getContextInfo(): string {
   const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const dayOfWeek = now.toLocaleDateString('en-US', { weekday: 'long' });
   const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  const hour = now.getHours();
+  
+  // Determine time of day context
+  let timeOfDay = 'morning';
+  if (hour >= 12 && hour < 17) timeOfDay = 'afternoon';
+  else if (hour >= 17) timeOfDay = 'evening';
   
   return `Current date: ${today} (${dayOfWeek})
-Current time: ${time}
-Tomorrow's date: ${tomorrow}`;
+Current time: ${time} (${timeOfDay})
+Tomorrow's date: ${tomorrow}
+Current hour: ${hour} (24-hour format)
+
+DEFAULT INFERENCE RULES:
+- "tomorrow" → ${tomorrow}
+- "tomorrow afternoon" → ${tomorrow}, time: 15:00 (3 PM)
+- "tomorrow evening" → ${tomorrow}, time: 18:00 (6 PM)
+- "after work" → time: 18:00 (6 PM)
+- "morning" → time: 09:00 (9 AM)
+- "afternoon" → time: 15:00 (3 PM)
+- "evening" → time: 18:00 (6 PM)
+- If date specified but no time → default to 15:00 (3 PM) for appointments`;
 }
 
 /**
