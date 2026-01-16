@@ -118,7 +118,11 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
       <div className="flex items-start gap-4">
         {/* Profile Image */}
         <div className="relative flex-shrink-0">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+          <div 
+            className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => !isEditing && setIsEditing(true)}
+            title={!isEditing ? "Click to edit photo" : undefined}
+          >
             {photo ? (
               <img src={photo} alt={member.name} className="w-full h-full object-cover" />
             ) : (
@@ -129,7 +133,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors shadow-sm"
+              className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors shadow-sm z-10"
               title="Change photo"
             >
               <Camera className="w-3.5 h-3.5" strokeWidth={2} />
@@ -141,6 +145,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
             accept="image/*"
             onChange={handlePhotoSelect}
             className="hidden"
+            style={{ display: 'none' }}
           />
         </div>
 
