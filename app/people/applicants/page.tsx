@@ -17,8 +17,7 @@ export default function ApplicantsPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Applicant management coming soon.</p>
-          <p className="text-sm">Manage applicants here.</p>
+          <p className="mb-4">Applicant management is not yet available.</p>
         </div>
       </div>
     </div>

@@ -17,8 +17,7 @@ export default function FaxPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Fax management coming soon.</p>
-          <p className="text-sm">Send and receive faxes here.</p>
+          <p className="mb-4">Fax management is not yet available.</p>
         </div>
       </div>
     </div>

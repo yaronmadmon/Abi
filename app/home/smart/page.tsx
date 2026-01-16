@@ -17,8 +17,7 @@ export default function SmartHomePage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Smart home features coming soon.</p>
-          <p className="text-sm">Connect and manage your smart home devices here.</p>
+          <p className="mb-4">Smart home features are not yet available.</p>
         </div>
       </div>
     </div>

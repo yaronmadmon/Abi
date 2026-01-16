@@ -17,7 +17,7 @@ export default function SubscriptionsPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Subscription management coming soon.</p>
+          <p className="mb-4">Subscription management is not yet available.</p>
           <p className="text-sm">Manage your subscriptions here.</p>
         </div>
       </div>

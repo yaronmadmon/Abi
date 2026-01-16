@@ -32,20 +32,8 @@ export default function PeoplePage() {
             <p className="text-sm text-gray-500">Pet care & information</p>
           </SummaryCard>
 
-          <SummaryCard
-            title="Applicants"
-            subtitle="Caregivers & staff"
-            icon="👤"
-            href="/people/applicants"
-          >
-            <p className="text-sm text-gray-500">Manage applicants</p>
-          </SummaryCard>
         </div>
 
-        {/* Placeholder for lists */}
-        <div className="glass-card p-8 text-center text-gray-500">
-          People management features coming soon. Use the summary cards above to navigate.
-        </div>
       </div>
     </div>
   )

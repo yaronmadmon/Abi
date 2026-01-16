@@ -74,14 +74,6 @@ export default function HomePage() {
             )}
           </SummaryCard>
 
-          <SummaryCard
-            title="Smart Home"
-            subtitle="Connected devices"
-            icon={Home}
-            href="/home/smart"
-          >
-            <p className="text-sm text-gray-500">No devices configured yet</p>
-          </SummaryCard>
 
           <SummaryCard
             title="Calendar"

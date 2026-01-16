@@ -17,7 +17,7 @@ export default function BudgetPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Budget tracking coming soon.</p>
+          <p className="mb-4">Budget tracking is not yet available.</p>
           <p className="text-sm">Track your spending and budget here.</p>
         </div>
       </div>

@@ -16,9 +16,9 @@ export default function BillsPage() {
           </div>
         </div>
 
-        <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Bill management coming soon.</p>
-          <p className="text-sm">Track and manage your bills here.</p>
+        <div className="glass-card p-12 text-center">
+          <p className="text-gray-500 mb-2">Bill management</p>
+          <p className="text-sm text-gray-400">This feature is not yet available.</p>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Transaction history coming soon.</p>
+          <p className="mb-4">Transaction history is not yet available.</p>
           <p className="text-sm">View your transaction history here.</p>
         </div>
       </div>

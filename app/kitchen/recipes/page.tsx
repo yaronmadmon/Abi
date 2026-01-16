@@ -17,8 +17,7 @@ export default function RecipesPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Recipe features coming soon.</p>
-          <p className="text-sm">Browse and save your favorite recipes here.</p>
+          <p className="mb-4">Recipe features are not yet available.</p>
         </div>
       </div>
     </div>

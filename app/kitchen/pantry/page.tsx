@@ -17,8 +17,7 @@ export default function PantryPage() {
         </div>
 
         <div className="glass-card p-8 text-center text-gray-500">
-          <p className="mb-4">Pantry tracking coming soon.</p>
-          <p className="text-sm">Track your pantry items and ingredients here.</p>
+          <p className="mb-4">Pantry tracking is not yet available.</p>
         </div>
       </div>
     </div>

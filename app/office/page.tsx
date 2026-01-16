@@ -32,29 +32,8 @@ export default function OfficePage() {
             <p className="text-sm text-gray-500">Scan new documents</p>
           </SummaryCard>
 
-          <SummaryCard
-            title="Fax"
-            subtitle="Send & receive"
-            icon="📠"
-            href="/office/fax"
-          >
-            <p className="text-sm text-gray-500">Fax management</p>
-          </SummaryCard>
-
-          <SummaryCard
-            title="Archive"
-            subtitle="Stored documents"
-            icon="📦"
-            href="/office/archive"
-          >
-            <p className="text-sm text-gray-500">Browse archived files</p>
-          </SummaryCard>
         </div>
 
-        {/* Placeholder for lists */}
-        <div className="glass-card p-8 text-center text-gray-500">
-          Office features coming soon. Use the summary cards above to navigate.
-        </div>
       </div>
     </div>
   )

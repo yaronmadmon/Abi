@@ -88,23 +88,6 @@ export default function KitchenPage() {
             )}
           </SummaryCard>
 
-          <SummaryCard
-            title="Recipes"
-            subtitle="Your recipe collection"
-            icon={BookOpen}
-            href="/kitchen/recipes"
-          >
-            <p className="text-sm text-gray-500">Browse your saved recipes</p>
-          </SummaryCard>
-
-          <SummaryCard
-            title="Pantry"
-            subtitle="Ingredients & supplies"
-            icon={Package}
-            href="/kitchen/pantry"
-          >
-            <p className="text-sm text-gray-500">Track your pantry items</p>
-          </SummaryCard>
         </div>
 
         {/* AI Input */}
