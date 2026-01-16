@@ -44,12 +44,31 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
 
   const handleSave = () => {
     try {
+      // Validate and parse age
+      let parsedAge: number | undefined = undefined
+      if (age && age.trim()) {
+        const ageNum = parseInt(age.trim())
+        if (!isNaN(ageNum) && ageNum > 0) {
+          parsedAge = ageNum
+        }
+      }
+
+      // Validate birthday format
+      let validBirthday: string | undefined = undefined
+      if (birthday && birthday.trim()) {
+        const date = new Date(birthday.trim())
+        if (!isNaN(date.getTime())) {
+          // Store as YYYY-MM-DD format
+          validBirthday = birthday.trim()
+        }
+      }
+
       onUpdate({
         ...member,
         name: name.trim(),
         relationship: relationship.trim() || undefined,
-        age: age ? parseInt(age) : undefined,
-        birthday: birthday.trim() || undefined,
+        age: parsedAge,
+        birthday: validBirthday,
         notes: notes.trim() || undefined,
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
@@ -57,8 +76,9 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         updatedAt: new Date().toISOString(),
       })
       setIsEditing(false)
-      showToast('Family member updated', 'success')
+      // Don't show toast here - onUpdate will handle it
     } catch (error) {
+      console.error('Error updating family member:', error)
       showToast('Couldn\'t update family member', 'error')
     }
   }
@@ -164,11 +184,13 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
                   placeholder="Age (optional)"
+                  min="0"
+                  max="150"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
                 <input
                   type="date"
-                  value={birthday}
+                  value={birthday || ''}
                   onChange={(e) => setBirthday(e.target.value)}
                   placeholder="Birthday (optional)"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"

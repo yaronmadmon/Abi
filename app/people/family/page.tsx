@@ -91,9 +91,32 @@ export default function FamilyPage() {
 
   const updateFamilyMember = (updated: FamilyMember) => {
     try {
-      saveFamily(family.map((member) => (member.id === updated.id ? updated : member)))
+      // Validate the updated member
+      if (!updated.id || !updated.name || !updated.name.trim()) {
+        showToast('Invalid family member data', 'error')
+        return
+      }
+
+      // Find the member and update it
+      const updatedFamily = family.map((member) => {
+        if (member.id === updated.id) {
+          return {
+            ...updated,
+            name: updated.name.trim(),
+            relationship: updated.relationship?.trim() || undefined,
+            notes: updated.notes?.trim() || undefined,
+            phone: updated.phone?.trim() || undefined,
+            email: updated.email?.trim() || undefined,
+            birthday: updated.birthday?.trim() || undefined,
+          }
+        }
+        return member
+      })
+
+      saveFamily(updatedFamily)
       showToast('Family member updated', 'success')
     } catch (error) {
+      console.error('Error updating family member:', error)
       showToast('Couldn\'t update family member', 'error')
     }
   }
