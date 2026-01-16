@@ -55,26 +55,9 @@ export default function WeatherCard() {
 
   const fetchWeather = async (lat: number, lon: number) => {
     try {
-      // Using OpenWeatherMap API (free tier)
-      // In production, you'd want to proxy this through your own API to hide the API key
-      const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY || ''
-      
-      if (!API_KEY) {
-        // Fallback: Use mock data or a public API
-        setWeather({
-          temperature: 72,
-          condition: 'Partly Cloudy',
-          description: 'Partly cloudy with light breeze',
-          humidity: 65,
-          windSpeed: 8,
-          icon: 'partly-cloudy'
-        })
-        setLoading(false)
-        return
-      }
-
+      // Use our API route to fetch weather (proxies to OpenWeatherMap or wttr.in)
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`
+        `/api/weather?lat=${lat}&lon=${lon}`
       )
 
       if (!response.ok) {
@@ -84,24 +67,16 @@ export default function WeatherCard() {
       const data = await response.json()
       
       setWeather({
-        temperature: Math.round(data.main.temp),
-        condition: data.weather[0].main,
-        description: data.weather[0].description,
-        humidity: data.main.humidity,
-        windSpeed: Math.round(data.wind.speed),
-        icon: data.weather[0].icon
+        temperature: data.temperature,
+        condition: data.condition,
+        description: data.description,
+        humidity: data.humidity,
+        windSpeed: data.windSpeed,
+        icon: data.icon
       })
     } catch (err) {
       console.error('Weather fetch error:', err)
-      // Fallback to mock data
-      setWeather({
-        temperature: 72,
-        condition: 'Partly Cloudy',
-        description: 'Partly cloudy with light breeze',
-        humidity: 65,
-        windSpeed: 8,
-        icon: 'partly-cloudy'
-      })
+      setError('Unable to load weather data')
     } finally {
       setLoading(false)
     }
