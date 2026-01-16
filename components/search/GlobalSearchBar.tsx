@@ -212,11 +212,11 @@ export default function GlobalSearchBar() {
       console.error('Error searching shopping:', e)
     }
 
-    // Search Reminders (stored as tasks with category "reminder")
+    // Search Reminders (stored as tasks with ID prefix "reminder-")
     try {
       const tasks: Task[] = JSON.parse(localStorage.getItem('tasks') || '[]')
       tasks
-        .filter((task) => task.category === 'reminder')
+        .filter((task) => task.id.startsWith('reminder-'))
         .forEach((task) => {
           if (task.title.toLowerCase().includes(lowerQuery)) {
             allResults.push({
