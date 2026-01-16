@@ -9,7 +9,7 @@ type CaptureType = 'thought' | 'task' | 'reminder' | 'appointment' | 'note'
 interface IconComponent {
   type: CaptureType
   label: string
-  Icon: React.ComponentType<{ className?: string }>
+  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
 }
 
 export default function QuickCaptureRow() {
