@@ -45,12 +45,21 @@ export default function MoodBar() {
   }
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.slice(0, 10) // Limit to 10 words
-    setQuickNote(value)
-    if (value.trim()) {
-      sessionStorage.setItem('todayNote', value)
+    const value = e.target.value
+    const words = value.split(/\s+/).filter(w => w.length > 0)
+    
+    // Limit to 10 words
+    if (words.length > 10) {
+      const limitedWords = words.slice(0, 10).join(' ')
+      setQuickNote(limitedWords)
+      sessionStorage.setItem('todayNote', limitedWords)
     } else {
-      sessionStorage.removeItem('todayNote')
+      setQuickNote(value)
+      if (value.trim()) {
+        sessionStorage.setItem('todayNote', value)
+      } else {
+        sessionStorage.removeItem('todayNote')
+      }
     }
   }
 
