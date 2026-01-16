@@ -194,6 +194,32 @@ export default function FamilyPage() {
                 </div>
               </div>
               <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone (optional)
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  placeholder="e.g., +1 (555) 123-4567"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email (optional)
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="e.g., name@example.com"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
                 <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
                   Notes (optional)
                 </label>

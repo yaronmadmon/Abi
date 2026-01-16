@@ -188,11 +188,11 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
             </div>
           ) : (
             <>
-              <div className="flex items-start justify-between mb-2">
-                <div>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
                   {member.relationship && (
-                    <p className="text-sm text-gray-600">{member.relationship}</p>
+                    <p className="text-sm text-gray-600 capitalize mb-1">{member.relationship}</p>
                   )}
                   {member.age && (
                     <p className="text-sm text-gray-500">{member.age} years old</p>
@@ -220,19 +220,29 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               </div>
 
-              {member.notes && (
-                <p className="text-sm text-gray-600 mb-3">{member.notes}</p>
-              )}
-
-              {/* Contact Info */}
+              {/* Contact Info - Clean display */}
               {(member.phone || member.email) && (
-                <div className="mb-3 space-y-1">
+                <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-1.5">
                   {member.phone && (
-                    <p className="text-sm text-gray-600">{member.phone}</p>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-gray-400" strokeWidth={2} />
+                      <span className="text-sm text-gray-700">{member.phone}</span>
+                    </div>
                   )}
                   {member.email && (
-                    <p className="text-sm text-gray-600">{member.email}</p>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-gray-400" strokeWidth={2} />
+                      <span className="text-sm text-gray-700">{member.email}</span>
+                    </div>
                   )}
+                </div>
+              )}
+
+              {/* Notes Section */}
+              {member.notes && (
+                <div className="mb-3">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{member.notes}</p>
                 </div>
               )}
 

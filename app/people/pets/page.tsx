@@ -217,6 +217,37 @@ export default function PetsPage() {
                 />
               </div>
               <div>
+                <label htmlFor="pet-birthday" className="block text-sm font-medium text-gray-700 mb-1">
+                  Birthday (optional)
+                </label>
+                <input
+                  id="pet-birthday"
+                  type="date"
+                  value={newBirthday}
+                  onChange={(e) => setNewBirthday(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="border-t border-gray-200 pt-3">
+                <p className="text-xs font-medium text-gray-500 mb-2">Veterinarian Info (optional)</p>
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={newVetName}
+                    onChange={(e) => setNewVetName(e.target.value)}
+                    placeholder="Vet name"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="tel"
+                    value={newVetPhone}
+                    onChange={(e) => setNewVetPhone(e.target.value)}
+                    placeholder="Vet phone"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
                 <label htmlFor="pet-notes" className="block text-sm font-medium text-gray-700 mb-1">
                   Notes (optional)
                 </label>

@@ -210,14 +210,21 @@ export default function PetCard({ pet, onUpdate, onDelete }: PetCardProps) {
             </div>
           ) : (
             <>
-              <div className="flex items-start justify-between mb-2">
-                <div>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-1">{pet.name}</h3>
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <span className="capitalize">{pet.type}</span>
-                    {pet.breed && <span>• {pet.breed}</span>}
-                    {pet.age && <span>• {pet.age} years old</span>}
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <span className="capitalize font-medium">{pet.type}</span>
+                    {pet.breed && <span className="text-gray-500">• {pet.breed}</span>}
                   </div>
+                  {pet.age && (
+                    <p className="text-sm text-gray-500">{pet.age} years old</p>
+                  )}
+                  {pet.birthday && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Birthday: {new Date(pet.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-1">
                   <button
@@ -241,8 +248,12 @@ export default function PetCard({ pet, onUpdate, onDelete }: PetCardProps) {
                 </div>
               </div>
 
+              {/* Notes Section */}
               {pet.notes && (
-                <p className="text-sm text-gray-600 mb-3">{pet.notes}</p>
+                <div className="mb-3">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{pet.notes}</p>
+                </div>
               )}
 
               {/* Vet Info */}
