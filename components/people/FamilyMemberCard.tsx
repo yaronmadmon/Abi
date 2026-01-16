@@ -220,27 +220,35 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               </div>
 
-              {/* Contact Info - Show if phone or email exists (check for truthy values) */}
-              {((member.phone && member.phone.trim()) || (member.email && member.email.trim())) && (
-                <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-2">
-                  {member.phone && member.phone.trim() && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 flex-1">
-                        <Phone className="w-4 h-4 text-gray-400" strokeWidth={2} />
-                        <span className="text-sm text-gray-700">{member.phone}</span>
-                      </div>
+              {/* Contact Info - Always show contact section */}
+              <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-2">
+                {member.phone && member.phone.trim() ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-1">
+                      <Phone className="w-4 h-4 text-gray-400" strokeWidth={2} />
+                      <span className="text-sm text-gray-700">{member.phone}</span>
                     </div>
-                  )}
-                  {member.email && member.email.trim() && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 flex-1">
-                        <Mail className="w-4 h-4 text-gray-400" strokeWidth={2} />
-                        <span className="text-sm text-gray-700">{member.email}</span>
-                      </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-300" strokeWidth={2} />
+                    <span className="text-sm text-gray-400 italic">No phone number</span>
+                  </div>
+                )}
+                {member.email && member.email.trim() ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-1">
+                      <Mail className="w-4 h-4 text-gray-400" strokeWidth={2} />
+                      <span className="text-sm text-gray-700">{member.email}</span>
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-gray-300" strokeWidth={2} />
+                    <span className="text-sm text-gray-400 italic">No email address</span>
+                  </div>
+                )}
+              </div>
 
               {/* Notes Section */}
               {member.notes && (
@@ -250,41 +258,67 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 </div>
               )}
 
-              {/* Quick Actions - Always visible if contact info exists (with proper checks) */}
-              {((member.phone && member.phone.trim()) || (member.email && member.email.trim())) && (
-                <div className="flex gap-2 mt-3">
-                  {member.phone && member.phone.trim() && (
-                    <>
-                      <button
-                        onClick={handleCall}
-                        className="flex-1 px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                        title={`Call ${member.phone}`}
-                      >
-                        <Phone className="w-4 h-4" strokeWidth={2} />
-                        <span className="text-sm font-medium">Call</span>
-                      </button>
-                      <button
-                        onClick={handleText}
-                        className="flex-1 px-4 py-2.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 active:bg-green-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                        title={`Text ${member.phone}`}
-                      >
-                        <MessageSquare className="w-4 h-4" strokeWidth={2} />
-                        <span className="text-sm font-medium">Text</span>
-                      </button>
-                    </>
-                  )}
-                  {member.email && member.email.trim() && (
+              {/* Quick Actions - Always show action buttons (disabled if no contact info) */}
+              <div className="flex gap-2 mt-3">
+                {member.phone && member.phone.trim() ? (
+                  <>
                     <button
-                      onClick={handleEmail}
-                      className="flex-1 px-4 py-2.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 active:bg-purple-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                      title={`Email ${member.email}`}
+                      onClick={handleCall}
+                      className="flex-1 px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                      title={`Call ${member.phone}`}
                     >
-                      <Mail className="w-4 h-4" strokeWidth={2} />
-                      <span className="text-sm font-medium">Email</span>
+                      <Phone className="w-4 h-4" strokeWidth={2} />
+                      <span className="text-sm font-medium">Call</span>
                     </button>
-                  )}
-                </div>
-              )}
+                    <button
+                      onClick={handleText}
+                      className="flex-1 px-4 py-2.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 active:bg-green-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                      title={`Text ${member.phone}`}
+                    >
+                      <MessageSquare className="w-4 h-4" strokeWidth={2} />
+                      <span className="text-sm font-medium">Text</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      disabled
+                      className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+                      title="Add phone number to enable"
+                    >
+                      <Phone className="w-4 h-4" strokeWidth={2} />
+                      <span className="text-sm font-medium">Call</span>
+                    </button>
+                    <button
+                      disabled
+                      className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+                      title="Add phone number to enable"
+                    >
+                      <MessageSquare className="w-4 h-4" strokeWidth={2} />
+                      <span className="text-sm font-medium">Text</span>
+                    </button>
+                  </>
+                )}
+                {member.email && member.email.trim() ? (
+                  <button
+                    onClick={handleEmail}
+                    className="flex-1 px-4 py-2.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 active:bg-purple-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                    title={`Email ${member.email}`}
+                  >
+                    <Mail className="w-4 h-4" strokeWidth={2} />
+                    <span className="text-sm font-medium">Email</span>
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+                    title="Add email address to enable"
+                  >
+                    <Mail className="w-4 h-4" strokeWidth={2} />
+                    <span className="text-sm font-medium">Email</span>
+                  </button>
+                )}
+              </div>
             </>
           )}
         </div>
