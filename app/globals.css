@@ -29,19 +29,21 @@
 
 /* Dark Mode */
 :root.dark-mode {
-  /* Colors - True dark with warmth */
+  /* Colors - True dark with warmth, glass cards */
   --background: #0f0f0f;
   --foreground: #ededed;
-  --card-bg: #1a1a1a;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --card-bg: rgba(26, 26, 26, 0.7); /* Semi-transparent for glass effect */
+  --card-bg-solid: rgba(26, 26, 26, 0.9); /* Fallback */
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
+  --card-inner-highlight: rgba(255, 255, 255, 0.15); /* Subtle inner highlight */
   --icon-color: #a0a0a0;
   --text-primary: #ededed;
   --text-secondary: #b0b0b0;
   --text-tertiary: #808080;
   --border-color: rgba(255, 255, 255, 0.12);
-  --input-bg: #1a1a1a;
+  --input-bg: rgba(26, 26, 26, 0.8);
   --input-border: rgba(255, 255, 255, 0.15);
 }
 
