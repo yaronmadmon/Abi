@@ -29,12 +29,19 @@ class RemindersHandler implements ModuleHandler {
       const stored = window.localStorage.getItem("tasks");
       const tasks: Task[] = stored ? JSON.parse(stored) : [];
 
+      // Apply smart defaults
+      let reminderDate = payload.date;
+      // If no date specified, default to today
+      if (!reminderDate) {
+        reminderDate = new Date().toISOString().split('T')[0];
+      }
+
       // Create new task (reminder) with unique ID
       const task: Task = {
         id: `reminder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         title: payload.title,
         category: "other",
-        dueDate: payload.date,
+        dueDate: reminderDate,
         completed: false,
         createdAt: new Date().toISOString(),
       };
