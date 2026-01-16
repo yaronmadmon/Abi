@@ -81,12 +81,7 @@ export default function CalendarCard() {
       setUpcomingEvents(displayedEvents)
       
       // Count all pending events (not just displayed)
-      const now = new Date()
-      const today = now.toISOString().split('T')[0]
-      const tomorrow = new Date(now)
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      const tomorrowStr = tomorrow.toISOString().split('T')[0]
-      
+      // Reuse the existing `today` and `tomorrowStr` variables defined above
       // Count today's incomplete tasks
       const todayTasks = tasks.filter(
         task => !task.completed && task.dueDate === today
