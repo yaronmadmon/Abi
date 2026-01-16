@@ -23,19 +23,86 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
   const [photo, setPhoto] = useState(member.photo || '')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File, maxWidth: number = 400, maxHeight: number = 400, quality: number = 0.7): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          let width = img.width
+          let height = img.height
+
+          // Calculate new dimensions
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width)
+              width = maxWidth
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height)
+              height = maxHeight
+            }
+          }
+
+          canvas.width = width
+          canvas.height = height
+
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'))
+            return
+          }
+
+          ctx.drawImage(img, 0, 0, width, height)
+          
+          // Convert to base64 with compression
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality)
+          resolve(compressedBase64)
+        }
+        img.onerror = reject
+        img.src = e.target?.result as string
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const base64 = reader.result as string
-        setPhoto(base64)
-        if (!isEditing) {
-          // Auto-save photo if not in edit mode
-          onUpdate({ ...member, photo: base64, updatedAt: new Date().toISOString() })
+      // Check file size (limit to 5MB before compression)
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Image too large. Please use an image smaller than 5MB.', 'error')
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
         }
+        return
       }
-      reader.readAsDataURL(file)
+
+      try {
+        // Compress the image
+        const compressedBase64 = await compressImage(file, 400, 400, 0.7)
+        
+        // Check compressed size (limit to 500KB base64)
+        if (compressedBase64.length > 500 * 1024) {
+          // Try more aggressive compression
+          const moreCompressed = await compressImage(file, 300, 300, 0.6)
+          setPhoto(moreCompressed)
+          if (!isEditing) {
+            onUpdate({ ...member, photo: moreCompressed, updatedAt: new Date().toISOString() })
+          }
+        } else {
+          setPhoto(compressedBase64)
+          if (!isEditing) {
+            onUpdate({ ...member, photo: compressedBase64, updatedAt: new Date().toISOString() })
+          }
+        }
+      } catch (error) {
+        console.error('Error compressing image:', error)
+        showToast('Could not process image. Please try a different image.', 'error')
+      }
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = ''

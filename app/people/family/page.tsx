@@ -52,7 +52,31 @@ export default function FamilyPage() {
 
   const saveFamily = (newFamily: FamilyMember[]) => {
     try {
+      // Calculate total size before saving
       const jsonString = JSON.stringify(newFamily)
+      const sizeInMB = (jsonString.length / (1024 * 1024)).toFixed(2)
+      console.log('📦 Family data size:', sizeInMB, 'MB')
+
+      // Check if data is too large (localStorage limit is ~5-10MB)
+      if (jsonString.length > 4 * 1024 * 1024) { // 4MB warning threshold
+        console.warn('⚠️ Warning: Family data is getting large:', sizeInMB, 'MB')
+        // Optionally remove photos from older members to free up space
+        if (jsonString.length > 8 * 1024 * 1024) { // 8MB hard limit
+          showToast('Data too large. Consider removing some photos.', 'error')
+          // Remove photos from all members to reduce size
+          const familyWithoutPhotos = newFamily.map((member) => ({
+            ...member,
+            photo: undefined,
+          }))
+          const reducedJson = JSON.stringify(familyWithoutPhotos)
+          localStorage.setItem('family', reducedJson)
+          setFamily(familyWithoutPhotos)
+          showToast('Photos removed to save space. You can re-add them later.', 'info')
+          window.dispatchEvent(new Event('storage'))
+          return
+        }
+      }
+
       localStorage.setItem('family', jsonString)
       setFamily(newFamily)
       console.log('✅ Family saved successfully:', newFamily.length, 'members')
@@ -61,8 +85,21 @@ export default function FamilyPage() {
     } catch (error) {
       console.error('❌ Error saving family to localStorage:', error)
       // Check if it's a quota exceeded error
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        showToast('Storage is full. Please clear some data.', 'error')
+      if (error instanceof Error && (error.name === 'QuotaExceededError' || (error as any).code === 22)) {
+        // Try to save without photos
+        try {
+          const familyWithoutPhotos = newFamily.map((member) => ({
+            ...member,
+            photo: undefined,
+          }))
+          const reducedJson = JSON.stringify(familyWithoutPhotos)
+          localStorage.setItem('family', reducedJson)
+          setFamily(familyWithoutPhotos)
+          showToast('Storage full. Photos removed to save space. You can re-add them later.', 'info')
+          window.dispatchEvent(new Event('storage'))
+        } catch (retryError) {
+          showToast('Storage is full. Please clear browser data or remove some family members.', 'error')
+        }
       } else {
         showToast('Failed to save family member', 'error')
       }
