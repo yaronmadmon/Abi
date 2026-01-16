@@ -44,28 +44,92 @@ export async function GET(request: NextRequest) {
     // Use OpenWeatherMap if API key is available
     console.log('🌤️ Fetching weather with OpenWeather API key:', API_KEY ? 'Present' : 'Missing')
     
-    const response = await fetch(
+    // Check if forecast data is requested
+    const includeForecast = request.nextUrl.searchParams.get('forecast') === 'true'
+    
+    // Fetch current weather
+    const currentResponse = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`
     )
 
-    if (!response.ok) {
-      const errorData = await response.text()
-      console.error('OpenWeather API error:', response.status, errorData)
-      throw new Error(`OpenWeather API error: ${response.status} - ${errorData}`)
+    if (!currentResponse.ok) {
+      const errorData = await currentResponse.text()
+      console.error('OpenWeather API error:', currentResponse.status, errorData)
+      throw new Error(`OpenWeather API error: ${currentResponse.status} - ${errorData}`)
     }
 
-    const data = await response.json()
-    console.log('✅ Weather data received:', data.name, data.weather[0].main)
+    const currentData = await currentResponse.json()
+    console.log('✅ Weather data received:', currentData.name, currentData.weather[0].main)
 
-    return NextResponse.json({
-      temperature: Math.round(data.main.temp),
-      condition: data.weather[0].main,
-      description: data.weather[0].description,
-      humidity: data.main.humidity,
-      windSpeed: Math.round(data.wind.speed || 0),
-      icon: data.weather[0].icon,
-      location: data.name,
-    })
+    const baseResponse = {
+      temperature: Math.round(currentData.main.temp),
+      condition: currentData.weather[0].main,
+      description: currentData.weather[0].description,
+      humidity: currentData.main.humidity,
+      windSpeed: Math.round(currentData.wind.speed || 0),
+      icon: currentData.weather[0].icon,
+      location: currentData.name,
+      feelsLike: Math.round(currentData.main.feels_like),
+      high: Math.round(currentData.main.temp_max),
+      low: Math.round(currentData.main.temp_min),
+    }
+
+    // If forecast is requested, fetch hourly and 5-day forecast
+    if (includeForecast) {
+      try {
+        const forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`
+        )
+
+        if (forecastResponse.ok) {
+          const forecastData = await forecastResponse.json()
+          
+          // Extract hourly forecast (next 12 hours from list)
+          const hourly = forecastData.list.slice(0, 12).map((item: any) => ({
+            time: new Date(item.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
+            temperature: Math.round(item.main.temp),
+            icon: item.weather[0].icon,
+            condition: item.weather[0].main,
+            pop: Math.round((item.pop || 0) * 100), // Probability of precipitation
+          }))
+
+          // Extract 5-day forecast (one entry per day)
+          const dailyMap = new Map()
+          forecastData.list.forEach((item: any) => {
+            const date = new Date(item.dt * 1000).toISOString().split('T')[0]
+            if (!dailyMap.has(date)) {
+              dailyMap.set(date, {
+                date,
+                day: new Date(item.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
+                high: Math.round(item.main.temp_max),
+                low: Math.round(item.main.temp_min),
+                icon: item.weather[0].icon,
+                condition: item.weather[0].main,
+                pop: Math.round((item.pop || 0) * 100),
+              })
+            } else {
+              // Update high/low for the day
+              const existing = dailyMap.get(date)
+              existing.high = Math.max(existing.high, Math.round(item.main.temp_max))
+              existing.low = Math.min(existing.low, Math.round(item.main.temp_min))
+            }
+          })
+
+          const daily = Array.from(dailyMap.values()).slice(0, 5)
+
+          return NextResponse.json({
+            ...baseResponse,
+            hourly,
+            daily,
+          })
+        }
+      } catch (forecastError) {
+        console.error('Forecast fetch error:', forecastError)
+        // Return current weather even if forecast fails
+      }
+    }
+
+    return NextResponse.json(baseResponse)
   } catch (error: any) {
     console.error('Weather API error:', error)
     const errorMessage = error?.message || 'Unknown error'
