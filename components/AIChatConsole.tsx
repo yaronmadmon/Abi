@@ -140,6 +140,7 @@ function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose
   
   // Load + persist conversation (one clean state, no injected system messages)
   useEffect(() => {
+    if (typeof window === 'undefined') return
     if (hasLoadedHistoryRef.current) return
     hasLoadedHistoryRef.current = true
     try {
@@ -164,6 +165,7 @@ function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose
   }, [])
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
     try {
       localStorage.setItem('aiChatConsoleMessages', JSON.stringify(messages))
     } catch (e) {
@@ -669,7 +671,7 @@ Structure: Acknowledge → Respond → Follow-up`
 
   // ESC key to close console
   useEffect(() => {
-    if (!isOpen) return
+    if (typeof window === 'undefined' || !isOpen) return
     
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !pendingProposal) {
