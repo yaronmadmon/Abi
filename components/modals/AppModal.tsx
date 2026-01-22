@@ -34,8 +34,8 @@ export default function AppModal({
       previousActiveElement.current = document.activeElement as HTMLElement
       
       // Lock body scroll and add modal-open class for debug indicator
-      document.body.style.overflow = 'hidden'
       if (document.body) {
+        document.body.style.overflow = 'hidden'
         document.body.classList.add('modal-open')
       }
       
@@ -165,10 +165,10 @@ export default function AppModal({
     </div>
   )
 
-  // Render to document.body using portal
-  if (typeof window !== 'undefined') {
-    return createPortal(overlay, document.body)
+  // Render to document.body using portal (client-side only)
+  if (typeof window === 'undefined' || !document.body) {
+    return null
   }
 
-  return null
+  return createPortal(overlay, document.body)
 }
