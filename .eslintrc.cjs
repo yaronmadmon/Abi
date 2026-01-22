@@ -6,7 +6,9 @@ module.exports = {
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     // Warn on missing dependencies in useEffect
     'react-hooks/exhaustive-deps': 'warn',
-    // Warn on unused variables
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    // Allow unescaped entities (apostrophes, quotes) in JSX
+    'react/no-unescaped-entities': 'off',
+    // Allow img tags (Next.js Image optimization can be added later)
+    '@next/next/no-img-element': 'warn',
   },
 }
