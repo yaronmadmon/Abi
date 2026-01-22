@@ -177,7 +177,7 @@ function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose
   useEffect(() => {
     if (typeof window === 'undefined') return
     const SpeechRecognition =
-      (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+      typeof window !== 'undefined' && ((window as any).webkitSpeechRecognition || (window as any).SpeechRecognition)
     if (!SpeechRecognition) return
 
     const recognition = new SpeechRecognition()
