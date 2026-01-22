@@ -339,7 +339,8 @@ body::before {
     display: none;
   }
 
-  /* Modal Open - Debug indicator */
+  /* Modal Open - Debug indicator (DISABLED - removed annoying blue banner) */
+  /*
   body.modal-open::before {
     content: '🔵 Modal Open - Press ESC to close';
     position: fixed;
@@ -356,6 +357,7 @@ body::before {
     pointer-events: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
+  */
   
   .btn-primary {
     @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-6 py-3 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-200 active:scale-95;
