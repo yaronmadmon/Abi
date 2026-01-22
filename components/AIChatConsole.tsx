@@ -35,6 +35,7 @@ import { shouldRequireApproval } from '@/ai/factories/commandFactory'
 import { commandExecutor } from '@/ai/execution/commandExecutor'
 import { approvalQueue } from '@/ai/execution/approvalQueue'
 import { FeatureErrorBoundary } from '@/components/errors/FeatureErrorBoundary'
+import AppModal from '@/components/modals/AppModal'
 
 interface Message {
   id: string
@@ -735,21 +736,16 @@ Structure: Acknowledge → Respond → Follow-up`
                   !isProcessing
 
   return (
-    <div 
-      className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={(e) => {
-        logger.debug('Overlay clicked - closing console')
-        onClose()
-      }}
+    <AppModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      variant="center" 
+      className="glass-card w-full max-w-2xl max-h-[90vh] flex flex-col p-0"
+      style={{ backgroundColor: 'var(--card-bg)' }}
     >
-      <div 
-        className="glass-card w-full max-w-2xl max-h-[90vh] flex flex-col" 
-        style={{ backgroundColor: 'var(--card-bg)' }}
-        onClick={(e) => e.stopPropagation()}
-      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-gray-900">Abby</h2>
+          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Abby</h2>
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -1081,7 +1077,7 @@ Structure: Acknowledge → Respond → Follow-up`
           />
         </div>
       </div>
-    </div>
+    </AppModal>
   )
 }
 

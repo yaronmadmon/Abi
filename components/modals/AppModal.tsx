@@ -31,8 +31,9 @@ export default function AppModal({
       // Store the previously focused element
       previousActiveElement.current = document.activeElement as HTMLElement
       
-      // Lock body scroll
+      // Lock body scroll and add modal-open class for debug indicator
       document.body.style.overflow = 'hidden'
+      document.body.classList.add('modal-open')
       
       // Focus trap: focus the modal container
       if (modalRef.current) {
@@ -44,8 +45,9 @@ export default function AppModal({
         }
       }
     } else {
-      // Restore body scroll
+      // Restore body scroll and remove modal-open class
       document.body.style.overflow = ''
+      document.body.classList.remove('modal-open')
       
       // Restore focus to previous element
       if (previousActiveElement.current) {
@@ -55,6 +57,7 @@ export default function AppModal({
 
     return () => {
       document.body.style.overflow = ''
+      document.body.classList.remove('modal-open')
     }
   }, [isOpen])
 

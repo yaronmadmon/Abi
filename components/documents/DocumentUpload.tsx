@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Upload, Camera, X, FileText, FileImage, FileType } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 import AIPen from '../AIPen'
+import AppModal from '../modals/AppModal'
 
 interface DocumentUploadProps {
   onUpload: (file: File, title: string, description?: string) => void
@@ -196,10 +197,9 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
   }, [])
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="glass-card p-6 max-w-md w-full max-h-[90vh] flex flex-col">
+    <AppModal isOpen={true} onClose={onCancel} variant="center" className="glass-card p-6 max-w-md w-full max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-gray-900">Upload Document</h2>
+          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Upload Document</h2>
           <button
             onClick={onCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -425,7 +425,6 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
             </div>
           </form>
         )}
-      </div>
-    </div>
+    </AppModal>
   )
 }
