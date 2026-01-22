@@ -8,6 +8,7 @@ import AIPen from '@/components/AIPen'
 import FamilyMemberCard from '@/components/people/FamilyMemberCard'
 import { showToast } from '@/components/feedback/ToastContainer'
 import PageContainer from '@/components/ui/PageContainer'
+import { logger } from '@/lib/logger'
 
 export default function FamilyPage() {
   const [family, setFamily] = useState<FamilyMember[]>([])
@@ -40,12 +41,12 @@ export default function FamilyPage() {
       if (stored) {
         const parsed = JSON.parse(stored)
         setFamily(parsed)
-        console.log('✅ Loaded family members:', parsed.length)
+        logger.debug(`Loaded family members: ${parsed.length}`)
       } else {
         setFamily([])
       }
     } catch (error) {
-      console.error('❌ Error loading family:', error)
+      logger.error('Error loading family', error as Error)
       setFamily([])
     }
   }
@@ -55,11 +56,11 @@ export default function FamilyPage() {
       // Calculate total size before saving
       const jsonString = JSON.stringify(newFamily)
       const sizeInMB = (jsonString.length / (1024 * 1024)).toFixed(2)
-      console.log('📦 Family data size:', sizeInMB, 'MB')
+      logger.debug(`Family data size: ${sizeInMB} MB`)
 
       // Check if data is too large (localStorage limit is ~5-10MB)
       if (jsonString.length > 4 * 1024 * 1024) { // 4MB warning threshold
-        console.warn('⚠️ Warning: Family data is getting large:', sizeInMB, 'MB')
+        logger.warn(`Warning: Family data is getting large: ${sizeInMB} MB`)
         // Optionally remove photos from older members to free up space
         if (jsonString.length > 8 * 1024 * 1024) { // 8MB hard limit
           showToast('Data too large. Consider removing some photos.', 'error')
@@ -79,11 +80,11 @@ export default function FamilyPage() {
 
       localStorage.setItem('family', jsonString)
       setFamily(newFamily)
-      console.log('✅ Family saved successfully:', newFamily.length, 'members')
+      logger.debug(`Family saved successfully: ${newFamily.length} members`)
       // Trigger storage event
       window.dispatchEvent(new Event('storage'))
     } catch (error) {
-      console.error('❌ Error saving family to localStorage:', error)
+      logger.error('Error saving family to localStorage', error as Error)
       // Check if it's a quota exceeded error
       if (error instanceof Error && (error.name === 'QuotaExceededError' || (error as any).code === 22)) {
         // Try to save without photos
@@ -179,7 +180,7 @@ export default function FamilyPage() {
             createdAt: updated.createdAt || member.createdAt, // Preserve creation date
             updatedAt: new Date().toISOString(),
           }
-          console.log('Updating member:', cleaned)
+          logger.debug('Updating member', { memberId: cleaned.id, name: cleaned.name })
           return cleaned
         }
         return member
@@ -188,7 +189,7 @@ export default function FamilyPage() {
       saveFamily(updatedFamily)
       showToast('Family member updated', 'success')
     } catch (error) {
-      console.error('Error updating family member:', error)
+      logger.error('Error updating family member', error as Error)
       showToast(`Couldn't update family member: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error')
     }
   }

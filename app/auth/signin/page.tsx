@@ -55,6 +55,7 @@ export default function SignInPage() {
         setSupabaseReady(false)
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSignIn = async (e: React.FormEvent) => {

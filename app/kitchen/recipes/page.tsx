@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Search, ChefHat, Clock, Users, Heart, ThumbsDown, Shield, ArrowLeft, Check, RefreshCw, X } from 'lucide-react'
 import { RECIPE_DATABASE, Recipe } from '@/data/recipeDatabase'
@@ -470,16 +471,14 @@ export default function RecipeLibraryPage() {
                 const isLiked = likedRecipes.includes(recipe.id)
                 
                 return (
-                  <>
-                    <div className="aspect-video w-full overflow-hidden bg-gray-100">
-                      <img
+                    <>
+                    <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
+                      <Image
                         src={recipe.imageUrl}
                         alt={recipe.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect fill="%23f3f4f6" width="600" height="400"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-size="24" fill="%239ca3af"%3ERecipe Image%3C/text%3E%3C/svg%3E';
-                        }}
+                        fill
+                        className="object-cover"
+                        unoptimized
                       />
                     </div>
                     <div className="p-6">
@@ -581,16 +580,14 @@ export default function RecipeLibraryPage() {
                   
                   <div 
                     onClick={swapMode?.active ? undefined : () => handleRecipeClick(recipe)}
-                    className={`aspect-video w-full overflow-hidden bg-gray-100 ${!swapMode?.active ? 'cursor-pointer' : ''}`}
+                    className={`aspect-video w-full overflow-hidden bg-gray-100 relative ${!swapMode?.active ? 'cursor-pointer' : ''}`}
                   >
-                    <img
+                    <Image
                       src={recipe.imageUrl}
                       alt={recipe.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect fill="%23f3f4f6" width="600" height="400"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-size="24" fill="%239ca3af"%3ERecipe Image%3C/text%3E%3C/svg%3E';
-                      }}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                      unoptimized
                     />
                   </div>
                   <div className="p-4">

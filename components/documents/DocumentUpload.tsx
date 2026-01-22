@@ -183,6 +183,7 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
     if (autoStartCamera && !showCamera && !file) {
       startCamera()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStartCamera])
 
   useEffect(() => {
@@ -314,11 +315,13 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
               {/* Preview */}
               {file.type.startsWith('image/') && (
-                <div className="mb-4">
-                  <img
+                <div className="mb-4 relative w-full h-[400px]">
+                  <Image
                     src={URL.createObjectURL(file)}
                     alt="Preview"
-                    className="w-full rounded-xl border border-gray-200 max-h-[400px] object-contain bg-gray-50"
+                    fill
+                    className="rounded-xl border border-gray-200 object-contain bg-gray-50"
+                    unoptimized
                   />
                 </div>
               )}

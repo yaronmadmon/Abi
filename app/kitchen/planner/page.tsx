@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { ChevronLeft, Sparkles, Check, Calendar, ShoppingCart, Clock, ChefHat, BookOpen, Wand2, Trash2 } from 'lucide-react'
 import { selectRecipesForPlan, Recipe } from '@/data/recipeDatabase'
 import PageContainer from '@/components/ui/PageContainer'
@@ -579,14 +580,15 @@ export default function MealPlannerPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {generatedMeals.slice(0, 6).map(meal => (
                   <div key={meal.id} className="bg-white rounded-xl border border-gray-200 p-3 flex gap-3">
-                    <img
-                      src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
-                      alt={meal.title}
-                      className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'
-                      }}
-                    />
+                    <div className="w-16 h-16 relative flex-shrink-0 rounded-lg overflow-hidden">
+                      <Image
+                        src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
+                        alt={meal.title}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-xs font-medium text-orange-600 uppercase mb-1">
                         {meal.mealType}
@@ -677,14 +679,15 @@ export default function MealPlannerPage() {
                                 </button>
 
                                 <div className="flex gap-4 mb-3 pr-10">
-                                  <img
-                                    src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
-                                    alt={meal.title}
-                                    className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'
-                                    }}
-                                  />
+                                  <div className="w-24 h-24 relative flex-shrink-0 rounded-lg overflow-hidden">
+                                    <Image
+                                      src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
+                                      alt={meal.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
                                       <span className="text-xs font-medium text-orange-600 uppercase">

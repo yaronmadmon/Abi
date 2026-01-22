@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { UtensilsCrossed, ShoppingCart, Sparkles, Clock, ChefHat, ArrowRight, BookOpen, Trash2, Shield } from 'lucide-react'
 import SummaryCard from '@/components/section/SummaryCard'
@@ -230,14 +231,15 @@ export default function KitchenPage() {
                       }}
                       className="w-full flex gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-left"
                     >
-                      <img 
-                        src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'} 
-                        alt={meal.title} 
-                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0" 
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'
-                        }}
-                      />
+                      <div className="w-20 h-20 relative flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image 
+                          src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'} 
+                          alt={meal.title} 
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
                       <div className="flex-1">
                         <div className="text-xs font-medium text-blue-600 uppercase mb-1">
                           {meal.mealType}

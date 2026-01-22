@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { logger } from '@/lib/logger'
 import { X, Save } from 'lucide-react'
 import AIPen from '../AIPen'
 import { showToast } from '../feedback/ToastContainer'
@@ -39,7 +40,7 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
       }
 
       setIsSaving(true);
-      console.log('💾 NoteCreateSheet: Saving note...', { title: title.trim() || 'Untitled Note', bodyLength: body.trim().length });
+      logger.debug('NoteCreateSheet: Saving note', { title: title.trim() || 'Untitled Note', bodyLength: body.trim().length });
       
       // Call onSave callback
       onSave({

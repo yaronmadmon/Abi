@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 /**
  * ElevenLabs TTS API Route (DISABLED)
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY
     if (!ELEVENLABS_API_KEY) {
-      console.error('❌ ElevenLabs API key not configured in environment variables')
+      logger.error('ElevenLabs API key not configured in environment variables')
       return NextResponse.json({ error: 'ElevenLabs API key not configured' }, { status: 500 })
     }
 
@@ -26,8 +27,7 @@ export async function POST(request: NextRequest) {
     // Common Rachel voice ID: "21m00Tcm4TlvDq8ikWAM" (verify in your dashboard)
     const voiceId = process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM"
     
-    console.log('🎙️ Calling ElevenLabs API with voice ID:', voiceId)
-    console.log('📝 Text length:', text.length, 'characters')
+    logger.debug('Calling ElevenLabs API', { voiceId, textLength: text.length })
     
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('❌ ElevenLabs API error:', response.status, error)
+      logger.error('ElevenLabs API error', new Error(error), { status: response.status })
       return NextResponse.json({ error: 'Failed to generate speech', details: error }, { status: response.status })
     }
     
-    console.log('✅ ElevenLabs API success, generating audio...')
+    logger.debug('ElevenLabs API success, generating audio')
 
     const audioBuffer = await response.arrayBuffer()
     
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('TTS error:', error)
+    logger.error('TTS error', error as Error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -28,6 +28,7 @@ import type { ActionProposal } from '@/ai/schemas/commandSchema'
 import { useApprovalQueue } from '@/hooks/useApprovalQueue'
 import ConfirmationUI from '@/components/ConfirmationUI'
 import { usePathname } from 'next/navigation'
+import { logger } from '@/lib/logger'
 import { initExecutors, areExecutorsInitialized } from '@/ai/execution/initExecutors'
 import { shouldRequireApproval } from '@/ai/factories/commandFactory'
 import { commandExecutor } from '@/ai/execution/commandExecutor'
@@ -290,26 +291,26 @@ Structure: Acknowledge → Respond → Follow-up`
   }
 
   const handleSpeak = async (text: string) => {
-    console.log('🔊 handleSpeak called:', { voiceEnabled, isSpeaking: isSpeakingRef.current, textLength: text.length })
+    logger.debug('handleSpeak called', { voiceEnabled, isSpeaking: isSpeakingRef.current, textLength: text.length })
     if (!voiceEnabled) {
-      console.warn('🔇 Voice is disabled, skipping TTS')
+      logger.warn('Voice is disabled, skipping TTS')
       return
     }
     if (isSpeakingRef.current) {
-      console.warn('🔇 Already speaking, skipping TTS')
+      logger.warn('Already speaking, skipping TTS')
       return
     }
     
     isSpeakingRef.current = true
     try {
-      console.log('🎤 Calling ElevenLabs TTS with Rachel voice')
+      logger.debug('Calling ElevenLabs TTS with Rachel voice')
       await speak(text, {
         voice: 'Rachel', // ElevenLabs Rachel voice
         speed: 1.0,
       })
-      console.log('✅ TTS completed successfully')
+      logger.debug('TTS completed successfully')
     } catch (error) {
-      console.error('❌ Voice engine error:', error)
+      logger.error('Voice engine error', error as Error)
     } finally {
       isSpeakingRef.current = false
     }
@@ -643,13 +644,13 @@ Structure: Acknowledge → Respond → Follow-up`
   // Auto-send effect: trigger sendMessage when in speech mode + preview mode
   useEffect(() => {
     if (speechMode && mode === 'preview' && draftMessage.trim() && !isProcessingRef.current && !autoSendTriggeredRef.current) {
-      console.log('🎙️ Speech mode: Auto-sending message')
+      logger.debug('Speech mode: Auto-sending message')
       autoSendTriggeredRef.current = true
       
       // Small delay to ensure state is settled
       const timer = setTimeout(() => {
         sendMessage().catch(err => {
-          console.error('Auto-send failed:', err)
+          logger.error('Auto-send failed', err as Error)
           autoSendTriggeredRef.current = false
         })
       }, 500)
@@ -661,6 +662,7 @@ Structure: Acknowledge → Respond → Follow-up`
     if (mode !== 'preview') {
       autoSendTriggeredRef.current = false
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speechMode, mode, draftMessage])
 
   // ESC key to close console
@@ -676,16 +678,17 @@ Structure: Acknowledge → Respond → Follow-up`
     
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, onClose, pendingProposal])
 
   // Debug: Log when overlay is rendered
   useEffect(() => {
     if (isOpen) {
-      console.log('🔵 AI Chat Console is OPEN')
+      logger.debug('AI Chat Console is OPEN')
       // Add body class to indicate modal is open
       document.body.classList.add('modal-open')
     } else {
-      console.log('⚪ AI Chat Console is CLOSED')
+      logger.debug('AI Chat Console is CLOSED')
       document.body.classList.remove('modal-open')
     }
     
@@ -698,7 +701,7 @@ Structure: Acknowledge → Respond → Follow-up`
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).closeAIConsole = () => {
-        console.log('🚨 Emergency close triggered')
+        logger.debug('Emergency close triggered')
         onClose()
       }
       
@@ -734,7 +737,7 @@ Structure: Acknowledge → Respond → Follow-up`
     <div 
       className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={(e) => {
-        console.log('🎯 Overlay clicked - closing console')
+        logger.debug('Overlay clicked - closing console')
         onClose()
       }}
     >
@@ -847,11 +850,13 @@ Structure: Acknowledge → Respond → Follow-up`
         {imagePreviews.length > 0 && (
           <div className="px-4 pb-2 flex gap-2 flex-wrap flex-shrink-0">
             {imagePreviews.map((preview, index) => (
-              <div key={index} className="relative">
-                <img
+              <div key={index} className="relative w-20 h-20">
+                <Image
                   src={preview}
                   alt={`Preview ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                  fill
+                  className="object-cover rounded-lg border border-gray-200"
+                  unoptimized
                 />
                 <button
                   onClick={() => removeImage(index)}

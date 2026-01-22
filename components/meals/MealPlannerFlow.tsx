@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { X, ChevronLeft, Sparkles, Check } from 'lucide-react'
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'baker'
@@ -317,11 +318,15 @@ export default function MealPlannerFlow({ onComplete, onCancel }: MealPlannerFlo
               <div key={meal.id} className="bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-all">
                 <div className="flex gap-3">
                   {meal.imageUrl && (
-                    <img 
-                      src={meal.imageUrl} 
-                      alt={meal.title}
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
+                    <div className="w-20 h-20 relative rounded-lg overflow-hidden">
+                      <Image 
+                        src={meal.imageUrl} 
+                        alt={meal.title}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
                   )}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">

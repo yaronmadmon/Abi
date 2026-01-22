@@ -60,6 +60,7 @@ export default function NotesPage() {
       window.removeEventListener('notesUpdated', handleNotesUpdate)
       window.removeEventListener('keydown', handleKeyDown)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadNotes = () => {

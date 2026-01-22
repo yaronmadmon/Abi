@@ -32,6 +32,7 @@ export default function MealDayViewPage() {
 
   useEffect(() => {
     loadMeals()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date])
 
   const loadMeals = () => {
@@ -244,14 +245,15 @@ export default function MealDayViewPage() {
               <div className="p-6">
                 {/* Recipe Image & Title */}
                 <div className="flex gap-4 mb-6">
-                  <img
-                    src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
-                    alt={meal.title}
-                    className="w-32 h-32 object-cover rounded-xl flex-shrink-0"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'
-                    }}
-                  />
+                  <div className="w-32 h-32 relative flex-shrink-0 rounded-xl overflow-hidden">
+                    <Image
+                      src={meal.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
+                      alt={meal.title}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
                   <div className="flex-1">
                     <Link
                       href={`/kitchen/recipes?recipe=${meal.id}`}

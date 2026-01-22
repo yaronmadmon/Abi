@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Clock, Users, Heart, ShoppingCart, Check, AlertTriangle, Shield } from 'lucide-react'
@@ -179,10 +180,12 @@ export default function RecipeDetailPage() {
       <PageContainer>
         {/* Hero Image */}
         <div className="relative w-full h-64 md:h-80 bg-gray-100">
-          <img
+          <Image
             src={recipe.imageUrl}
             alt={recipe.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            unoptimized
           />
           
           {/* Back Button Overlay */}

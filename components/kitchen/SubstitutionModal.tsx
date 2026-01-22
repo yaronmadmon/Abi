@@ -25,6 +25,7 @@ export default function SubstitutionModal({
 
   useEffect(() => {
     loadSubstitutions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missingIngredient])
 
   const loadSubstitutions = async () => {

@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Phone, Mail, MessageSquare, Edit2, Save, X, Camera, User, Trash2, Calendar } from 'lucide-react'
 import type { FamilyMember } from '@/types/home'
+import { logger } from '@/lib/logger'
+import Image from 'next/image'
 import { showToast } from '../feedback/ToastContainer'
 
 interface FamilyMemberCardProps {
@@ -165,13 +167,13 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         updatedAt: new Date().toISOString(),
       }
 
-      console.log('Saving member:', updatedMember.id, updatedMember.name)
+      logger.debug('Saving member', { memberId: updatedMember.id, name: updatedMember.name })
       
       // Call onUpdate with the updated member
       onUpdate(updatedMember)
       setIsEditing(false)
     } catch (error) {
-      console.error('Error in handleSave:', error)
+      logger.error('Error in handleSave', error as Error)
       showToast(`Couldn't update: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error')
     }
   }
@@ -217,7 +219,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
             title={!isEditing ? "Click to edit photo" : undefined}
           >
             {photo ? (
-              <img src={photo} alt={member.name} className="w-full h-full object-cover" />
+              <Image src={photo} alt={member.name} fill className="object-cover" unoptimized />
             ) : (
               <User className="w-10 h-10 text-gray-400" strokeWidth={1.5} />
             )}

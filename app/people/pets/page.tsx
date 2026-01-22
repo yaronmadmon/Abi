@@ -8,6 +8,7 @@ import AIPen from '@/components/AIPen'
 import PetCard from '@/components/people/PetCard'
 import { showToast } from '@/components/feedback/ToastContainer'
 import PageContainer from '@/components/ui/PageContainer'
+import { logger } from '@/lib/logger'
 
 export default function PetsPage() {
   const [pets, setPets] = useState<Pet[]>([])
@@ -41,12 +42,12 @@ export default function PetsPage() {
       if (stored) {
         const parsed = JSON.parse(stored)
         setPets(parsed)
-        console.log('✅ Loaded pets:', parsed.length)
+        logger.debug(`Loaded pets: ${parsed.length}`)
       } else {
         setPets([])
       }
     } catch (error) {
-      console.error('❌ Error loading pets:', error)
+      logger.error('Error loading pets', error as Error)
       setPets([])
     }
   }

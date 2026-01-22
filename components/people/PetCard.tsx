@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Edit2, Save, X, Camera, Heart, Phone, Trash2 } from 'lucide-react'
+import Image from 'next/image'
 import type { Pet } from '@/types/home'
 import { showToast } from '../feedback/ToastContainer'
 
@@ -96,7 +97,7 @@ export default function PetCard({ pet, onUpdate, onDelete }: PetCardProps) {
         <div className="relative flex-shrink-0">
           <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
             {photo ? (
-              <img src={photo} alt={pet.name} className="w-full h-full object-cover" />
+              <Image src={photo} alt={pet.name} fill className="object-cover" unoptimized />
             ) : (
               <Heart className="w-10 h-10 text-gray-400" strokeWidth={1.5} />
             )}

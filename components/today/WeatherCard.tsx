@@ -56,6 +56,7 @@ const WeatherCardContent = memo(function WeatherCardContent() {
     // Refresh weather every 30 minutes
     const interval = setInterval(loadWeather, 30 * 60 * 1000)
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadWeather = async () => {

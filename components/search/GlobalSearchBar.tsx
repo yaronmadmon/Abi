@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { Search, X, CheckCircle2, FileText, Calendar, User, Heart, UtensilsCrossed, ShoppingCart, Clock, ChefHat } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Task, Meal, ShoppingItem, FamilyMember, Pet } from '@/types/home'
@@ -426,11 +427,13 @@ export default function GlobalSearchBar() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header with Image */}
-            <div className="relative">
-              <img
+            <div className="relative w-full h-64">
+              <Image
                 src={selectedRecipe.imageUrl}
                 alt={selectedRecipe.title}
-                className="w-full h-64 object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
               <button
                 onClick={() => setSelectedRecipe(null)}

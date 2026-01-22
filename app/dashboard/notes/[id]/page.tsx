@@ -43,6 +43,7 @@ export default function NoteEditorPage(): JSX.Element {
         clearTimeout(saveTimeoutRef.current)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noteId])
 
   // Initialize contentEditable elements with note content on load
@@ -59,6 +60,7 @@ export default function NoteEditorPage(): JSX.Element {
       }, 50)
       return () => clearTimeout(timer)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note?.id]) // Only when note ID changes (initial load)
 
   const loadNote = () => {

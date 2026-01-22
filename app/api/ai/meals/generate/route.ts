@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { getOpenAIApiKey } from '@/ai/serverEnv'
+import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 
@@ -163,7 +164,7 @@ Return ONLY the JSON array, no other text.`
     try {
       meals = JSON.parse(cleanedResponse)
     } catch (parseError) {
-      console.error('Failed to parse AI response:', cleanedResponse)
+      logger.error('Failed to parse AI response', parseError as Error, { cleanedResponse })
       throw new Error('AI returned invalid JSON')
     }
 
@@ -192,7 +193,7 @@ Return ONLY the JSON array, no other text.`
     return NextResponse.json({ meals: enrichedMeals })
 
   } catch (error) {
-    console.error('Error generating meals:', error)
+    logger.error('Error generating meals', error as Error)
     return NextResponse.json(
       { error: 'Failed to generate meals', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

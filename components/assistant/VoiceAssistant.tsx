@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { logger } from '@/lib/logger'
 import { Mic, MicOff, Square, CheckCircle2 } from 'lucide-react'
 import { speak, cancelSpeech } from '@/ai/voiceEngine'
 import type { ActionIntent } from '@/ai/schemas/actionIntentSchema'
@@ -55,19 +56,19 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
           recognition.onstart = () => {
             setIsListening(true)
             setState('listening')
-            console.log('🎤 Speech recognition started')
+            logger.debug('Speech recognition started')
           }
           
           recognition.onresult = (event: any) => {
             const text = event.results[0][0].transcript
-            console.log('📝 Speech recognized:', text)
+            logger.debug('Speech recognized', { text })
             setTranscript(text)
             setIsListening(false)
             handleCommand(text)
           }
           
           recognition.onerror = (event: any) => {
-            console.error('❌ Speech recognition error:', event.error)
+            logger.error('Speech recognition error', new Error(event.error))
             setIsListening(false)
             setState('idle')
             
@@ -93,9 +94,9 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
           
           recognitionRef.current = recognition
           setVoiceInputAvailable(true)
-          console.log('✅ Speech Recognition API initialized')
+          logger.debug('Speech Recognition API initialized')
         } catch (error) {
-          console.error('❌ Failed to initialize Speech Recognition:', error)
+          logger.error('Failed to initialize Speech Recognition', error as Error)
           setVoiceInputAvailable(false)
           onError?.('Speech recognition is not available in your browser.')
         }
@@ -103,10 +104,11 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
         setVoiceInputAvailable(false)
       }
     } else {
-      console.warn('⚠️ Speech Recognition API not available (Chrome/Edge required)')
+      logger.warn('Speech Recognition API not available (Chrome/Edge required)')
       setVoiceInputAvailable(false)
       // Don't show error immediately - user can still use text input
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Cleanup

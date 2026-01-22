@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 interface ShareRequest {
   to: {
@@ -77,11 +78,7 @@ Sent from Abby`
       try {
         // TODO: Integrate with email service (Resend, SendGrid, or Nodemailer)
         // For now, log it
-        console.log('📧 Would send email:', {
-          to: to.email,
-          subject: emailSubject,
-          body: emailBody,
-        })
+        logger.debug('Would send email', { to: to.email, subject: emailSubject })
         
         // Example with Resend (uncomment when API key is set):
         // const RESEND_API_KEY = process.env.RESEND_API_KEY
@@ -102,7 +99,7 @@ Sent from Abby`
         //   if (!response.ok) throw new Error('Failed to send email')
         // }
       } catch (error) {
-        console.error('Error sending email:', error)
+        logger.error('Error sending email', error as Error)
         // Don't fail the whole request if email fails
       }
     }
@@ -112,10 +109,7 @@ Sent from Abby`
       try {
         // TODO: Integrate with SMS service (Twilio, AWS SNS, or Resend SMS)
         // For now, log it
-        console.log('📱 Would send SMS:', {
-          to: to.phone,
-          body: smsBody,
-        })
+        logger.debug('Would send SMS', { to: to.phone })
         
         // Example with Twilio (uncomment when credentials are set):
         // const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID
@@ -140,7 +134,7 @@ Sent from Abby`
         //   if (!response.ok) throw new Error('Failed to send SMS')
         // }
       } catch (error) {
-        console.error('Error sending SMS:', error)
+        logger.error('Error sending SMS', error as Error)
         // Don't fail the whole request if SMS fails
       }
     }
@@ -156,7 +150,7 @@ Sent from Abby`
       }
     })
   } catch (error) {
-    console.error('Error in share API:', error)
+    logger.error('Error in share API', error as Error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

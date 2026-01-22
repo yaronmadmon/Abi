@@ -47,6 +47,7 @@ export default function ConfirmationUI({ proposal, onApprove, onReject, isProces
     
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing, command.id])
   
   return (

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { logger } from '@/lib/logger'
 import { X, Download, Share2, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
 
 interface DocumentViewerProps {
@@ -136,24 +138,21 @@ export default function DocumentViewer({ isOpen, onClose, fileUrl, fileName, tit
                 </button>
               </div>
             ) : (
-              <img
-                src={fileUrl}
-                alt={title}
-                onLoad={() => setIsLoading(false)}
-                onError={(e) => {
-                  console.error('Image load error:', fileUrl.substring(0, 50) + '...')
-                  setImageError(true)
-                  setIsLoading(false)
-                }}
-                style={{
-                  transform: `rotate(${rotation}deg) scale(${zoom})`,
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                  transition: 'transform 0.2s',
-                  display: isLoading ? 'none' : 'block',
-                }}
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={fileUrl}
+                  alt={title}
+                  fill
+                  className="object-contain"
+                  onLoad={() => setIsLoading(false)}
+                  onError={() => {
+                    logger.error('Image load error', new Error('Failed to load image'))
+                    setImageError(true)
+                    setIsLoading(false)
+                  }}
+                  unoptimized
+                />
+              </div>
             )}
           </>
         ) : isPDF ? (

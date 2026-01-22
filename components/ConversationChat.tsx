@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { logger } from '@/lib/logger'
 import { Mic, Square, Image as ImageIcon, X } from 'lucide-react'
+import Image from 'next/image'
 import { speak, cancelSpeech } from '@/ai/voiceEngine'
 import type { AIIntent } from '@/ai/schemas/intentSchema'
 import { routeIntent } from '@/ai/aiRouter'
@@ -117,7 +119,7 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
                 recognition.start()
               } catch (error) {
                 // Recognition might already be running or stopped intentionally
-                console.log('Recognition restart:', error)
+                logger.debug('Recognition restart', { error })
               }
             }
           }, 300)
@@ -134,7 +136,8 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
       }
       cancelSpeech() // Cancel any ongoing voice output
     }
-  }, [onError])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onError, isSpeaking])
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -153,7 +156,7 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
     
     // Prevent duplicate calls
     if (isSpeakingRef.current) {
-      console.warn('⚠️ Already speaking, ignoring duplicate call')
+      logger.warn('Already speaking, ignoring duplicate call')
       return
     }
     
@@ -176,7 +179,7 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
               recognitionRef.current.start()
             } catch (error) {
               // Recognition might already be running, ignore
-              console.log('Recognition already active or error:', error)
+              logger.debug('Recognition already active or error', { error })
             }
           }
         }, 500)
@@ -464,11 +467,13 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
         {imagePreviews.length > 0 && (
           <div className="mb-3 flex gap-2 flex-wrap">
             {imagePreviews.map((preview, index) => (
-              <div key={index} className="relative">
-                <img
+              <div key={index} className="relative w-20 h-20">
+                <Image
                   src={preview}
                   alt={`Preview ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                  fill
+                  className="object-cover rounded-lg border border-gray-200"
+                  unoptimized
                 />
                 <button
                   onClick={() => removeImage(index)}

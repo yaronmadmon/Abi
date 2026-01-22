@@ -12,6 +12,7 @@ import {
   type CalendarPreferences
 } from '@/lib/calendarSystems'
 import { showToast } from '@/components/feedback/ToastContainer'
+import { logger } from '@/lib/logger'
 
 export default function CalendarSettingsPage() {
   const router = useRouter()
@@ -44,7 +45,7 @@ export default function CalendarSettingsPage() {
       preferences.showInToday !== originalPreferences.showInToday ||
       preferences.showInWeekly !== originalPreferences.showInWeekly
     
-    console.log('Change detection:', {
+    logger.debug('Change detection', {
       changed,
       selectedCalendars: preferences.selectedCalendars,
       originalSelected: originalPreferences.selectedCalendars,
@@ -75,7 +76,7 @@ export default function CalendarSettingsPage() {
 
   const handleSave = () => {
     try {
-      console.log('Saving preferences:', preferences)
+      logger.debug('Saving preferences', { preferences })
       saveCalendarPreferences(preferences)
       setOriginalPreferences(preferences)
       setHasChanges(false)
@@ -98,7 +99,7 @@ export default function CalendarSettingsPage() {
         window.location.href = '/today'
       }, 800)
     } catch (error) {
-      console.error('Error saving calendar preferences:', error)
+      logger.error('Error saving calendar preferences', error as Error)
       showToast('Failed to save settings. Please try again.', 'error')
     }
   }
