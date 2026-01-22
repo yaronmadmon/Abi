@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { X, MapPin, Wind, Droplets, Eye, Gauge, Sunrise, Sunset, ChevronDown, ChevronUp } from 'lucide-react'
 import { Cloud, CloudRain, Sun, CloudSun } from 'lucide-react'
+import AppModal from '../modals/AppModal'
 
 interface HourlyForecast {
   time: string
@@ -46,24 +47,7 @@ interface WeatherForecastModalProps {
 export default function WeatherForecastModal({ weather, locationName, onClose, isLoading }: WeatherForecastModalProps) {
   const [expandedDay, setExpandedDay] = useState<string | null>(null)
 
-  // Close on ESC key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [])
+  if (!weather) return null
 
   const getWeatherIcon = (iconCode: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     const sizeClasses = {
@@ -91,19 +75,12 @@ export default function WeatherForecastModal({ weather, locationName, onClose, i
   }
 
   return (
-    <div 
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in"
-      onClick={onClose}
-    >
-      <div 
-        className="relative w-full h-full max-w-4xl max-h-[90vh] bg-white rounded-none sm:rounded-lg shadow-2xl overflow-hidden animate-slide-up"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <AppModal isOpen={true} onClose={onClose} variant="center" className="max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-xl border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Weather Forecast</h2>
+              <h2 id="modal-title" className="text-2xl font-bold text-gray-900">Weather Forecast</h2>
               {locationName && (
                 <div className="flex items-center gap-1 mt-1 text-sm text-gray-600">
                   <MapPin className="w-4 h-4" strokeWidth={1.5} />
@@ -288,7 +265,6 @@ export default function WeatherForecastModal({ weather, locationName, onClose, i
             </>
           )}
         </div>
-      </div>
-    </div>
+    </AppModal>
   )
 }

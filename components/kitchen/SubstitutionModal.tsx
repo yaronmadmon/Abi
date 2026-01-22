@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, AlertCircle, Lightbulb, ChevronRight, Loader2 } from 'lucide-react'
 import { getSubstitutionSuggestions, type SubstitutionResult, type SubstitutionOption } from '@/lib/substitutionEngine'
 import { formatAllergenNames } from '@/lib/allergyManager'
+import AppModal from '../modals/AppModal'
 
 interface SubstitutionModalProps {
   missingIngredient: string
@@ -46,12 +47,11 @@ export default function SubstitutionModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-6">
-      <div className="bg-white w-full sm:max-w-2xl sm:rounded-lg max-h-[90vh] overflow-y-auto">
+    <AppModal isOpen={true} onClose={onClose} variant="center" className="w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b-2 border-gray-100 p-6 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Missing Ingredient</h2>
+            <h2 id="modal-title" className="text-2xl font-bold text-gray-900">Missing Ingredient</h2>
             <p className="text-sm text-gray-600 mt-1">Find a substitution or add to shopping</p>
           </div>
           <button
@@ -215,7 +215,6 @@ export default function SubstitutionModal({
             </p>
           </div>
         </div>
-      </div>
-    </div>
+    </AppModal>
   )
 }

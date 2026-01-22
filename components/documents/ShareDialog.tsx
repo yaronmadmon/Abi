@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Mail, MessageCircle, Link2, Copy, Check } from 'lucide-react'
 import { showToast } from '@/components/feedback/ToastContainer'
+import AppModal from '../modals/AppModal'
 
 interface ShareDialogProps {
   isOpen: boolean
@@ -25,8 +26,6 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
       setShareLink(link)
     }
   }, [isOpen, fileUrl, shareLink])
-
-  if (!isOpen) return null
 
   // Generate shareable link (in production, this would be a server-generated link)
   const generateShareLink = () => {
@@ -99,17 +98,17 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-card p-6 max-w-md w-full">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Share Document</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-5 h-5" strokeWidth={2} />
-          </button>
-        </div>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="center" className="glass-card p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Share Document</h2>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" strokeWidth={2} />
+        </button>
+      </div>
 
         <div className="space-y-4">
           {/* Email Share */}
@@ -237,7 +236,6 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
             </button>
           )}
         </div>
-      </div>
-    </div>
+    </AppModal>
   )
 }

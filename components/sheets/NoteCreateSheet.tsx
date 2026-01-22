@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { logger } from '@/lib/logger'
 import { X, Save } from 'lucide-react'
 import AIPen from '../AIPen'
+import AppModal from '../modals/AppModal'
 import { showToast } from '../feedback/ToastContainer'
 
 interface Note {
@@ -25,12 +26,6 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
   const [body, setBody] = useState('')
   const [isSaving, setIsSaving] = useState(false)
 
-  // Reset form when opened
-  if (isOpen && title === '' && body === '') {
-    // Form is already reset
-  }
-
-  if (!isOpen) return null
 
   const handleSave = async () => {
     try {
@@ -73,8 +68,7 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
 
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[100] flex items-end">
-      <div className="relative w-full rounded-t-3xl shadow-soft-lg max-h-[75vh] flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
         {/* Handle */}
         <div className="flex justify-center pt-2 pb-1">
           <div className="w-10 h-0.5 bg-gray-300 rounded-full" />
@@ -82,7 +76,7 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
 
         {/* Header - Compact */}
         <div className="px-4 py-2.5 border-b border-gray-100/50 flex items-center justify-between">
-          <h2 className="text-base font-medium text-gray-700">New Note</h2>
+          <h2 id="modal-title" className="text-base font-medium text-gray-700">New Note</h2>
           <button
             onClick={onClose}
             className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
@@ -165,7 +159,6 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
             )}
           </button>
         </div>
-      </div>
-    </div>
+    </AppModal>
   )
 }

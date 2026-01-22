@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import AppModal from '../modals/AppModal'
 
 interface PlanSomethingSheetProps {
   isOpen: boolean
@@ -14,19 +15,6 @@ export default function PlanSomethingSheet({ isOpen, onClose }: PlanSomethingShe
   const router = useRouter()
   const [selectedType, setSelectedType] = useState<PlanType | null>(null)
 
-  // Lock body scroll when sheet is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isOpen])
-
-  if (!isOpen) return null
 
   const planOptions: { type: PlanType; label: string; icon: string; route: string }[] = [
     { type: 'trip', label: 'Trip', icon: '✈️', route: '/home' },
@@ -48,15 +36,7 @@ export default function PlanSomethingSheet({ isOpen, onClose }: PlanSomethingShe
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end" style={{ animation: 'fadeIn 200ms ease-in-out' }}>
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Sheet */}
-      <div className="relative w-full rounded-t-3xl shadow-soft-lg max-h-[70vh] flex flex-col" style={{ backgroundColor: 'var(--card-bg)', animation: 'slideUp 240ms cubic-bezier(0.16, 1, 0.3, 1)' }}>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col max-h-[70vh]" style={{ backgroundColor: 'var(--card-bg)' }}>
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-12 h-1 bg-gray-300 rounded-full" />
@@ -64,7 +44,7 @@ export default function PlanSomethingSheet({ isOpen, onClose }: PlanSomethingShe
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">Plan Something</h2>
+          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Plan Something</h2>
           <p className="text-sm text-gray-500 mt-1">What would you like to plan?</p>
         </div>
 
@@ -83,7 +63,6 @@ export default function PlanSomethingSheet({ isOpen, onClose }: PlanSomethingShe
             ))}
           </div>
         </div>
-      </div>
-    </div>
+    </AppModal>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Save, Calendar, Clock, User, Sparkles, Share2 } from 'lucide-react'
 import AIPen from '../AIPen'
 import { showToast } from '../feedback/ToastContainer'
+import AppModal from '../modals/AppModal'
 import type { FamilyMember } from '@/types/home'
 
 interface AppointmentCreateSheetProps {
@@ -59,8 +60,6 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave, initia
     }
   }, [isOpen])
 
-  if (!isOpen) return null
-
   const handleSave = () => {
     if (title.trim() && date && time) {
       try {
@@ -98,8 +97,7 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave, initia
   const today = new Date().toISOString().split('T')[0]
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[100] flex items-end">
-      <div className="relative w-full rounded-t-3xl shadow-soft-lg max-h-[90vh] flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-12 h-1 bg-gray-300 rounded-full" />
@@ -107,7 +105,7 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave, initia
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">New Appointment</h2>
+          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">New Appointment</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowAIAssist(!showAIAssist)}
@@ -123,6 +121,7 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave, initia
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Close"
             >
               <X className="w-5 h-5" strokeWidth={2} />
             </button>
@@ -294,7 +293,6 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave, initia
             <span>Save</span>
           </button>
         </div>
-      </div>
-    </div>
+    </AppModal>
   )
 }

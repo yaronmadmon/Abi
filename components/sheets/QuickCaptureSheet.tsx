@@ -17,21 +17,12 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
   const [showNativeForm, setShowNativeForm] = useState(true)
   const [showAIFallback, setShowAIFallback] = useState(false)
 
-  // Lock body scroll when sheet is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
       setShowNativeForm(true)
       setShowAIFallback(false)
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
     }
   }, [isOpen])
-
-  if (!isOpen) return null
 
   // Handle note creation - navigate to full-screen editor
   const handleNoteCreate = () => {
@@ -149,25 +140,22 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
   // But provide a quick capture option here
   if (type === 'task' || type === 'reminder') {
     return (
-      <div className="fixed inset-0 z-[100] flex items-end" style={{ animation: 'fadeIn 200ms ease-in-out' }}>
-        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative w-full rounded-t-3xl shadow-soft-lg max-h-[60vh] flex flex-col" style={{ backgroundColor: 'var(--card-bg)', animation: 'slideUp 240ms cubic-bezier(0.16, 1, 0.3, 1)' }}>
-          <div className="flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1 bg-gray-300 rounded-full" />
-          </div>
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {type === 'task' ? 'Add a To-Do' : type === 'reminder' ? 'Add a Reminder' : type === 'appointment' ? 'Add an Appointment' : type === 'note' ? 'Add a Note' : 'Quick Capture'}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {type === 'task' ? 'What needs to be done?' : type === 'reminder' ? 'What should I remind you about?' : 'Describe what you need'}
-            </p>
-          </div>
-          <div className="flex-1 overflow-y-auto p-6">
-            <p className="text-gray-500 text-center">Quick capture moved to full-page view</p>
-          </div>
+      <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-12 h-1 bg-gray-300 rounded-full" />
         </div>
-      </div>
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+            {type === 'task' ? 'Add a To-Do' : type === 'reminder' ? 'Add a Reminder' : type === 'appointment' ? 'Add an Appointment' : type === 'note' ? 'Add a Note' : 'Quick Capture'}
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {type === 'task' ? 'What needs to be done?' : type === 'reminder' ? 'What should I remind you about?' : 'Describe what you need'}
+          </p>
+        </div>
+        <div className="flex-1 overflow-y-auto p-6">
+          <p className="text-gray-500 text-center">Quick capture moved to full-page view</p>
+        </div>
+      </AppModal>
     )
   }
 
