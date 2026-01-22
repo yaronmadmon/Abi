@@ -12,6 +12,13 @@ import type { ActionProposal } from "./schemas/commandSchema";
 import { createCommandFromIntent, generateProposal, shouldRequireApproval } from "./factories/commandFactory";
 
 /**
+ * Type guard to check if result is an ActionProposal
+ */
+function isActionProposal(result: ActionProposal | { type: 'clarification' | 'unknown', message: string }): result is ActionProposal {
+  return 'command' in result;
+}
+
+/**
  * Route intent to proposal
  * Returns a proposal that requires user approval before execution
  */
@@ -68,6 +75,16 @@ export async function routeIntentLegacy(intent: AIIntent, context?: string, sett
       success: true,
       route: 'none',
       message: result.message,
+      payload: {},
+    };
+  }
+  
+  // Type guard ensures TypeScript knows result is ActionProposal
+  if (!isActionProposal(result)) {
+    return {
+      success: true,
+      route: 'none',
+      message: 'Unknown error',
       payload: {},
     };
   }
