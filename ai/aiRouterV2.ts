@@ -72,6 +72,7 @@ export async function routeIntentLegacy(intent: AIIntent, context?: string, sett
   
   // Use type guard first to properly narrow the type
   if (!isActionProposal(result)) {
+    // result is { type: 'clarification' | 'unknown', message: string }
     return {
       success: true,
       route: 'none',
@@ -80,11 +81,12 @@ export async function routeIntentLegacy(intent: AIIntent, context?: string, sett
     };
   }
   
-  // TypeScript now knows result is ActionProposal
+  // TypeScript now knows result is ActionProposal after the type guard
+  const proposal: ActionProposal = result;
   return {
     success: true,
-    route: result.command.entity,
-    proposal: result,
-    requiresApproval: result.requiresApproval,
+    route: proposal.command.entity,
+    proposal: proposal,
+    requiresApproval: proposal.requiresApproval,
   };
 }
