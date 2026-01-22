@@ -70,7 +70,8 @@ export async function routeIntentToProposal(
 export async function routeIntentLegacy(intent: AIIntent, context?: string, settings?: any) {
   const result = await routeIntentToProposal(intent, context, settings);
   
-  if ('type' in result && (result.type === 'clarification' || result.type === 'unknown')) {
+  // Use type guard first to properly narrow the type
+  if (!isActionProposal(result)) {
     return {
       success: true,
       route: 'none',
@@ -79,17 +80,7 @@ export async function routeIntentLegacy(intent: AIIntent, context?: string, sett
     };
   }
   
-  // Type guard ensures TypeScript knows result is ActionProposal
-  if (!isActionProposal(result)) {
-    return {
-      success: true,
-      route: 'none',
-      message: 'Unknown error',
-      payload: {},
-    };
-  }
-  
-  // Return proposal for UI to handle
+  // TypeScript now knows result is ActionProposal
   return {
     success: true,
     route: result.command.entity,
