@@ -8,6 +8,7 @@
  */
 
 import { executorRegistry } from './executorRegistry'
+import { logger } from '@/lib/logger'
 import { tasksHandler } from '../handlers/tasksHandler'
 import { mealsHandler } from '../handlers/mealsHandler'
 import { shoppingHandler } from '../handlers/shoppingHandler'
@@ -102,7 +103,7 @@ export function initExecutors() {
   executorRegistry.markInitialized()
   
   const registeredCount = executorRegistry.getRegisteredTypes().length
-  console.log(`✅ Command executors initialized (${registeredCount} executors registered: 7 create, 7 update, 7 delete)`)
+  logger.debug(`Command executors initialized (${registeredCount} executors registered: 7 create, 7 update, 7 delete)`)
 }
 
 /**

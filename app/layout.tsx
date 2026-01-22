@@ -21,6 +21,7 @@ const VoiceAssistantWrapper = dynamic(
 export const metadata: Metadata = {
   title: 'Abby - Your AI Home Assistant',
   description: 'Your intelligent home management companion',
+  icons: { icon: '/icon.svg' },
 }
 
 export default function RootLayout({
