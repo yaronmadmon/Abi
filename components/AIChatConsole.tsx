@@ -19,6 +19,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { Mic, Square, Plus, X, Send, Camera, Image as ImageIcon, FileText } from 'lucide-react'
 import { speak, cancelSpeech } from '@/ai/voiceEngine'
 import type { AIIntent } from '@/ai/schemas/intentSchema'

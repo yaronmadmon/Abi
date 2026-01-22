@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ChevronLeft, Clock, Users, CheckCircle2, ShoppingCart, RefreshCw, Trash2, AlertCircle, BookOpen, Lightbulb } from 'lucide-react'
 import SubstitutionModal from '@/components/kitchen/SubstitutionModal'
 import PageContainer from '@/components/ui/PageContainer'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -9,7 +9,7 @@ import { RECIPE_DATABASE, Recipe } from '@/data/recipeDatabase'
 import { getAllergyPreferences, isRecipeSafe, formatAllergenNames } from '@/lib/allergyManager'
 import PageContainer from '@/components/ui/PageContainer'
 
-export default function RecipeLibraryPage() {
+function RecipeLibraryContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
@@ -660,5 +660,13 @@ export default function RecipeLibraryPage() {
         ) : null}
       </PageContainer>
     </div>
+  )
+}
+
+export default function RecipeLibraryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--background)' }}>Loading...</div>}>
+      <RecipeLibraryContent />
+    </Suspense>
   )
 }

@@ -144,13 +144,13 @@ export default function FamilyPage() {
     try {
       // Validate the updated member
       if (!updated.id) {
-        console.error('Missing member ID')
+        logger.error('Missing member ID')
         showToast('Missing member ID', 'error')
         return
       }
 
       if (!updated.name || !updated.name.trim()) {
-        console.error('Missing or empty name')
+        logger.error('Missing or empty name')
         showToast('Name is required', 'error')
         return
       }
@@ -158,7 +158,7 @@ export default function FamilyPage() {
       // Check if member exists
       const memberExists = family.some((member) => member.id === updated.id)
       if (!memberExists) {
-        console.error('Member not found:', updated.id)
+        logger.error('Member not found', new Error(updated.id))
         showToast('Family member not found', 'error')
         return
       }

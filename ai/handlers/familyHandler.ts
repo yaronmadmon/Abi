@@ -33,7 +33,7 @@ class FamilyHandler implements ModuleHandler {
    * @deprecated Use propose() + execute() pattern instead
    */
   async create(payload: FamilyMemberPayload): Promise<void> {
-    return this.execute(payload);
+    await this.execute(payload);
   }
 
   /**

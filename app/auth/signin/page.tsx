@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { showToast } from '@/components/feedback/ToastContainer'
+import { logger } from '@/lib/logger'
 import { Chrome, Apple, Mail } from 'lucide-react'
 
 // TEMPORARY: Google OAuth disabled for deployment
@@ -51,7 +52,7 @@ export default function SignInPage() {
         setSupabase(client)
         setSupabaseReady(true)
       } catch (error) {
-        console.error('Failed to initialize Supabase:', error)
+        logger.error('Failed to initialize Supabase', error instanceof Error ? error : new Error(String(error)))
         setSupabaseReady(false)
       }
     })

@@ -28,7 +28,7 @@ class RemindersHandler implements ModuleHandler {
    * @deprecated Use propose() + execute() pattern instead
    */
   async create(payload: ReminderPayload): Promise<void> {
-    return this.execute(payload);
+    await this.execute(payload);
   }
 
   /**

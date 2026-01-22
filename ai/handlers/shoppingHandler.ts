@@ -28,7 +28,7 @@ class ShoppingHandler implements ModuleHandler {
    * @deprecated Use propose() + execute() pattern instead
    */
   async create(payload: ShoppingPayload): Promise<void> {
-    return this.execute(payload);
+    await this.execute(payload);
   }
 
   /**
@@ -128,10 +128,14 @@ class ShoppingHandler implements ModuleHandler {
       throw new Error(`Shopping item with ID ${payload.id} not found`);
     }
 
+    const validCategories = ['produce', 'dairy', 'meat', 'cleaning', 'pantry', 'other'] as const;
+    const category = payload.category && validCategories.includes(payload.category as any)
+      ? (payload.category as ShoppingItem['category'])
+      : undefined;
     const updatedItem: ShoppingItem = {
       ...items[itemIndex],
       ...(payload.name && { name: payload.name }),
-      ...(payload.category && { category: payload.category }),
+      ...(category && { category }),
       ...(payload.completed !== undefined && { completed: payload.completed }),
     };
 

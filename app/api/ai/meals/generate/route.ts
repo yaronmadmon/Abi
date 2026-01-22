@@ -137,7 +137,7 @@ ${preferences.familyFriendly ? 'Make sure meals appeal to kids and adults.' : ''
 
 Return ONLY the JSON array, no other text.`
 
-    console.log('🍽️ Generating meals with OpenAI...')
+    logger.debug('Generating meals with OpenAI')
     
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
@@ -188,7 +188,7 @@ Return ONLY the JSON array, no other text.`
       }
     })
 
-    console.log(`✅ Generated ${enrichedMeals.length} meals`)
+    logger.info(`Generated ${enrichedMeals.length} meals`)
 
     return NextResponse.json({ meals: enrichedMeals })
 

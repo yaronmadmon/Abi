@@ -41,7 +41,7 @@ class AppointmentsHandler implements ModuleHandler {
    * @deprecated Use propose() + execute() pattern instead
    */
   async create(payload: AppointmentPayload): Promise<void> {
-    return this.execute(payload);
+    await this.execute(payload);
   }
 
   /**

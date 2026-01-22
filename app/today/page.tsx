@@ -15,6 +15,7 @@ import GlanceBar from '@/components/today/GlanceBar'
 import NowCard from '@/components/today/NowCard'
 import { useEveningMode } from '@/hooks/useEveningMode'
 import { getCalendarPreferences, formatInCalendar, getCalendarSystem } from '@/lib/calendarSystems'
+import type { CalendarPreferences } from '@/lib/calendarSystems'
 import type { Task } from '@/types/home'
 import PageContainer from '@/components/ui/PageContainer'
 import { logger } from '@/lib/logger'
@@ -39,14 +40,8 @@ export default function TodayPage() {
   const [appointmentCount, setAppointmentCount] = useState(0)
   const [noteCount, setNoteCount] = useState(0)
   const [shoppingCount, setShoppingCount] = useState(0)
-  const [calendarPrefs, setCalendarPrefs] = useState<{
-    primary: string
-    secondary: string[]
-    showInToday: boolean
-    showInWeekly: boolean
-  }>({
-    primary: 'gregorian',
-    secondary: [],
+  const [calendarPrefs, setCalendarPrefs] = useState<CalendarPreferences>({
+    selectedCalendars: [],
     showInToday: true,
     showInWeekly: false
   })

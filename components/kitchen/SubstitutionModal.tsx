@@ -17,7 +17,8 @@ export default function SubstitutionModal({
   missingIngredient,
   recipeTitle,
   onClose,
-  onAddToShopping
+  onAddToShopping,
+  onApplySubstitution
 }: SubstitutionModalProps) {
   const [loading, setLoading] = useState(true)
   const [result, setResult] = useState<SubstitutionResult | null>(null)

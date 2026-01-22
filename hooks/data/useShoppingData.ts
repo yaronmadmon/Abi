@@ -71,17 +71,17 @@ export function useShoppingData() {
     return await saveItems(filtered)
   }, [items, saveItems])
 
-  // Toggle checked
+  // Toggle completed
   const toggleItem = useCallback(async (id: string) => {
     const updated = items.map(i => 
-      i.id === id ? { ...i, checked: !i.checked } : i
+      i.id === id ? { ...i, completed: !i.completed } : i
     )
     return await saveItems(updated)
   }, [items, saveItems])
 
-  // Clear checked items
+  // Clear completed items
   const clearChecked = useCallback(async () => {
-    const unchecked = items.filter(i => !i.checked)
+    const unchecked = items.filter(i => !i.completed)
     return await saveItems(unchecked)
   }, [items, saveItems])
 

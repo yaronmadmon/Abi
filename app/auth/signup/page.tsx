@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { showToast } from '@/components/feedback/ToastContainer'
+import { logger } from '@/lib/logger'
 
 // TEMPORARY: Google OAuth disabled for deployment
 // Set to true to re-enable Google OAuth
@@ -41,7 +42,7 @@ export default function SignUpPage() {
         setSupabase(client)
         setSupabaseReady(true)
       } catch (error) {
-        console.error('Failed to initialize Supabase:', error)
+        logger.error('Failed to initialize Supabase', error instanceof Error ? error : new Error(String(error)))
         setSupabaseReady(false)
       }
     })

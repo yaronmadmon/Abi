@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Phone, Mail, MessageSquare, Edit2, Save, X, Camera, User, Trash2, Calendar } from 'lucide-react'
 import type { FamilyMember } from '@/types/home'
 import { logger } from '@/lib/logger'
-import Image from 'next/image'
+import ImageComponent from 'next/image'
 import { showToast } from '../feedback/ToastContainer'
 
 interface FamilyMemberCardProps {
@@ -214,12 +214,12 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         {/* Profile Image */}
         <div className="relative flex-shrink-0">
           <div 
-            className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+            className="relative w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => !isEditing && setIsEditing(true)}
             title={!isEditing ? "Click to edit photo" : undefined}
           >
             {photo ? (
-              <Image src={photo} alt={member.name} fill className="object-cover" unoptimized />
+              <ImageComponent src={photo} alt={member.name} fill className="object-cover" unoptimized sizes="80px" />
             ) : (
               <User className="w-10 h-10 text-gray-400" strokeWidth={1.5} />
             )}

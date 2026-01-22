@@ -10,7 +10,7 @@ export interface HomeProfile {
 export interface Task {
   id: string
   title: string
-  category: 'cleaning' | 'errands' | 'kids' | 'home-maintenance' | 'other'
+  category: 'cleaning' | 'errands' | 'kids' | 'home-maintenance' | 'other' | 'reminder'
   dueDate?: string
   completed: boolean
   createdAt: string

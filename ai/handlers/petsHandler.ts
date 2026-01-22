@@ -34,7 +34,7 @@ class PetsHandler implements ModuleHandler {
    * @deprecated Use propose() + execute() pattern instead
    */
   async create(payload: PetPayload): Promise<void> {
-    return this.execute(payload);
+    await this.execute(payload);
   }
 
   /**

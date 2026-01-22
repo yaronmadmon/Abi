@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { Upload, Camera, X, FileText, FileImage, FileType } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 import AIPen from '../AIPen'
