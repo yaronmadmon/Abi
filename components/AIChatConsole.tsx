@@ -685,6 +685,8 @@ Structure: Acknowledge → Respond → Follow-up`
 
   // Debug: Log when overlay is rendered
   useEffect(() => {
+    if (typeof window === 'undefined' || !document.body) return
+    
     if (isOpen) {
       logger.debug('AI Chat Console is OPEN')
       // Add body class to indicate modal is open
@@ -695,7 +697,9 @@ Structure: Acknowledge → Respond → Follow-up`
     }
     
     return () => {
-      document.body.classList.remove('modal-open')
+      if (typeof window !== 'undefined' && document.body) {
+        document.body.classList.remove('modal-open')
+      }
     }
   }, [isOpen])
   
