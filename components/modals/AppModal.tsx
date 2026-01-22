@@ -118,7 +118,8 @@ export default function AppModal({
     return () => window.removeEventListener('keydown', handleTabKey)
   }, [isOpen])
 
-  if (!isOpen) return null
+  // Early return for SSR or when closed
+  if (typeof window === 'undefined' || !isOpen) return null
 
   // Determine panel classes based on variant
   const getPanelClasses = () => {
@@ -166,9 +167,6 @@ export default function AppModal({
   )
 
   // Render to document.body using portal (client-side only)
-  if (typeof window === 'undefined' || !document.body) {
-    return null
-  }
-
+  // document.body is guaranteed to exist here because we checked window above
   return createPortal(overlay, document.body)
 }

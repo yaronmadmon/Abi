@@ -718,6 +718,9 @@ Structure: Acknowledge → Respond → Follow-up`
     // Only show floating button if no external control (self-managed)
     if (externalIsOpen !== undefined) return null
     
+    // Don't render floating button during SSR
+    if (typeof window === 'undefined') return null
+    
     return (
       <button
         onClick={() => setInternalIsOpen(true)}
