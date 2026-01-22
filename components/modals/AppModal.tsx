@@ -27,13 +27,17 @@ export default function AppModal({
 
   // Lock body scroll when modal is open
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    
     if (isOpen) {
       // Store the previously focused element
       previousActiveElement.current = document.activeElement as HTMLElement
       
       // Lock body scroll and add modal-open class for debug indicator
       document.body.style.overflow = 'hidden'
-      document.body.classList.add('modal-open')
+      if (document.body) {
+        document.body.classList.add('modal-open')
+      }
       
       // Focus trap: focus the modal container
       if (modalRef.current) {
@@ -46,8 +50,10 @@ export default function AppModal({
       }
     } else {
       // Restore body scroll and remove modal-open class
-      document.body.style.overflow = ''
-      document.body.classList.remove('modal-open')
+      if (document.body) {
+        document.body.style.overflow = ''
+        document.body.classList.remove('modal-open')
+      }
       
       // Restore focus to previous element
       if (previousActiveElement.current) {
@@ -56,8 +62,10 @@ export default function AppModal({
     }
 
     return () => {
-      document.body.style.overflow = ''
-      document.body.classList.remove('modal-open')
+      if (typeof window !== 'undefined' && document.body) {
+        document.body.style.overflow = ''
+        document.body.classList.remove('modal-open')
+      }
     }
   }, [isOpen])
 

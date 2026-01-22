@@ -8,6 +8,7 @@ import AIPen from '../AIPen'
 import AppModal from '../modals/AppModal'
 
 interface DocumentUploadProps {
+  isOpen?: boolean
   onUpload: (file: File, title: string, description?: string) => void
   onCancel: () => void
   autoStartCamera?: boolean
@@ -15,7 +16,7 @@ interface DocumentUploadProps {
 
 type SaveFormat = 'image' | 'pdf'
 
-export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = false }: DocumentUploadProps) {
+export default function DocumentUpload({ isOpen = true, onUpload, onCancel, autoStartCamera = false }: DocumentUploadProps) {
   const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -197,7 +198,7 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
   }, [])
 
   return (
-    <AppModal isOpen={true} onClose={onCancel} variant="center" className="glass-card p-6 max-w-md w-full max-h-[90vh] flex flex-col">
+    <AppModal isOpen={isOpen} onClose={onCancel} variant="center" className="glass-card p-6 max-w-md w-full max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Upload Document</h2>
           <button

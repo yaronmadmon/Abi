@@ -175,6 +175,7 @@ export default function DocumentsPage() {
 
         {showUpload && (
           <DocumentUpload
+            isOpen={showUpload}
             onUpload={handleUpload}
             onCancel={() => setShowUpload(false)}
           />

@@ -210,6 +210,7 @@ export default function ScannerPage() {
 
         {showUpload && (
           <DocumentUpload
+            isOpen={showUpload}
             onUpload={handleUpload}
             onCancel={() => setShowUpload(false)}
             autoStartCamera={true}
