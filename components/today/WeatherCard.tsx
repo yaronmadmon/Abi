@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, memo } from 'react'
-import { Cloud, CloudRain, Sun, CloudSun, Wind, Droplets, Thermometer } from 'lucide-react'
+import { Cloud, CloudRain, Sun, CloudSun, Wind, Droplets, Thermometer, RefreshCw } from 'lucide-react'
 import WeatherForecastModal from '@/components/weather/WeatherForecastModal'
 import { FeatureErrorBoundary } from '@/components/errors/FeatureErrorBoundary'
 import { logger } from '@/lib/logger'
@@ -54,13 +54,19 @@ const WeatherCardContent = memo(function WeatherCardContent() {
   useEffect(() => {
     loadWeather()
     // Refresh weather every 30 minutes
-    const interval = setInterval(loadWeather, 30 * 60 * 1000)
+    const interval = setInterval(() => {
+      logger.debug('🔄 Auto-refreshing weather data')
+      loadWeather()
+    }, 30 * 60 * 1000)
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadWeather = async () => {
+  const loadWeather = async (forceRefresh: boolean = false) => {
     try {
+      if (forceRefresh) {
+        logger.debug('🔄 Manual weather refresh triggered')
+      }
       setLoading(true)
       setError(null)
 
@@ -127,9 +133,12 @@ const WeatherCardContent = memo(function WeatherCardContent() {
 
   const fetchWeather = async (lat: number, lon: number, includeForecast: boolean = false, locationName?: string) => {
     try {
+      logger.debug('🌤️ Fetching weather', { lat, lon, includeForecast, locationName })
       // Use our API route to fetch weather (proxies to OpenWeatherMap or wttr.in)
+      // Add cache-busting timestamp to ensure fresh data
+      const timestamp = new Date().getTime()
       const response = await fetch(
-        `/api/weather?lat=${lat}&lon=${lon}${includeForecast ? '&forecast=true' : ''}`
+        `/api/weather?lat=${lat}&lon=${lon}${includeForecast ? '&forecast=true' : ''}&_t=${timestamp}`
       )
 
       if (!response.ok) {
@@ -142,6 +151,12 @@ const WeatherCardContent = memo(function WeatherCardContent() {
       }
 
       const data = await response.json()
+      
+      logger.debug('✅ Weather data received', { 
+        temperature: data.temperature, 
+        condition: data.condition,
+        location: data.location || locationName 
+      })
       
       setWeather({
         temperature: data.temperature,
@@ -166,7 +181,11 @@ const WeatherCardContent = memo(function WeatherCardContent() {
       if (error) {
         setError(null)
       }
+      
+      // Log successful update
+      logger.debug('✅ Weather state updated successfully')
     } catch (err: any) {
+      logger.error('Weather fetch error', err as Error, { lat, lon, includeForecast })
       console.error('Weather fetch error:', err)
       setError(err.message || 'Unable to load weather data')
     } finally {
@@ -294,9 +313,23 @@ const WeatherCardContent = memo(function WeatherCardContent() {
         >
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Weather</h2>
-            {loading && (
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  loadWeather(true)
+                }}
+                disabled={loading}
+                className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Refresh weather"
+                aria-label="Refresh weather"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} strokeWidth={2} />
+              </button>
+              {loading && (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+              )}
+            </div>
           </div>
 
           {locationName && (

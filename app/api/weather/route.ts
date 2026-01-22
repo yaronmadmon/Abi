@@ -111,6 +111,12 @@ export async function GET(request: NextRequest) {
             ...baseResponse,
             hourly,
             daily,
+          }, {
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            },
           })
         }
       } catch (forecastError) {
@@ -119,7 +125,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(baseResponse)
+    // Return with no-cache headers to ensure fresh data
+    return NextResponse.json(baseResponse, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    })
   } catch (error: any) {
     logger.error('Weather API error', error as Error)
     const errorMessage = error?.message || 'Unknown error'
@@ -131,7 +144,12 @@ export async function GET(request: NextRequest) {
         details: errorMessage,
         apiKeyPresent: !!process.env.OPENWEATHER_API_KEY || !!process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY
       },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
     )
   }
 }
