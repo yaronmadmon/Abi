@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Plus, Heart } from 'lucide-react'
 import type { Pet } from '@/types/home'
-import AIInputBar from '@/components/AIInputBar'
 import AIPen from '@/components/AIPen'
 import PetCard from '@/components/people/PetCard'
 import { showToast } from '@/components/feedback/ToastContainer'
+import PageContainer from '@/components/ui/PageContainer'
 
 export default function PetsPage() {
   const [pets, setPets] = useState<Pet[]>([])
@@ -110,17 +110,10 @@ export default function PetsPage() {
     }
   }
 
-  const handleAIIntent = (route: string, payload: any) => {
-    if (route === 'pets') {
-      // Pet was already created by petsHandler.create() in routeIntent
-      loadPets()
-      showToast('Pet added', 'success')
-    }
-  }
 
   return (
     <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
-      <div className="max-w-2xl mx-auto">
+      <PageContainer maxWidth="2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <Link href="/people" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
@@ -134,11 +127,9 @@ export default function PetsPage() {
             className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             <Plus className="w-4 h-4" strokeWidth={2} />
-            <span className="text-sm font-medium">Add</span>
+            <span className="text-sm font-medium">Add a Pet</span>
           </button>
         </div>
-
-        <AIInputBar onIntent={handleAIIntent} />
 
         {showAddForm && (
           <div className="glass-card p-5 mb-6">
@@ -324,7 +315,7 @@ export default function PetsPage() {
             ))}
           </div>
         )}
-      </div>
+      </PageContainer>
     </div>
   )
 }

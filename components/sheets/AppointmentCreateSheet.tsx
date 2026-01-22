@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { X, Save, Calendar, Clock, User, Sparkles } from 'lucide-react'
-import AIInputBar from '../AIInputBar'
+import { useState, useEffect } from 'react'
+import { X, Save, Calendar, Clock, User, Sparkles, Share2 } from 'lucide-react'
 import AIPen from '../AIPen'
 import { showToast } from '../feedback/ToastContainer'
+import type { FamilyMember } from '@/types/home'
 
 interface AppointmentCreateSheetProps {
   isOpen: boolean
@@ -15,16 +15,49 @@ interface AppointmentCreateSheetProps {
     time: string
     location?: string
     forWho?: string
+    sharedTo?: {
+      id: string
+      name: string
+      email?: string
+      phone?: string
+    }
   }) => void
+  initialDate?: string
 }
 
-export default function AppointmentCreateSheet({ isOpen, onClose, onSave }: AppointmentCreateSheetProps) {
+export default function AppointmentCreateSheet({ isOpen, onClose, onSave, initialDate }: AppointmentCreateSheetProps) {
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState(initialDate || '')
   const [time, setTime] = useState('')
   const [location, setLocation] = useState('')
   const [forWho, setForWho] = useState('')
   const [showAIAssist, setShowAIAssist] = useState(false)
+  const [showShare, setShowShare] = useState(false)
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<FamilyMember | null>(null)
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
+
+  // Update date when initialDate changes or sheet opens
+  useEffect(() => {
+    if (initialDate && isOpen) {
+      setDate(initialDate)
+    }
+  }, [initialDate, isOpen])
+
+  // Load family members when sheet opens
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const stored = localStorage.getItem('family')
+        if (stored) {
+          const parsed = JSON.parse(stored) as FamilyMember[]
+          setFamilyMembers(parsed)
+        }
+      } catch (error) {
+        console.error('Error loading family members:', error)
+        setFamilyMembers([])
+      }
+    }
+  }, [isOpen])
 
   if (!isOpen) return null
 
@@ -37,36 +70,29 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave }: Appo
           time,
           location: location.trim() || undefined,
           forWho: forWho.trim() || undefined,
+          sharedTo: selectedFamilyMember ? {
+            id: selectedFamilyMember.id,
+            name: selectedFamilyMember.name,
+            email: selectedFamilyMember.email,
+            phone: selectedFamilyMember.phone,
+          } : undefined,
         })
-        showToast('Appointment created', 'success')
+        showToast('Appointment added! 📅', 'success')
         // Reset
         setTitle('')
         setDate('')
         setTime('')
         setLocation('')
         setForWho('')
+        setShowShare(false)
+        setSelectedFamilyMember(null)
         onClose()
       } catch (error) {
-        showToast('Couldn\'t create appointment', 'error')
+        showToast('Couldn\'t create appointment. Try again?', 'error')
       }
     }
   }
 
-  const handleAIAssist = (route: string, payload: any) => {
-    // AI can fill fields but doesn't block
-    if (payload.title && !title) {
-      setTitle(payload.title)
-    }
-    if (payload.date && !date) {
-      setDate(payload.date)
-    }
-    if (payload.time && !time) {
-      setTime(payload.time)
-    }
-    if (payload.location && !location) {
-      setLocation(payload.location)
-    }
-  }
 
   // Get today's date in YYYY-MM-DD format for min date
   const today = new Date().toISOString().split('T')[0]
@@ -90,7 +116,7 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave }: Appo
                   ? 'bg-blue-100 text-blue-600'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
-              title="AI Assist"
+              title="Abby AI Assist"
             >
               <Sparkles className="w-4 h-4" strokeWidth={2} />
             </button>
@@ -105,12 +131,6 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave }: Appo
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {showAIAssist && (
-            <div className="mb-4 glass-card p-4 bg-blue-50/50 border-blue-200">
-              <p className="text-xs text-blue-700 mb-2">AI Assist: Describe your appointment</p>
-              <AIInputBar onIntent={handleAIAssist} />
-            </div>
-          )}
 
           <div className="space-y-4">
             <div>
@@ -205,6 +225,54 @@ export default function AppointmentCreateSheet({ isOpen, onClose, onSave }: Appo
                 <option value="kids">Kids</option>
                 <option value="other">Other</option>
               </select>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  <Share2 className="w-4 h-4 inline mr-1" strokeWidth={2} />
+                  Share with family member (optional)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowShare(!showShare)
+                    if (showShare) {
+                      setSelectedFamilyMember(null)
+                    }
+                  }}
+                  className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                    showShare
+                      ? 'bg-blue-100 text-blue-600'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {showShare ? 'Cancel' : 'Share'}
+                </button>
+              </div>
+              {showShare && (
+                <select
+                  value={selectedFamilyMember?.id || ''}
+                  onChange={(e) => {
+                    const member = familyMembers.find(m => m.id === e.target.value)
+                    setSelectedFamilyMember(member || null)
+                  }}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="">Select family member...</option>
+                  {familyMembers.map((member) => (
+                    <option key={member.id} value={member.id}>
+                      {member.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {selectedFamilyMember && (
+                <p className="mt-2 text-xs text-gray-500">
+                  Will share with {selectedFamilyMember.name}
+                  {selectedFamilyMember.email && ` (${selectedFamilyMember.email})`}
+                </p>
+              )}
             </div>
           </div>
         </div>

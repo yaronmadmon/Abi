@@ -1,10 +1,12 @@
 'use client'
 
 import { ReactNode } from 'react'
+import Link from 'next/link'
 import { useMobilePreview } from '@/contexts/MobilePreviewContext'
 import GlobalSearchBar from '@/components/search/GlobalSearchBar'
 import ThemeToggles from '@/components/ThemeToggles'
 import BottomNavClient from '@/components/navigation/BottomNavClient'
+import AbbyLogo from '@/components/branding/AbbyLogo'
 
 interface MobileAppShellProps {
   children: ReactNode
@@ -22,17 +24,20 @@ export default function MobileAppShell({ children }: MobileAppShellProps) {
   return (
     <div className="flex flex-col h-full w-full overflow-hidden">
       {/* Status Bar Spacer - Accounts for notch/status bar */}
-      <div className="h-12 flex-shrink-0" aria-hidden="true" />
+      <div className="h-8 flex-shrink-0" aria-hidden="true" />
       
       {/* Mobile Header - Sticky inside phone, full-width */}
       <header 
-        className="sticky top-0 z-40 flex-shrink-0 backdrop-blur-xl px-4 py-3"
+        className="sticky top-0 z-[60] flex-shrink-0 backdrop-blur-xl px-4 py-3"
         style={{
           backgroundColor: 'var(--background)',
           borderBottom: '1px solid var(--border-color)',
         }}
       >
         <div className="flex items-center justify-between gap-3 w-full">
+          <Link href="/today" className="flex-shrink-0">
+            <AbbyLogo size="small" showSubtitle={false} />
+          </Link>
           <div className="flex-1 min-w-0">
             <GlobalSearchBar />
           </div>

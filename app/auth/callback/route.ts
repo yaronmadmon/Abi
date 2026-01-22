@@ -7,10 +7,29 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get('code')
 
   if (code) {
-    const supabase = createServerClient()
-    await supabase.auth.exchangeCodeForSession(code)
+    try {
+      const supabase = createServerClient()
+      const { error } = await supabase.auth.exchangeCodeForSession(code)
+      
+      if (error) {
+        console.error('Auth callback error:', error)
+        // Redirect to signin with error message
+        const signinUrl = new URL('/auth/signin', requestUrl.origin)
+        signinUrl.searchParams.set('error', 'auth_failed')
+        return NextResponse.redirect(signinUrl)
+      }
+    } catch (error) {
+      console.error('Auth callback exception:', error)
+      // Redirect to signin with error message
+      const signinUrl = new URL('/auth/signin', requestUrl.origin)
+      signinUrl.searchParams.set('error', 'auth_failed')
+      return NextResponse.redirect(signinUrl)
+    }
+  } else {
+    // No code provided, redirect to signin
+    return NextResponse.redirect(new URL('/auth/signin', requestUrl.origin))
   }
 
-  // URL to redirect to after sign in process completes
+  // URL to redirect to after sign in process completes successfully
   return NextResponse.redirect(new URL('/today', requestUrl.origin))
 }

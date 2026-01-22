@@ -1,3 +1,8 @@
+/* ============================================
+   GOOGLE FONTS - Abby Branding
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,6 +30,12 @@
   --border-color: rgba(0, 0, 0, 0.08);
   --input-bg: rgba(255, 255, 255, 0.9);
   --input-border: rgba(0, 0, 0, 0.1);
+  
+  /* Abby Brand Accent Colors */
+  --accent-blue: #2B4C7E; /* Dark blue for CTAs, logo */
+  --accent-peach: #F5E6D3; /* Light peach for highlights, hover states */
+  --accent-gold: #C9A96E; /* Golden brown for elegant touches, borders */
+  --primary-red: #b91c1c; /* Danger/delete actions */
 }
 
 /* Dark Mode */
@@ -45,6 +56,12 @@
   --border-color: rgba(255, 255, 255, 0.12);
   --input-bg: rgba(26, 26, 26, 0.8);
   --input-border: rgba(255, 255, 255, 0.15);
+  
+  /* Abby Brand Accent Colors (slightly adjusted for dark mode) */
+  --accent-blue: #4B6FA3; /* Lighter blue for dark mode */
+  --accent-peach: #D4C0A8; /* Slightly darker peach */
+  --accent-gold: #B8975E; /* Slightly darker gold */
+  --primary-red: #dc2626; /* Brighter red for visibility */
 }
 
 /* Evening Mode - Calmer colors, activated at 5 PM */
@@ -64,6 +81,12 @@
   --border-color: rgba(0, 0, 0, 0.06);
   --input-bg: rgba(255, 255, 255, 0.85);
   --input-border: rgba(0, 0, 0, 0.08);
+  
+  /* Abby Brand Accent Colors (same as light mode) */
+  --accent-blue: #2B4C7E;
+  --accent-peach: #F5E6D3;
+  --accent-gold: #C9A96E;
+  --primary-red: #b91c1c;
 }
 
 /* Mobile Mode - Default */
@@ -106,7 +129,7 @@ body {
   color: var(--foreground);
   /* Warm background with subtle gradient for depth */
   background: linear-gradient(135deg, var(--background) 0%, color-mix(in srgb, var(--background) 95%, #E8E6E3) 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -114,6 +137,47 @@ body {
   position: relative;
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
+}
+
+/* ============================================
+   ABBY BRANDING - Logo Typography
+   ============================================ */
+
+.logo-script {
+  font-family: 'Allura', cursive;
+  font-weight: 400;
+  color: var(--accent-blue);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.logo-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.625rem; /* 10px */
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: -0.25rem;
+}
+
+/* ============================================
+   TYPOGRAPHY HIERARCHY
+   ============================================ */
+
+.page-heading {
+  @apply text-3xl font-bold;
+  color: var(--text-primary);
+}
+
+.section-heading {
+  @apply text-xl font-semibold;
+  color: var(--text-primary);
+}
+
+.card-heading {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
 }
 
 /* Content container respects view mode */
@@ -274,6 +338,24 @@ body::before {
   .pending-badge:empty {
     display: none;
   }
+
+  /* Modal Open - Debug indicator */
+  body.modal-open::before {
+    content: '🔵 Modal Open - Press ESC to close';
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(37, 99, 235, 0.95);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
   
   .btn-primary {
     @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-6 py-3 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-200 active:scale-95;
@@ -316,9 +398,9 @@ body::before {
 
   /* Safe area for bottom nav - using inline style in component instead */
   
-  /* Page bottom padding to account for bottom nav (64px) + input bar (80px) + spacing */
+  /* Page bottom padding to account for bottom nav (64px) + spacing */
   .page-with-bottom-nav {
-    padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
 
   /* ContentEditable placeholder */
@@ -340,29 +422,40 @@ body::before {
     min-height: 1.5em;
   }
 
-  /* Mobile Preview Layout Overrides - Removes desktop constraints when inside mobile preview */
+  /* ============================================
+     MOBILE PREVIEW LAYOUT SYSTEM
+     Removes desktop constraints in mobile preview
+     ============================================ */
+  
   .mobile-content-wrapper {
     width: 100%;
+    min-height: 100%;
   }
 
-  /* Remove desktop centering and max-width constraints in mobile preview */
-  .mobile-content-wrapper > * {
+  /* Override ALL max-width utilities in mobile */
+  .mobile-content-wrapper [class*="max-w-"] {
     max-width: 100% !important;
   }
 
-  /* Remove max-w-2xl specifically */
-  .mobile-content-wrapper .max-w-2xl {
-    max-width: 100% !important;
+  /* Remove desktop centering (mx-auto) in mobile */
+  .mobile-content-wrapper [class*="mx-auto"] {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
 
-  /* Remove desktop padding from page containers */
-  .mobile-content-wrapper > div[class*="min-h-screen"],
-  .mobile-content-wrapper > div[class*="p-6"]:not(.glass-card):not([class*="px-"]) {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-top: 0 !important;
+  /* Ensure full-width containers */
+  .mobile-content-wrapper > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem !important;   /* 16px default mobile padding */
+    padding-right: 1rem !important;
+  }
+
+  /* Preserve card padding (don't override) */
+  .mobile-content-wrapper .glass-card,
+  .mobile-content-wrapper [class*="rounded-"] {
+    padding-left: revert !important;
+    padding-right: revert !important;
   }
 
   /* Remove page-with-bottom-nav padding in mobile (handled by shell) */
@@ -370,15 +463,37 @@ body::before {
     padding-bottom: 0 !important;
   }
 
-  /* Ensure single column layout - disable grids */
-  .mobile-content-wrapper .grid {
-    display: flex !important;
-    flex-direction: column !important;
+  /* Responsive grid columns - don't destroy all grids, make them adaptive */
+  .mobile-content-wrapper .grid-cols-3,
+  .mobile-content-wrapper .grid-cols-4,
+  .mobile-content-wrapper .grid-cols-5,
+  .mobile-content-wrapper .grid-cols-6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+
+  /* Keep 2-column grids on mobile (they work fine on 375px width) */
+  /* .mobile-content-wrapper .grid-cols-2 stays as-is */
 
   /* Stack cards vertically with consistent spacing */
   .mobile-content-wrapper > div > div[class*="space-y"] {
     display: flex;
     flex-direction: column;
+  }
+}
+
+/* ============================================
+   MOBILE TEXT SCALING
+   Optimize font sizes for mobile screens
+   ============================================ */
+@media (max-width: 640px) {
+  .mobile-content-wrapper {
+    h1, .page-heading { font-size: 1.75rem !important; }  /* 28px */
+    h2, .section-heading { font-size: 1.5rem !important; }   /* 24px */
+    h3, .card-heading { font-size: 1.25rem !important; }  /* 20px */
+  }
+  
+  .mobile-content-wrapper .glass-card {
+    padding: 1rem !important;
+    border-radius: 1rem !important;
   }
 }

@@ -10,11 +10,16 @@ export default function ThemeToggles() {
     <div className="flex items-center gap-2">
       {/* View Mode Toggle */}
       <button
-        onClick={toggleViewMode}
-        className="p-2 rounded-lg transition-colors"
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          toggleViewMode()
+        }}
+        className="p-2 rounded-lg transition-colors relative z-[60]"
         style={{
           backgroundColor: 'var(--card-bg)',
           border: '1px solid var(--border-color)',
+          pointerEvents: 'auto',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.opacity = '0.9'

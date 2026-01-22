@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Phone, Mail, MessageSquare, Edit2, Save, X, Camera, User, Trash2, Calendar } from 'lucide-react'
 import type { FamilyMember } from '@/types/home'
 import { showToast } from '../feedback/ToastContainer'
@@ -22,6 +22,20 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
   const [email, setEmail] = useState(member.email || '')
   const [photo, setPhoto] = useState(member.photo || '')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Sync state with member prop when it changes (e.g., after navigation/reload)
+  useEffect(() => {
+    if (!isEditing) {
+      setName(member.name)
+      setRelationship(member.relationship || '')
+      setAge(member.age?.toString() || '')
+      setBirthday(member.birthday || '')
+      setNotes(member.notes || '')
+      setPhone(member.phone || '')
+      setEmail(member.email || '')
+      setPhoto(member.photo || '')
+    }
+  }, [member.id, member.photo, member.name, member.relationship, member.age, member.birthday, member.notes, member.phone, member.email, isEditing])
 
   const compressImage = (file: File, maxWidth: number = 400, maxHeight: number = 400, quality: number = 0.7): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -147,7 +161,7 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         notes: notes.trim() || undefined,
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
-        photo: photo || undefined,
+        photo: photo && photo.trim() ? photo : undefined,
         updatedAt: new Date().toISOString(),
       }
 

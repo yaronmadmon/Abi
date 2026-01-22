@@ -21,7 +21,7 @@ export default function DesktopLayout({ children }: DesktopLayoutProps) {
   return (
     <>
       <div 
-        className="sticky top-0 z-40 backdrop-blur-xl px-6 py-3 transition-colors"
+        className="sticky top-0 z-[60] backdrop-blur-xl px-6 py-3 transition-colors"
         style={{
           backgroundColor: 'var(--background)',
           borderBottom: '1px solid var(--border-color)',

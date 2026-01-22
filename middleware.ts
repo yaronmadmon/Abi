@@ -1,7 +1,31 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// TEMPORARY: Hide login page UI for deployment
+// Set to true to show login page
+const SHOW_LOGIN_PAGE = false
+
 export async function middleware(request: NextRequest) {
+  // ⚠️ DEV AUTH BYPASS - ONLY ACTIVE IN DEVELOPMENT
+  // ============================================================================
+  // This bypasses authentication ONLY when:
+  // 1. NODE_ENV is not 'production' (development/test)
+  // 2. AND ENABLE_DEV_AUTH_BYPASS is explicitly set to 'true'
+  // ============================================================================
+  // In production, this bypass is automatically disabled by NODE_ENV check
+  // To enable in dev: set ENABLE_DEV_AUTH_BYPASS=true in .env.local
+  // ============================================================================
+  const isDev = process.env.NODE_ENV !== 'production'
+  const bypassEnabled = process.env.ENABLE_DEV_AUTH_BYPASS === 'true'
+  
+  if (isDev && bypassEnabled) {
+    // Only bypass in development when explicitly enabled
+    return NextResponse.next()
+  }
+  // ============================================================================
+  // PRODUCTION: Authentication is always enforced
+  // ============================================================================
+
   // Check if Supabase is configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -31,7 +55,7 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             request.cookies.set(name, value)
             response.cookies.set(name, value, options)
@@ -50,6 +74,12 @@ export async function middleware(request: NextRequest) {
   const isProtectedPath = protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
+    // TEMPORARY: When login is hidden, allow access to app (for deployment)
+    // This allows the app to work while login UI is hidden
+    if (!SHOW_LOGIN_PAGE) {
+      // Allow access - login is hidden so we bypass auth check
+      return NextResponse.next()
+    }
     return NextResponse.redirect(new URL('/auth/signin', request.url))
   }
 
@@ -59,6 +89,11 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthPath && user) {
     return NextResponse.redirect(new URL('/today', request.url))
+  }
+
+  // TEMPORARY: Redirect unauthenticated users away from login page
+  if (isAuthPath && !user && !SHOW_LOGIN_PAGE) {
+    return NextResponse.redirect(new URL('/early-access', request.url))
   }
 
   return response

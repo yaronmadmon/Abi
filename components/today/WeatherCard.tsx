@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Cloud, CloudRain, Sun, CloudSun, Wind, Droplets, Thermometer, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState, useEffect, memo } from 'react'
+import { Cloud, CloudRain, Sun, CloudSun, Wind, Droplets, Thermometer } from 'lucide-react'
+import WeatherForecastModal from '@/components/weather/WeatherForecastModal'
+import { FeatureErrorBoundary } from '@/components/errors/FeatureErrorBoundary'
+import { logger } from '@/lib/logger'
 
 interface HourlyForecast {
   time: string
@@ -35,11 +38,14 @@ interface WeatherData {
   daily?: DailyForecast[]
 }
 
-export default function WeatherCard() {
+// Memoized because: Prevents re-renders when parent Today page updates,
+// expensive operations: API calls, date calculations, geolocation.
+// Remove memo if: Component moves to isolated page with no parent re-renders.
+const WeatherCardContent = memo(function WeatherCardContent() {
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lon: number; name?: string } | null>(null)
   const [locationName, setLocationName] = useState<string | null>(null)
   const [showLocationInput, setShowLocationInput] = useState(false)
@@ -65,7 +71,7 @@ export default function WeatherCard() {
           await fetchWeather(lat, lon, false, name)
           return
         } catch (e) {
-          console.error('Error loading saved location:', e)
+          logger.error('Error loading saved location', e as Error)
         }
       }
 
@@ -74,11 +80,11 @@ export default function WeatherCard() {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords
-            console.log('📍 Location detected:', latitude, longitude)
+            logger.debug('Location detected', { latitude, longitude })
             await fetchWeather(latitude, longitude)
           },
           async (error) => {
-            console.warn('Geolocation error:', error.message)
+            logger.warn('Geolocation error', { message: error.message })
             // If geolocation fails, try to get location from IP or use a sensible default
             // For now, we'll show an error and let user know they can set location manually
             setError('Location access denied. Using default location.')
@@ -88,13 +94,13 @@ export default function WeatherCard() {
               if (ipResponse.ok) {
                 const ipData = await ipResponse.json()
                 if (ipData.latitude && ipData.longitude) {
-                  console.log('📍 Using IP-based location:', ipData.latitude, ipData.longitude)
+                  logger.debug('Using IP-based location', { latitude: ipData.latitude, longitude: ipData.longitude, location: ipData.city || ipData.region })
                   await fetchWeather(ipData.latitude, ipData.longitude, false, ipData.city || ipData.region)
                   return
                 }
               }
             } catch (ipError) {
-              console.error('IP geolocation failed:', ipError)
+              logger.error('IP geolocation failed', ipError as Error)
             }
             // Final fallback - but we should let user know
             setError('Unable to detect location. Please allow location access or set a location manually.')
@@ -112,7 +118,7 @@ export default function WeatherCard() {
         await fetchWeather(40.7128, -74.0060, false, 'New York, NY')
       }
     } catch (err) {
-      console.error('Weather error:', err)
+      logger.error('Weather error', err as Error)
       setError('Unable to load weather')
       setLoading(false)
     }
@@ -127,6 +133,10 @@ export default function WeatherCard() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
+        // Handle 503 (API not configured) specially
+        if (response.status === 503) {
+          throw new Error('Weather service not configured. Add OPENWEATHER_API_KEY to enable weather features.')
+        }
         throw new Error(errorData.error || 'Weather API error')
       }
 
@@ -163,12 +173,13 @@ export default function WeatherCard() {
     }
   }
 
-  const handleExpand = () => {
-    if (!isExpanded && currentLocation && !weather?.hourly) {
-      // Fetch forecast data when expanding
+  const handleCardClick = () => {
+    if (!weather) return
+    // Fetch forecast data if not already loaded
+    if (currentLocation && !weather?.hourly) {
       fetchWeather(currentLocation.lat, currentLocation.lon, true)
     }
-    setIsExpanded(!isExpanded)
+    setShowModal(true)
   }
 
   const handleManualLocation = async () => {
@@ -202,7 +213,7 @@ export default function WeatherCard() {
       setShowLocationInput(false)
       setManualLocation('')
     } catch (err: any) {
-      console.error('Location search error:', err)
+      logger.error('Location search error', err as Error)
       setError(err.message || 'Could not find location')
       setLoading(false)
     }
@@ -232,63 +243,13 @@ export default function WeatherCard() {
   }
 
   return (
-    <div className="glass-card mb-4 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ maxHeight: isExpanded ? '600px' : 'none' }}>
-      <div className="p-5">
-        <div className="mb-3">
-          <button
-            onClick={handleExpand}
-            className="w-full flex items-center justify-between group"
-          >
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-900">Weather</h2>
-            </div>
-            <div className="flex items-center gap-2">
-              {loading && (
-                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-              )}
-              {!loading && (
-                <div className="text-gray-400 group-hover:text-gray-600 transition-colors">
-                  {isExpanded ? (
-                    <ChevronUp className="w-5 h-5" strokeWidth={2} />
-                  ) : (
-                    <ChevronDown className="w-5 h-5" strokeWidth={2} />
-                  )}
-                </div>
-              )}
-            </div>
-          </button>
-          {locationName && (
-            <div className="flex items-center gap-2 mt-0.5">
-              <p className="text-xs text-gray-500">{locationName}</p>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowLocationInput(true)
-                }}
-                className="text-xs text-blue-600 hover:text-blue-700 underline"
-                title="Change location"
-              >
-                Change
-              </button>
-            </div>
-          )}
-          {error && !weather && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowLocationInput(true)
-              }}
-              className="text-xs text-blue-600 hover:text-blue-700 underline mt-1"
-            >
-              Set location manually
-            </button>
-          )}
-        </div>
-
+    <>
+      <div className="glass-card mb-4 overflow-hidden transition-all duration-200">
+        {/* Location Input Section */}
         {showLocationInput && (
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg space-y-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Enter location (e.g., "New York, NY" or "London, UK")
+          <div className="p-4 bg-gray-50 border-b border-gray-200">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Enter location (e.g., &quot;New York, NY&quot; or &quot;London, UK&quot;)
             </label>
             <div className="flex gap-2">
               <input
@@ -324,134 +285,151 @@ export default function WeatherCard() {
           </div>
         )}
 
-        {error && !weather ? (
-          <div className="space-y-2">
-            <p className="text-sm text-red-600">{error}</p>
-            <div className="flex gap-3">
-              <button
-                onClick={loadWeather}
-                className="text-xs text-blue-600 hover:text-blue-700 underline"
-              >
-                Try again
-              </button>
-              <button
-                onClick={() => setShowLocationInput(true)}
-                className="text-xs text-blue-600 hover:text-blue-700 underline"
-              >
-                Set location manually
-              </button>
-            </div>
-          </div>
-        ) : error && weather ? (
-          <p className="text-xs text-amber-600 mb-2">{error}</p>
-        ) : null}
-        
-        {weather ? (
-          <div className="space-y-3">
-            {/* Current Weather - Always Visible */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {getWeatherIcon(weather.condition)}
-                <div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-gray-900">{weather.temperature}°</span>
-                    <span className="text-sm text-gray-500">F</span>
-                  </div>
-                  <p className="text-sm text-gray-600 capitalize">{weather.description}</p>
-                  {weather.high && weather.low && (
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      H: {weather.high}° L: {weather.low}°
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Basic Stats - Always Visible */}
-            <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t border-gray-100">
-              <div className="flex items-center gap-1">
-                <Droplets className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>{weather.humidity}%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Wind className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>{weather.windSpeed} mph</span>
-              </div>
-              {weather.feelsLike && (
-                <div className="flex items-center gap-1">
-                  <Thermometer className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span>Feels like {weather.feelsLike}°</span>
-                </div>
-              )}
-            </div>
-
-            {/* Expanded Content */}
-            {isExpanded && (
-              <div className="pt-4 border-t border-gray-100 space-y-4 animate-fade-in">
-                {/* Hourly Forecast */}
-                {weather.hourly && weather.hourly.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Hourly Forecast</h3>
-                    <div className="overflow-x-auto scrollbar-hide -mx-5 px-5">
-                      <div className="flex gap-3 pb-2">
-                        {weather.hourly.map((hour, index) => (
-                          <div key={index} className="flex-shrink-0 text-center min-w-[60px]">
-                            <p className="text-xs text-gray-500 mb-1">{hour.time}</p>
-                            <div className="mb-1 flex justify-center">
-                              {getWeatherIconFromCode(hour.icon)}
-                            </div>
-                            <p className="text-sm font-medium text-gray-900">{hour.temperature}°</p>
-                            {hour.pop > 0 && (
-                              <p className="text-xs text-blue-500 mt-0.5">{hour.pop}%</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 5-Day Forecast */}
-                {weather.daily && weather.daily.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">5-Day Forecast</h3>
-                    <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-hide">
-                      {weather.daily.map((day, index) => (
-                        <div key={index} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-b-0">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 w-12">{day.day}</p>
-                            <div className="flex-shrink-0">
-                              {getWeatherIconFromCode(day.icon)}
-                            </div>
-                            {day.pop > 0 && (
-                              <p className="text-xs text-blue-500">{day.pop}%</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3 flex-shrink-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-900 font-medium">{day.high}°</span>
-                              <span className="text-sm text-gray-500">{day.low}°</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {(!weather.hourly || weather.hourly.length === 0) && loading && (
-                  <div className="text-center py-4">
-                    <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin mx-auto mb-2"></div>
-                    <p className="text-xs text-gray-500">Loading forecast...</p>
-                  </div>
-                )}
-              </div>
+        {/* Main Weather Card - Clickable */}
+        <button 
+          onClick={handleCardClick}
+          disabled={!weather || loading}
+          className="w-full text-left p-5 hover:bg-gray-50/50 transition-colors disabled:cursor-not-allowed"
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Weather</h2>
+            {loading && (
+              <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
             )}
           </div>
-        ) : (
-          <p className="text-sm text-gray-500">Loading weather...</p>
-        )}
+
+          {locationName && (
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-xs text-gray-500">{locationName}</p>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowLocationInput(true)
+                }}
+                className="text-xs text-blue-600 hover:text-blue-700 underline cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation()
+                    setShowLocationInput(true)
+                  }
+                }}
+                title="Change location"
+              >
+                Change
+              </span>
+            </div>
+          )}
+
+          {error && !weather ? (
+            <div className="space-y-2">
+              <p className="text-sm text-red-600">{error}</p>
+              <div className="flex gap-3">
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    loadWeather()
+                  }}
+                  className="text-xs text-blue-600 hover:text-blue-700 underline cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation()
+                      loadWeather()
+                    }
+                  }}
+                >
+                  Try again
+                </span>
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowLocationInput(true)
+                  }}
+                  className="text-xs text-blue-600 hover:text-blue-700 underline cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation()
+                      setShowLocationInput(true)
+                    }
+                  }}
+                >
+                  Set location manually
+                </span>
+              </div>
+            </div>
+          ) : error && weather ? (
+            <p className="text-xs text-amber-600 mb-2">{error}</p>
+          ) : null}
+          
+          {weather ? (
+            <div className="space-y-3">
+              {/* Current Weather - Always Visible */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {getWeatherIcon(weather.condition)}
+                  <div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-gray-900">{weather.temperature}°</span>
+                      <span className="text-sm text-gray-500">F</span>
+                    </div>
+                    <p className="text-sm text-gray-600 capitalize">{weather.description}</p>
+                    {weather.high && weather.low && (
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        H: {weather.high}° L: {weather.low}°
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Basic Stats - Always Visible */}
+              <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-1">
+                  <Droplets className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span>{weather.humidity}%</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Wind className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span>{weather.windSpeed} mph</span>
+                </div>
+                {weather.feelsLike && (
+                  <div className="flex items-center gap-1">
+                    <Thermometer className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    <span>Feels like {weather.feelsLike}°</span>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-xs text-blue-600 mt-3 font-medium">Click for detailed forecast →</p>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">Loading weather...</p>
+          )}
+        </button>
       </div>
-    </div>
+
+      {/* Weather Forecast Modal */}
+      {showModal && weather && (
+        <WeatherForecastModal
+          weather={weather}
+          locationName={locationName}
+          onClose={() => setShowModal(false)}
+          isLoading={loading}
+        />
+      )}
+    </>
+  )
+})
+
+export default function WeatherCard() {
+  return (
+    <FeatureErrorBoundary featureName="Weather">
+      <WeatherCardContent />
+    </FeatureErrorBoundary>
   )
 }

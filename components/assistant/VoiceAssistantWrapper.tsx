@@ -1,14 +1,25 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import VoiceAssistant from './VoiceAssistant'
+import AIChatConsole from '@/components/AIChatConsole'
+
+/**
+ * AI Chat Console Wrapper
+ * 
+ * This is the CENTRAL AI BRAIN for the app.
+ * Replaces VoiceAssistant - now uses the new AIChatConsole with:
+ * - Push-to-talk voice (no auto-sending)
+ * - 4 modes: idle, typing, listening, preview
+ * - Multimodal input (+ button)
+ * - Clean conversation history
+ * - Context-aware (sees app state)
+ */
 
 export default function VoiceAssistantWrapper() {
   const router = useRouter()
 
   const handleAction = (route: string, payload: any) => {
     // Handle action completion - refresh the current page to show updates
-    // The action has already been executed by the VoiceAssistant component
     router.refresh()
     
     // Optionally navigate to specific routes based on action type
@@ -22,9 +33,9 @@ export default function VoiceAssistantWrapper() {
   }
 
   const handleError = (error: string) => {
-    console.error('Voice Assistant Error:', error)
-    // You could show a toast notification here if you have one
+    console.error('AI Chat Console Error:', error)
   }
 
-  return <VoiceAssistant onAction={handleAction} onError={handleError} />
+  // AIChatConsole manages its own open/close state via floating button
+  return <AIChatConsole onIntent={handleAction} onError={handleError} />
 }

@@ -14,6 +14,12 @@ export interface Task {
   dueDate?: string
   completed: boolean
   createdAt: string
+  sharedTo?: {
+    id: string
+    name: string
+    email?: string
+    phone?: string
+  }
 }
 
 export interface Meal {

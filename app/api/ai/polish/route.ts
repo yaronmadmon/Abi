@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { polishText, type PolishStyle } from '@/ai/textPolisher'
+import { logger } from '@/lib/logger'
+
+export const runtime = 'nodejs'
 
 /**
  * AI Text Polishing Endpoint
@@ -20,13 +23,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ polished: '' })
     }
 
-    console.log('✨ Polishing text:', text.substring(0, 50) + '...', 'Style:', style);
+    logger.debug('✨ Polishing text', { preview: text.substring(0, 50) + '...', style });
     const polished = await polishText(text, style as PolishStyle);
-    console.log('✅ Polished text:', polished.substring(0, 50) + '...');
+    logger.debug('✅ Polished text', { preview: polished.substring(0, 50) + '...' });
 
     return NextResponse.json({ polished });
   } catch (error) {
-    console.error('Text polishing error:', error);
+    logger.error('Text polishing error', error as Error);
     return NextResponse.json(
       { 
         error: 'Failed to polish text',

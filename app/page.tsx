@@ -1,6 +1,30 @@
 import { redirect } from 'next/navigation'
 
+// TEMPORARY: Hide login page UI for deployment
+// Set to true to show login page
+const SHOW_LOGIN_PAGE = false
+
 export default async function HomePage() {
+  // ⚠️ DEV AUTH BYPASS - ONLY ACTIVE IN DEVELOPMENT
+  // ============================================================================
+  // This bypasses authentication ONLY when:
+  // 1. NODE_ENV is not 'production' (development/test)
+  // 2. AND ENABLE_DEV_AUTH_BYPASS is explicitly set to 'true'
+  // ============================================================================
+  // In production, this bypass is automatically disabled by NODE_ENV check
+  // To enable in dev: set ENABLE_DEV_AUTH_BYPASS=true in .env.local
+  // ============================================================================
+  const isDev = process.env.NODE_ENV !== 'production'
+  const bypassEnabled = process.env.ENABLE_DEV_AUTH_BYPASS === 'true'
+  
+  if (isDev && bypassEnabled) {
+    // Only bypass in development when explicitly enabled
+    redirect('/today')
+  }
+  // ============================================================================
+  // PRODUCTION: Authentication is always enforced
+  // ============================================================================
+
   // Check if Supabase is configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -39,7 +63,6 @@ export default async function HomePage() {
     )
   }
 
-  // Supabase is configured, check auth
   try {
     const { createServerClient } = await import('@/lib/supabase')
     const supabase = createServerClient()
@@ -50,10 +73,17 @@ export default async function HomePage() {
     if (user) {
       redirect('/today')
     } else {
+      // TEMPORARY: When login is hidden, allow access to app
+      if (!SHOW_LOGIN_PAGE) {
+        redirect('/today')
+      }
       redirect('/auth/signin')
     }
   } catch (error) {
-    // If there's an error, redirect to signin
+    // If there's an error, allow access when login is hidden
+    if (!SHOW_LOGIN_PAGE) {
+      redirect('/today')
+    }
     redirect('/auth/signin')
   }
 }

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { Trash2 } from 'lucide-react'
 import type { ShoppingItem } from '@/types/home'
-import AIInputBar from '@/components/AIInputBar'
 import { showToast } from '@/components/feedback/ToastContainer'
+import PageContainer from '@/components/ui/PageContainer'
 
 export default function ShoppingPage() {
   const [items, setItems] = useState<ShoppingItem[]>([])
@@ -24,8 +25,20 @@ export default function ShoppingPage() {
   }
 
   const saveItems = (newItems: ShoppingItem[]) => {
-    localStorage.setItem('shoppingItems', JSON.stringify(newItems))
-    setItems(newItems)
+    try {
+      localStorage.setItem('shoppingItems', JSON.stringify(newItems))
+      setItems(newItems)
+      window.dispatchEvent(new Event('shoppingUpdated'))
+    } catch (error) {
+      console.error('Failed to save shopping items to localStorage:', error)
+      // Check if it's a quota exceeded error
+      if (error instanceof Error && (error.name === 'QuotaExceededError' || (error as any).code === 22)) {
+        showToast('Storage is full. Please clear browser data or remove some items.', 'error')
+      } else {
+        showToast('Failed to save shopping list. Please try again.', 'error')
+      }
+      throw error // Re-throw so caller knows save failed
+    }
   }
 
   const addItem = (name: string, category: ShoppingItem['category'] = 'other') => {
@@ -40,9 +53,9 @@ export default function ShoppingPage() {
       saveItems([...items, item])
       setNewItemName('')
       setShowAddForm(false)
-      showToast('Item added', 'success')
+      showToast('Added to your list! ✓', 'success')
     } catch (error) {
-      showToast('Couldn\'t add item', 'error')
+      showToast('Oops! Couldn\'t add that. Try again?', 'error')
     }
   }
 
@@ -64,23 +77,21 @@ export default function ShoppingPage() {
   const deleteItem = (id: string) => {
     try {
       saveItems(items.filter((item) => item.id !== id))
-      showToast('Item deleted', 'success')
+      showToast('Item removed from your list ✓', 'success')
     } catch (error) {
       showToast('Couldn\'t delete item', 'error')
     }
   }
 
-  const handleAIIntent = (route: string, payload: any) => {
-    if (route === 'shopping') {
-      const category = (payload.category || 'other') as ShoppingItem['category']
-      // Handle multiple items from payload.items array
-      const items = payload.items || []
-      items.forEach((name: string) => {
-        addItem(name, category)
-      })
-      // Reload items to show the new ones
-      loadItems()
-      // Note: Confirmation already shown by AIInputBar
+  const clearAllItems = () => {
+    if (!confirm('Are you sure you want to delete all shopping items? This cannot be undone.')) return
+    
+    try {
+      localStorage.setItem('shoppingItems', JSON.stringify([]))
+      setItems([])
+      showToast('Shopping list cleared! Ready for a fresh start? 🛒', 'success')
+    } catch (error) {
+      showToast('Failed to clear items', 'error')
     }
   }
 
@@ -100,27 +111,40 @@ export default function ShoppingPage() {
   }, {} as Record<string, ShoppingItem[]>)
 
   return (
-    <div className="min-h-screen p-6 pb-40">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6 flex items-center justify-between">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
-            ← Back
+    <div className="min-h-screen p-6 pb-40 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
+      <PageContainer>
+        <div className="mb-6">
+          <Link href="/today" className="text-gray-500 hover:text-gray-700 text-sm mb-3 inline-block">
+            ← Back to Today
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Shopping List</h1>
-          <div className="w-12"></div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Shopping List</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                {items.length} {items.length === 1 ? 'item' : 'items'} • {items.filter(i => i.completed).length} checked
+              </p>
+            </div>
+            {items.length > 0 && (
+              <button
+                onClick={clearAllItems}
+                className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear All
+              </button>
+            )}
+          </div>
         </div>
-
-        <AIInputBar onIntent={handleAIIntent} context="shopping" />
 
         {!showAddForm ? (
           <button
             onClick={() => setShowAddForm(true)}
-            className="btn-secondary w-full mb-6"
+            className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all mb-6"
           >
             + Add Item Manually
           </button>
         ) : (
-          <div className="glass-card p-4 mb-6">
+          <div className="bg-white rounded-2xl p-5 mb-6 border-2 border-gray-100">
             <input
               type="text"
               value={newItemName}
@@ -153,7 +177,7 @@ export default function ShoppingPage() {
                     addItem(newItemName.trim(), selectedCategory)
                   }
                 }}
-                className="btn-primary flex-1"
+                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
               >
                 Add
               </button>
@@ -162,7 +186,7 @@ export default function ShoppingPage() {
                   setShowAddForm(false)
                   setNewItemName('')
                 }}
-                className="btn-secondary flex-1"
+                className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all"
               >
                 Cancel
               </button>
@@ -171,31 +195,44 @@ export default function ShoppingPage() {
         )}
 
         {Object.keys(groupedItems).length === 0 ? (
-          <div className="glass-card p-8 text-center text-gray-500">
-            No items yet. Add something to your list!
+          <div className="bg-white rounded-2xl p-8 text-center text-gray-500 border-2 border-gray-100">
+            <p className="text-lg mb-2">No items yet</p>
+            <p className="text-sm">Add something to your list!</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {Object.entries(groupedItems).map(([category, categoryItems]) => (
-              <div key={category} className="glass-card p-4">
-                <h2 className="font-semibold text-gray-700 mb-3">
+              <div key={category} className="bg-white rounded-2xl p-5 border-2 border-gray-100">
+                <h2 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">
                   {category.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                  <span className="ml-2 text-gray-400 font-normal">({categoryItems.length})</span>
                 </h2>
                 <div className="space-y-2">
                   {categoryItems.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/50 transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors bg-white border border-gray-100"
                     >
-                      <input
-                        type="checkbox"
-                        checked={item.completed}
-                        onChange={() => toggleItem(item.id)}
-                        className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                      />
-                      <div className="flex-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleItem(item.id)
+                        }}
+                        className="flex-shrink-0 w-6 h-6 rounded border-2 border-gray-300 flex items-center justify-center hover:border-blue-500 transition-colors cursor-pointer"
+                        aria-label={item.completed ? 'Uncheck item' : 'Check item'}
+                      >
+                        {item.completed && (
+                          <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                      <div
+                        onClick={() => toggleItem(item.id)}
+                        className="flex-1 cursor-pointer"
+                      >
                         <p
-                          className={`${
+                          className={`text-base ${
                             item.completed
                               ? 'line-through text-gray-400'
                               : 'text-gray-900'
@@ -205,10 +242,17 @@ export default function ShoppingPage() {
                         </p>
                       </div>
                       <button
-                        onClick={() => deleteItem(item.id)}
-                        className="text-red-400 hover:text-red-600"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (confirm(`Delete "${item.name}"?`)) {
+                            deleteItem(item.id)
+                          }
+                        }}
+                        className="flex-shrink-0 w-8 h-8 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center cursor-pointer"
+                        aria-label="Delete item"
+                        title="Remove item"
                       >
-                        ×
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
@@ -217,7 +261,7 @@ export default function ShoppingPage() {
             ))}
           </div>
         )}
-      </div>
+      </PageContainer>
     </div>
   )
 }

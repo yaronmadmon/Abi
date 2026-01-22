@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,31 +19,20 @@ export async function GET(request: NextRequest) {
     const API_KEY = process.env.OPENWEATHER_API_KEY || process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY
 
     if (!API_KEY) {
-      // If no API key, use a free public weather API (wttr.in)
-      const response = await fetch(
-        `https://wttr.in/?format=j1&lat=${lat}&lon=${lon}`
+      // Return a helpful message if no API key is configured
+      logger.warn('⚠️ No OpenWeather API key configured. Weather features disabled.')
+      return NextResponse.json(
+        { 
+          error: 'Weather API not configured',
+          message: 'Please add OPENWEATHER_API_KEY to your .env.local file',
+          instructions: 'Get a free API key at https://openweathermap.org/api'
+        },
+        { status: 503 }
       )
-
-      if (!response.ok) {
-        throw new Error('Weather API error')
-      }
-
-      const data = await response.json()
-      const current = data.current_condition[0]
-
-      return NextResponse.json({
-        temperature: parseInt(current.temp_F),
-        condition: current.weatherDesc[0].value,
-        description: current.weatherDesc[0].value.toLowerCase(),
-        humidity: parseInt(current.humidity),
-        windSpeed: parseInt(current.windspeedMiles),
-        icon: current.weatherCode,
-        location: data.nearest_area[0].areaName[0].value,
-      })
     }
 
     // Use OpenWeatherMap if API key is available
-    console.log('🌤️ Fetching weather with OpenWeather API key:', API_KEY ? 'Present' : 'Missing')
+    logger.debug('🌤️ Fetching weather with OpenWeather API key', { apiKeyPresent: !!API_KEY })
     
     // Check if forecast data is requested
     const includeForecast = request.nextUrl.searchParams.get('forecast') === 'true'
@@ -54,12 +44,12 @@ export async function GET(request: NextRequest) {
 
     if (!currentResponse.ok) {
       const errorData = await currentResponse.text()
-      console.error('OpenWeather API error:', currentResponse.status, errorData)
+      logger.error('OpenWeather API error', new Error(`OpenWeather API error: ${currentResponse.status} - ${errorData}`), { status: currentResponse.status, errorData })
       throw new Error(`OpenWeather API error: ${currentResponse.status} - ${errorData}`)
     }
 
     const currentData = await currentResponse.json()
-    console.log('✅ Weather data received:', currentData.name, currentData.weather[0].main)
+    logger.debug('✅ Weather data received', { location: currentData.name, condition: currentData.weather[0].main })
 
     const baseResponse = {
       temperature: Math.round(currentData.main.temp),
@@ -124,14 +114,14 @@ export async function GET(request: NextRequest) {
           })
         }
       } catch (forecastError) {
-        console.error('Forecast fetch error:', forecastError)
+        logger.error('Forecast fetch error', forecastError as Error)
         // Return current weather even if forecast fails
       }
     }
 
     return NextResponse.json(baseResponse)
   } catch (error: any) {
-    console.error('Weather API error:', error)
+    logger.error('Weather API error', error as Error)
     const errorMessage = error?.message || 'Unknown error'
     const errorDetails = error?.response?.statusText || error?.statusText || 'No details'
     

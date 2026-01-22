@@ -43,7 +43,7 @@ export default function SummaryCard({
               ) : (
                 (() => {
                   const IconComponent = icon
-                  return <IconComponent className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
+                  return <IconComponent className="w-5 h-5" style={{ color: 'var(--icon-color)' }} strokeWidth={1.5} />
                 })()
               )
             )}

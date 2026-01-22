@@ -1,17 +1,19 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Search, X, CheckCircle2, FileText, Calendar, User, Heart, UtensilsCrossed, ShoppingCart, Clock } from 'lucide-react'
+import { Search, X, CheckCircle2, FileText, Calendar, User, Heart, UtensilsCrossed, ShoppingCart, Clock, ChefHat } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Task, Meal, ShoppingItem, FamilyMember, Pet } from '@/types/home'
+import { RECIPE_DATABASE, Recipe } from '@/data/recipeDatabase'
 
 interface SearchResult {
   id: string
-  type: 'task' | 'note' | 'appointment' | 'family' | 'pet' | 'meal' | 'shopping' | 'reminder' | 'document'
+  type: 'task' | 'note' | 'appointment' | 'family' | 'pet' | 'meal' | 'shopping' | 'reminder' | 'document' | 'recipe'
   title: string
   subtitle?: string
   route: string
   icon: React.ReactNode
+  data?: any
 }
 
 interface Note {
@@ -35,6 +37,7 @@ export default function GlobalSearchBar() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
   const searchRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -256,6 +259,30 @@ export default function GlobalSearchBar() {
       console.error('Error searching documents:', e)
     }
 
+    // Search Recipes (from Recipe Database)
+    try {
+      RECIPE_DATABASE.forEach((recipe) => {
+        if (
+          recipe.title.toLowerCase().includes(lowerQuery) ||
+          recipe.description.toLowerCase().includes(lowerQuery) ||
+          recipe.cuisine.toLowerCase().includes(lowerQuery) ||
+          recipe.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
+        ) {
+          allResults.push({
+            id: recipe.id,
+            type: 'recipe',
+            title: recipe.title,
+            subtitle: `${recipe.cuisine} • ${recipe.mealType}`,
+            route: '/kitchen/recipes',
+            icon: <ChefHat className="w-4 h-4 text-purple-600" strokeWidth={2} />,
+            data: recipe,
+          })
+        }
+      })
+    } catch (e) {
+      console.error('Error searching recipes:', e)
+    }
+
     // Sort by relevance (exact matches first, then partial)
     allResults.sort((a, b) => {
       const aExact = a.title.toLowerCase() === lowerQuery
@@ -270,11 +297,40 @@ export default function GlobalSearchBar() {
   }
 
   const handleResultClick = (result: SearchResult) => {
-    router.push(result.route)
-    setQuery('')
-    setResults([])
-    setIsOpen(false)
-    setIsFocused(false)
+    // Special handling for recipes - open detail modal instead of navigating
+    if (result.type === 'recipe' && result.data) {
+      setSelectedRecipe(result.data)
+      setQuery('')
+      setResults([])
+      setIsOpen(false)
+      setIsFocused(false)
+    } else {
+      router.push(result.route)
+      setQuery('')
+      setResults([])
+      setIsOpen(false)
+      setIsFocused(false)
+    }
+  }
+
+  const handleAddToShoppingList = async (recipe: Recipe) => {
+    try {
+      const ingredientNames = recipe.ingredients.map((ing) => ing.name)
+      
+      await fetch('/api/shopping/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          items: ingredientNames,
+          category: 'recipe-ingredients'
+        })
+      })
+      
+      alert(`Added ${ingredientNames.length} ingredients from "${recipe.title}" to shopping list`)
+    } catch (error) {
+      console.error('Error adding ingredients:', error)
+      alert('Failed to add ingredients')
+    }
   }
 
   const handleClear = () => {
@@ -298,7 +354,7 @@ export default function GlobalSearchBar() {
             setIsFocused(true)
             if (results.length > 0) setIsOpen(true)
           }}
-          placeholder="Search to-dos, notes, people, pets..."
+          placeholder="Search recipes, to-dos, notes, people..."
           className="w-full pl-10 pr-10 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm transition-colors"
           style={{
             borderColor: 'var(--input-border)',
@@ -362,6 +418,130 @@ export default function GlobalSearchBar() {
           }}
         >
           <p className="text-sm text-center" style={{ color: 'var(--text-secondary)' }}>No results found</p>
+        </div>
+      )}
+
+      {/* Recipe Detail Modal (from global search) */}
+      {selectedRecipe && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header with Image */}
+            <div className="relative">
+              <img
+                src={selectedRecipe.imageUrl}
+                alt={selectedRecipe.title}
+                className="w-full h-64 object-cover"
+              />
+              <button
+                onClick={() => setSelectedRecipe(null)}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-white transition-colors shadow-lg"
+              >
+                <X className="w-5 h-5" strokeWidth={2} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="text-xs font-medium text-purple-600 uppercase mb-2">
+                {selectedRecipe.mealType} • {selectedRecipe.cuisine} • {selectedRecipe.difficulty}
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                {selectedRecipe.title}
+              </h2>
+              <p className="text-gray-600 mb-4">{selectedRecipe.description}</p>
+
+              {/* Recipe Metadata */}
+              <div className="flex gap-6 mb-6 pb-6 border-b">
+                <div className="text-center">
+                  <Clock className="w-5 h-5 text-gray-400 mx-auto mb-1" />
+                  <div className="text-sm font-semibold text-gray-900">{selectedRecipe.totalTime} min</div>
+                  <div className="text-xs text-gray-500">Total Time</div>
+                </div>
+                <div className="text-center">
+                  <User className="w-5 h-5 text-gray-400 mx-auto mb-1" />
+                  <div className="text-sm font-semibold text-gray-900">{selectedRecipe.servings}</div>
+                  <div className="text-xs text-gray-500">Servings</div>
+                </div>
+                {selectedRecipe.calories && (
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-gray-900">{selectedRecipe.calories}</div>
+                    <div className="text-xs text-gray-500">Calories</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Ingredients */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Ingredients</h3>
+                <ul className="space-y-2">
+                  {selectedRecipe.ingredients.map((ing, idx) => (
+                    <li key={idx} className="flex gap-3 text-sm text-gray-700">
+                      <span className="text-purple-500 font-bold">•</span>
+                      <span>
+                        <span className="font-medium">{ing.quantity}</span> {ing.name}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Instructions */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Instructions</h3>
+                <ol className="space-y-3">
+                  {selectedRecipe.instructions.map((instruction, idx) => (
+                    <li key={idx} className="flex gap-3 text-sm text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                        {idx + 1}
+                      </span>
+                      <span className="flex-1 pt-0.5">{instruction}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              {/* Tags */}
+              {selectedRecipe.tags.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex gap-2 flex-wrap">
+                    {selectedRecipe.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="space-y-3 pt-4 border-t">
+                <button
+                  onClick={() => {
+                    handleAddToShoppingList(selectedRecipe)
+                    setSelectedRecipe(null)
+                  }}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                >
+                  Add Ingredients to Shopping List
+                </button>
+                <button
+                  onClick={() => router.push('/kitchen/recipes')}
+                  className="w-full py-3 px-4 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                >
+                  Browse More Recipes
+                </button>
+                <button
+                  onClick={() => setSelectedRecipe(null)}
+                  className="w-full py-3 px-4 text-gray-500 hover:text-gray-700 font-medium transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

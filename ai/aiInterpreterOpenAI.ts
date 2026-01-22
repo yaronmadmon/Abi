@@ -8,10 +8,11 @@
 
 import OpenAI from "openai";
 import type { AIIntent, TaskPayload, MealPayload, ShoppingPayload, ReminderPayload, AppointmentPayload } from "./schemas/intentSchema";
+import { getOpenAIApiKey } from "./serverEnv";
 
 // Initialize OpenAI client (server-side only)
 const getOpenAIClient = () => {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = getOpenAIApiKey();
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY environment variable is not set");
   }

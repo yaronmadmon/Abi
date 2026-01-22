@@ -1,7 +1,8 @@
 // Mock data for initial app state
 // This data is automatically removed once real user data exists
 
-import type { Task, Appointment, FamilyMember, Pet } from '@/types/home'
+import type { Task, FamilyMember, Pet } from '@/types/home'
+import type { Appointment } from './activeItems'
 
 interface Note {
   id: string
@@ -162,14 +163,14 @@ export const initializeMockData = () => {
   const existingFamily = localStorage.getItem('family')
   if (!existingFamily || JSON.parse(existingFamily).length === 0) {
     // Generate placeholder profile images (simple colored circles with initials)
-    const emmaPhoto = 'data:image/svg+xml;base64,' + btoa(`
+    const emmaPhoto = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
       <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
         <circle cx="100" cy="100" r="100" fill="#4F46E5"/>
         <text x="100" y="140" font-size="80" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">E</text>
       </svg>
     `)
     
-    const alexPhoto = 'data:image/svg+xml;base64,' + btoa(`
+    const alexPhoto = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
       <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
         <circle cx="100" cy="100" r="100" fill="#10B981"/>
         <text x="100" y="140" font-size="80" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">A</text>
@@ -209,7 +210,7 @@ export const initializeMockData = () => {
   const existingPets = localStorage.getItem('pets')
   if (!existingPets || JSON.parse(existingPets).length === 0) {
     // Generate placeholder pet images
-    const maxPhoto = 'data:image/svg+xml;base64,' + btoa(`
+    const maxPhoto = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
       <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
         <circle cx="100" cy="100" r="100" fill="#F59E0B"/>
         <text x="100" y="140" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">🐕</text>

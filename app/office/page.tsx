@@ -32,6 +32,15 @@ export default function OfficePage() {
             <p className="text-sm text-gray-500">Scan new documents</p>
           </SummaryCard>
 
+          <SummaryCard
+            title="Fax"
+            subtitle="Send & receive"
+            icon="📠"
+            href="/office/fax"
+          >
+            <p className="text-sm text-gray-500">Fax management</p>
+          </SummaryCard>
+
         </div>
 
       </div>

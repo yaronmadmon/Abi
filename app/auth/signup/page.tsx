@@ -4,6 +4,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { showToast } from '@/components/feedback/ToastContainer'
 
+// TEMPORARY: Google OAuth disabled for deployment
+// Set to true to re-enable Google OAuth
+const ENABLE_GOOGLE_AUTH = false
+
+// TEMPORARY: Hide login page UI for deployment
+// Set to true to show login page
+const SHOW_LOGIN_PAGE = false
+
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,6 +22,12 @@ export default function SignUpPage() {
   const router = useRouter()
 
   useEffect(() => {
+    // TEMPORARY: Redirect away from signup page if login is hidden
+    if (!SHOW_LOGIN_PAGE) {
+      router.push('/early-access')
+      return
+    }
+
     // Check if Supabase is configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       setSupabaseReady(false)
@@ -66,6 +80,12 @@ export default function SignUpPage() {
   }
 
   const handleSignUpWithGoogle = async () => {
+    // TEMPORARY: Guard against Google OAuth during deployment
+    if (!ENABLE_GOOGLE_AUTH) {
+      showToast('Google sign-in coming soon', 'info')
+      return
+    }
+
     if (!supabase || !supabaseReady) {
       showToast('Supabase not configured. Please check your environment variables.', 'error')
       return
@@ -215,18 +235,21 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            <button
-              onClick={handleSignUpWithGoogle}
-              disabled={loading}
-              className="mt-4 w-full px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                borderColor: 'var(--border-color)',
-                backgroundColor: 'var(--card-bg)',
-                color: 'var(--text-primary)',
-              }}
-            >
-              Google
-            </button>
+            {/* TEMPORARY: Google OAuth hidden during deployment */}
+            {ENABLE_GOOGLE_AUTH && (
+              <button
+                onClick={handleSignUpWithGoogle}
+                disabled={loading}
+                className="mt-4 w-full px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  borderColor: 'var(--border-color)',
+                  backgroundColor: 'var(--card-bg)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                Google
+              </button>
+            )}
           </div>
 
           <p className="mt-6 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>

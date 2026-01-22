@@ -8,7 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "fix-perms": "powershell -ExecutionPolicy Bypass -File ./fix-next-permissions.ps1"
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "fix-perms": "powershell -ExecutionPolicy Bypass -File ./fix-next-permissions.ps1",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
@@ -18,7 +22,8 @@
     "next": "^14.2.0",
     "openai": "^4.28.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -28,6 +33,7 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
     "postcss": "^8.4.40",
+    "prettier": "^3.8.0",
     "tailwindcss": "^3.4.7",
     "typescript": "^5.5.4"
   }

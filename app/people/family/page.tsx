@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Plus, User } from 'lucide-react'
 import type { FamilyMember } from '@/types/home'
-import AIInputBar from '@/components/AIInputBar'
 import AIPen from '@/components/AIPen'
 import FamilyMemberCard from '@/components/people/FamilyMemberCard'
 import { showToast } from '@/components/feedback/ToastContainer'
+import PageContainer from '@/components/ui/PageContainer'
 
 export default function FamilyPage() {
   const [family, setFamily] = useState<FamilyMember[]>([])
@@ -136,7 +136,7 @@ export default function FamilyPage() {
     setNewEmail('')
     setNewPhoto('')
     setShowAddForm(false)
-    showToast('Family member added', 'success')
+    showToast('Family member added! Welcome to the family! 👋', 'success')
   }
 
   const updateFamilyMember = (updated: FamilyMember) => {
@@ -202,17 +202,10 @@ export default function FamilyPage() {
     }
   }
 
-  const handleAIIntent = (route: string, payload: any) => {
-    if (route === 'family') {
-      // Family member was already created by familyHandler.create() in routeIntent
-      loadFamily()
-      showToast('Family member added', 'success')
-    }
-  }
 
   return (
     <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
-      <div className="max-w-2xl mx-auto">
+      <PageContainer maxWidth="2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <Link href="/people" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
@@ -226,11 +219,9 @@ export default function FamilyPage() {
             className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             <Plus className="w-4 h-4" strokeWidth={2} />
-            <span className="text-sm font-medium">Add</span>
+            <span className="text-sm font-medium">Add Family Member</span>
           </button>
         </div>
-
-        <AIInputBar onIntent={handleAIIntent} />
 
         {showAddForm && (
           <div className="glass-card p-5 mb-6">
@@ -383,7 +374,7 @@ export default function FamilyPage() {
         {family.length === 0 ? (
           <div className="glass-card p-12 text-center">
             <User className="w-16 h-16 text-gray-300 mx-auto mb-4" strokeWidth={1} />
-            <p className="text-gray-500 mb-2">No family members yet</p>
+            <p className="text-gray-500 mb-2">No family members yet. Let's add your first one!</p>
             <p className="text-sm text-gray-400 mb-6">Add your first family member to get started</p>
             <button
               onClick={() => setShowAddForm(true)}
@@ -405,7 +396,7 @@ export default function FamilyPage() {
             ))}
           </div>
         )}
-      </div>
+      </PageContainer>
     </div>
   )
 }

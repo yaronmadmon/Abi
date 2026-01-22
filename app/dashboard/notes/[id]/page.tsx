@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Share2, MoreVertical, Check, Type, List, Table, Paperclip, PenTool, Sparkles, Undo2, Redo2 } from 'lucide-react'
 import { showToast } from '@/components/feedback/ToastContainer'
+import { logger } from '@/lib/logger'
 
 interface Note {
   id: string
@@ -52,8 +53,8 @@ export default function NoteEditorPage(): JSX.Element {
         if (titleRef.current && titleRef.current.textContent !== title) {
           titleRef.current.textContent = title || ''
         }
-        if (bodyRef.current && bodyRef.current.textContent !== body) {
-          bodyRef.current.textContent = body || ''
+        if (bodyRef.current && bodyRef.current.innerHTML !== body) {
+          bodyRef.current.innerHTML = body || ''
         }
       }, 50)
       return () => clearTimeout(timer)
@@ -79,7 +80,7 @@ export default function NoteEditorPage(): JSX.Element {
         router.push('/dashboard/notes')
       }
     } catch (error) {
-      console.error('Error loading note:', error)
+      logger.error('Error loading note', error as Error)
       router.push('/dashboard/notes')
     }
   }
@@ -92,7 +93,7 @@ export default function NoteEditorPage(): JSX.Element {
       
       // Get current content from contentEditable elements
       const currentTitle = titleRef.current?.textContent || title || ''
-      const currentBody = bodyRef.current?.textContent || body || ''
+      const currentBody = bodyRef.current?.innerHTML || body || ''
       
       const stored = localStorage.getItem('notes') || '[]'
       const notes: Note[] = JSON.parse(stored)
@@ -118,12 +119,12 @@ export default function NoteEditorPage(): JSX.Element {
       setLastSaved(new Date())
       
       if (showConfirmation) {
-        showToast('Saved', 'success')
+        showToast('Saved! ✓', 'success')
       }
     } catch (error) {
-      console.error('Error saving note:', error)
+      logger.error('Error saving note', error as Error)
       if (showConfirmation) {
-        showToast('Couldn\'t save note', 'error')
+        showToast('Couldn\'t save that. Try again?', 'error')
       }
     } finally {
       setIsSaving(false)
@@ -267,8 +268,8 @@ export default function NoteEditorPage(): JSX.Element {
         showToast('Text updated', 'success')
       }
     } catch (error) {
-      console.error('AI action error:', error)
-      showToast('Couldn\'t process text', 'error')
+      logger.error('AI action error', error as Error)
+      showToast('Couldn\'t process that. Try again?', 'error')
     } finally {
       setIsAIPolishing(false)
     }
@@ -515,16 +516,46 @@ export default function NoteEditorPage(): JSX.Element {
                   </div>
                 )}
                 <button
-                  onClick={() => {}}
+                  onClick={async () => {
+                    // Save before sharing
+                    await saveNote(false)
+                    
+                    // Use native share API if available (mobile/modern browsers)
+                    if (navigator.share && note) {
+                      try {
+                        await navigator.share({
+                          title: note.title || 'Untitled Note',
+                          text: note.body || '',
+                        })
+                        showToast('Note shared', 'success')
+                      } catch (err) {
+                        // User cancelled or error occurred
+                        if (err instanceof Error && err.name !== 'AbortError') {
+                          // Fallback: copy to clipboard
+                          navigator.clipboard.writeText(`${note.title || 'Untitled Note'}\n\n${note.body || ''}`)
+                          showToast('Note copied to clipboard', 'success')
+                        }
+                      }
+                    } else if (note) {
+                      // Fallback for browsers without share API
+                      const noteText = `${note.title || 'Untitled Note'}\n\n${note.body || ''}`
+                      navigator.clipboard.writeText(noteText)
+                      showToast('Note copied to clipboard', 'success')
+                    }
+                  }}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
                   aria-label="Share"
                 >
                   <Share2 className="w-4 h-4" strokeWidth={1.5} />
                 </button>
                 <button
-                  onClick={() => {}}
+                  onClick={async () => {
+                    // Save before any action
+                    await saveNote(true)
+                  }}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
-                  aria-label="More"
+                  aria-label="Save"
+                  title="Save note"
                 >
                   <MoreVertical className="w-4 h-4" strokeWidth={1.5} />
                 </button>
@@ -700,7 +731,7 @@ export default function NoteEditorPage(): JSX.Element {
                       ? 'text-gray-300 cursor-not-allowed'
                       : 'text-gray-600 hover:bg-gray-100 active:bg-gray-200'
                   }`}
-                  title="AI assistance"
+                  title="Abby AI assistance"
                 >
                   {isAIPolishing ? (
                     <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>

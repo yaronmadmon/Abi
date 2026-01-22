@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AppointmentCreateSheet from './AppointmentCreateSheet'
 import ThoughtCreateSheet from './ThoughtCreateSheet'
-import AIInputBar from '../AIInputBar'
 import { showToast } from '../feedback/ToastContainer'
 
 interface QuickCaptureSheetProps {
@@ -83,6 +82,10 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
       }
       appointments.push(newAppointment)
       localStorage.setItem('appointments', JSON.stringify(appointments))
+      
+      // Trigger update event for UI refresh
+      window.dispatchEvent(new Event('appointmentsUpdated'))
+      
       showToast('Appointment created', 'success')
       onClose()
     } catch (error) {
@@ -102,6 +105,10 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
       }
       thoughts.push(newThought)
       localStorage.setItem('thoughts', JSON.stringify(thoughts))
+      
+      // Trigger update event for UI refresh (for future thoughts card/widget)
+      window.dispatchEvent(new Event('thoughtsUpdated'))
+      
       showToast('Thought saved', 'success')
       onClose()
     } catch (error) {
@@ -157,10 +164,7 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
             </p>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
-            <AIInputBar 
-              onIntent={type === 'task' ? handleTaskIntent : handleReminderIntent} 
-              context={type === 'task' ? 'task' : 'reminder'} 
-            />
+            <p className="text-gray-500 text-center">Quick capture moved to full-page view</p>
           </div>
         </div>
       </div>

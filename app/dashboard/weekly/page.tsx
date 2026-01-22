@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Task, Meal, ShoppingItem } from '@/types/home'
+import PageContainer from '@/components/ui/PageContainer'
 
 export default function WeeklyPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -15,7 +16,7 @@ export default function WeeklyPage() {
 
   const loadData = () => {
     const storedTasks = localStorage.getItem('tasks')
-    const storedMeals = localStorage.getItem('meals')
+    const storedMeals = localStorage.getItem('weeklyMeals')
     const storedShopping = localStorage.getItem('shoppingItems')
 
     if (storedTasks) setTasks(JSON.parse(storedTasks))
@@ -55,9 +56,9 @@ export default function WeeklyPage() {
 
   return (
     <div className="min-h-screen p-6 pb-40" style={{ backgroundColor: 'var(--background)' }}>
-      <div className="max-w-6xl mx-auto">
+      <PageContainer maxWidth="6xl">
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+          <Link href="/today" className="text-gray-500 hover:text-gray-700">
             ← Back
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Weekly Overview</h1>
@@ -178,7 +179,7 @@ export default function WeeklyPage() {
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   )
 }

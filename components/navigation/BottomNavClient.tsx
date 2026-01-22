@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Calendar, Home, UtensilsCrossed, Wallet, Users, Folder } from 'lucide-react'
+import { Calendar, Home, UtensilsCrossed, Wallet, Users, Folder, Settings } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useMobilePreview } from '@/contexts/MobilePreviewContext'
 
@@ -14,11 +14,11 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: '/today', label: 'Today', Icon: Calendar },
-  { href: '/home', label: 'Home', Icon: Home },
   { href: '/kitchen', label: 'Kitchen', Icon: UtensilsCrossed },
   { href: '/finance', label: 'Finance', Icon: Wallet },
   { href: '/people', label: 'People', Icon: Users },
   { href: '/office', label: 'Office', Icon: Folder },
+  { href: '/settings', label: 'Settings', Icon: Settings },
 ]
 
 export default function BottomNavClient() {
@@ -54,14 +54,14 @@ export default function BottomNavClient() {
               <item.Icon 
                 className="w-6 h-6 mb-1 transition-colors duration-200"
                 style={{
-                  color: isActive ? '#2563eb' : 'var(--icon-color)',
+                  color: isActive ? 'var(--accent-blue)' : 'var(--icon-color)',
                 }}
                 strokeWidth={isActive ? 2 : 1.5}
               />
               <span 
                 className="text-xs font-medium transition-colors duration-200"
                 style={{
-                  color: isActive ? '#2563eb' : 'var(--text-secondary)',
+                  color: isActive ? 'var(--accent-blue)' : 'var(--text-secondary)',
                   fontWeight: isActive ? 600 : 500,
                 }}
               >

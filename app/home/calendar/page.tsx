@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Calendar, Plus, Clock, MapPin, User, CheckSquare } from 'lucide-react'
+import { Calendar, Plus, Clock, MapPin, User, CheckSquare, Settings } from 'lucide-react'
 import AppointmentCreateSheet from '@/components/sheets/AppointmentCreateSheet'
 import MonthlyCalendar from '@/components/calendar/MonthlyCalendar'
 import type { Task } from '@/types/home'
+import PageContainer from '@/components/ui/PageContainer'
+import { showToast } from '@/components/feedback/ToastContainer'
 
 interface Appointment {
   id: string
@@ -15,6 +17,12 @@ interface Appointment {
   location?: string
   forWho?: string
   createdAt: string
+  sharedTo?: {
+    id: string
+    name: string
+    email?: string
+    phone?: string
+  }
 }
 
 export default function CalendarPage() {
@@ -35,35 +43,100 @@ export default function CalendarPage() {
   }, [])
 
   const loadData = () => {
-    const storedAppointments = localStorage.getItem('appointments')
-    if (storedAppointments) {
-      setAppointments(JSON.parse(storedAppointments))
+    try {
+      const storedAppointments = localStorage.getItem('appointments')
+      if (storedAppointments) {
+        setAppointments(JSON.parse(storedAppointments))
+      }
+    } catch (error) {
+      console.error('Error loading appointments:', error)
+      setAppointments([])
     }
 
-    const storedTasks = localStorage.getItem('tasks')
-    if (storedTasks) {
-      setTasks(JSON.parse(storedTasks))
+    try {
+      const storedTasks = localStorage.getItem('tasks')
+      if (storedTasks) {
+        setTasks(JSON.parse(storedTasks))
+      }
+    } catch (error) {
+      console.error('Error loading tasks:', error)
+      setTasks([])
     }
   }
 
-  const handleAppointmentSave = (appointment: {
+  const handleAppointmentSave = async (appointment: {
     title: string
     date: string
     time: string
     location?: string
     forWho?: string
-  }) => {
-    const stored = localStorage.getItem('appointments') || '[]'
-    const appointments = JSON.parse(stored)
-    const newAppointment: Appointment = {
-      id: `apt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      ...appointment,
-      createdAt: new Date().toISOString(),
+    sharedTo?: {
+      id: string
+      name: string
+      email?: string
+      phone?: string
     }
-    appointments.push(newAppointment)
-    localStorage.setItem('appointments', JSON.stringify(appointments))
-    loadData()
-    setShowCreateForm(false)
+  }) => {
+    try {
+      const stored = localStorage.getItem('appointments') || '[]'
+      const appointments = JSON.parse(stored)
+      const newAppointment: Appointment = {
+        id: `apt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        ...appointment,
+        createdAt: new Date().toISOString(),
+      }
+      appointments.push(newAppointment)
+      localStorage.setItem('appointments', JSON.stringify(appointments))
+      // Notify Today page and other components
+      window.dispatchEvent(new Event('appointmentsUpdated'))
+      loadData()
+      setShowCreateForm(false)
+    } catch (error) {
+      console.error('Failed to save appointment:', error)
+      // Check if it's a quota exceeded error
+      if (error instanceof Error && (error.name === 'QuotaExceededError' || (error as any).code === 22)) {
+        alert('Storage is full. Please clear browser data or remove some appointments.')
+      } else {
+        alert('Failed to save appointment. Please try again.')
+      }
+      return
+    }
+
+    // Share with family member if selected
+    if (appointment.sharedTo) {
+      try {
+        // Get user's notification preferences
+        const settingsStr = localStorage.getItem('abiSettings.v1')
+        const settings = settingsStr ? JSON.parse(settingsStr) : {}
+        
+        const response = await fetch('/api/share', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: appointment.sharedTo,
+            item: {
+              type: 'appointment',
+              title: appointment.title,
+              date: appointment.date,
+              time: appointment.time,
+              location: appointment.location,
+            },
+            preferences: {
+              emailNotifications: settings.emailNotifications !== false,
+              smsNotifications: settings.smsNotifications === true,
+            },
+          }),
+        })
+
+        if (response.ok) {
+          showToast(`Shared with ${appointment.sharedTo.name}`, 'success')
+        } else {
+          console.error('Failed to share appointment')
+        }
+      } catch (error) {
+        console.error('Error sharing appointment:', error)
+      }
+    }
   }
 
   const handleDateClick = (date: Date) => {
@@ -91,22 +164,32 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
-      <div className="max-w-4xl mx-auto">
+      <PageContainer maxWidth="4xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/home" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
-              ← Back to Home
+            <Link href="/today" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+              ← Back to Today
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Calendar</h1>
             <p className="text-sm text-gray-500">Monthly view with appointments & tasks</p>
           </div>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <Plus className="w-4 h-4" strokeWidth={2} />
-            <span className="text-sm font-medium">New</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/settings/calendar"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              title="Calendar Systems"
+            >
+              <Settings className="w-4 h-4" strokeWidth={2} />
+              <span className="text-sm font-medium hidden sm:inline">Calendar Systems</span>
+            </Link>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              <Plus className="w-4 h-4" strokeWidth={2} />
+              <span className="text-sm font-medium">New</span>
+            </button>
+          </div>
         </div>
 
         {/* Monthly Calendar */}
@@ -201,7 +284,7 @@ export default function CalendarPage() {
             onSave={handleAppointmentSave}
           />
         )}
-      </div>
+      </PageContainer>
     </div>
   )
 }

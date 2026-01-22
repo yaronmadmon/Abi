@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { reasonWithGPT, generateConversationalResponse, isConversationalInput } from '@/ai/gptReasoning'
+import { reasonWithGPT } from '@/ai/gptReasoning'
 import type { AIIntent } from '@/ai/schemas/intentSchema'
+import { logger } from '@/lib/logger'
+
+export const runtime = 'nodejs'
 
 /**
  * AI Classification Endpoint
@@ -23,7 +26,7 @@ import type { AIIntent } from '@/ai/schemas/intentSchema'
 export async function POST(request: NextRequest) {
   let userInput = '';
   try {
-    const { input, context, images, conversationalMode } = await request.json()
+    const { input, context, history, images } = await request.json()
     userInput = input || '';
 
     if (!input || typeof input !== 'string') {
@@ -33,31 +36,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Step 1: Check if this is conversational input or in conversational mode
-    const isConversational = conversationalMode || isConversationalInput(input);
-    
-    if (isConversational) {
-      // Generate natural GPT response instead of intent classification
-      console.log('💬 Conversational Mode: Generating GPT response');
-      const gptResponse = await generateConversationalResponse(input, context, images);
-      console.log('✅ GPT Response:', gptResponse);
-      
-      // Return as a conversational intent
-      return NextResponse.json({
-        intent: {
-          type: 'clarification' as const, // Use clarification type but with GPT response
-          confidence: 1.0,
-          raw: input,
-          followUpQuestion: gptResponse, // GPT's natural response
-          isConversational: true, // Flag to indicate this is a GPT response, not a clarification request
-        } as AIIntent & { isConversational?: boolean }
-      });
-    }
+    // Build a clean, combined context string:
+    // - app context (screen/module)
+    // - message history (User/Assistant turns)
+    const combinedContextParts: string[] = []
+    if (typeof context === 'string' && context.trim()) combinedContextParts.push(`App context: ${context.trim()}`)
+    if (typeof history === 'string' && history.trim()) combinedContextParts.push(`Conversation:\n${history.trim()}`)
+    const combinedContext = combinedContextParts.length ? combinedContextParts.join('\n\n') : undefined
 
     // Step 2: Use GPT as PRIMARY reasoning engine for intent classification (with vision support if images provided)
-    console.log('🧠 GPT Reasoning:', input, images ? `with ${images.length} image(s)` : '');
-    const reasoningResult = await reasonWithGPT(input, context, images);
-    console.log('✅ GPT Reasoning Result:', reasoningResult);
+    logger.debug('🧠 GPT Reasoning', { input, imageCount: images?.length || 0 });
+    const reasoningResult = await reasonWithGPT(input, combinedContext, images);
+    logger.debug('✅ GPT Reasoning Result', { result: reasoningResult });
 
     // Step 3: Convert GPT reasoning result to AIIntent format
     const intent = convertReasoningToIntent(reasoningResult, input);
@@ -65,15 +55,24 @@ export async function POST(request: NextRequest) {
     // Step 4: Return intent
     return NextResponse.json({ intent });
   } catch (error) {
-    console.error('AI classification error:', error)
+    logger.error('AI classification error', error as Error)
+    
+    // Check if error is due to missing OpenAI API key
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const isMissingApiKey = errorMessage.includes('OPENAI_API_KEY environment variable is not set')
+    
     return NextResponse.json(
       { 
-        error: 'Failed to classify input',
+        error: isMissingApiKey 
+          ? 'OPENAI_API_KEY environment variable is not set. Please add it to your .env.local file and restart the server. See SETUP_OPENAI_KEY.md for instructions.'
+          : 'Failed to classify input',
         intent: {
           type: 'unknown',
           confidence: 0,
           raw: userInput,
-          followUpQuestion: 'Sorry, I encountered an error. Could you try rephrasing that?'
+          followUpQuestion: isMissingApiKey
+            ? 'OpenAI API key is not configured. Please check SETUP_OPENAI_KEY.md for setup instructions.'
+            : 'Sorry, I encountered an error. Could you try rephrasing that?'
         } as AIIntent
       },
       { status: 500 }

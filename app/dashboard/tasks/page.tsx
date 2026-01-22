@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import type { Task } from '@/types/home'
-import AIInputBar from '@/components/AIInputBar'
+import type { Task, FamilyMember } from '@/types/home'
 import AIPen from '@/components/AIPen'
 import { showToast } from '@/components/feedback/ToastContainer'
+import PageContainer from '@/components/ui/PageContainer'
+import { logger } from '@/lib/logger'
+import { Share2 } from 'lucide-react'
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -13,9 +15,22 @@ export default function TasksPage() {
   const [selectedCategory, setSelectedCategory] = useState<Task['category']>('other')
   const [showAddForm, setShowAddForm] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [showShare, setShowShare] = useState(false)
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<FamilyMember | null>(null)
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
 
   useEffect(() => {
     loadTasks()
+    // Load family members for sharing
+    try {
+      const stored = localStorage.getItem('family')
+      if (stored) {
+        const parsed = JSON.parse(stored) as FamilyMember[]
+        setFamilyMembers(parsed)
+      }
+    } catch (error) {
+      logger.error('Error loading family members', error as Error)
+    }
   }, [])
 
   const loadTasks = () => {
@@ -24,25 +39,36 @@ export default function TasksPage() {
       if (stored) {
         const parsed = JSON.parse(stored)
         setTasks(parsed)
-        console.log('✅ Loaded tasks:', parsed.length)
+        logger.debug('✅ Loaded tasks', { count: parsed.length })
       } else {
         setTasks([])
-        console.log('ℹ️ No tasks found in localStorage')
+        logger.debug('ℹ️ No tasks found in localStorage')
       }
     } catch (error) {
-      console.error('❌ Error loading tasks:', error)
+      logger.error('❌ Error loading tasks', error as Error)
       setTasks([])
     }
   }
 
   const saveTasks = (newTasks: Task[]) => {
-    localStorage.setItem('tasks', JSON.stringify(newTasks))
-    setTasks(newTasks)
-    // Trigger custom event for badge updates
-    window.dispatchEvent(new Event('tasksUpdated'))
+    try {
+      localStorage.setItem('tasks', JSON.stringify(newTasks))
+      setTasks(newTasks)
+      // Trigger custom event for badge updates
+      window.dispatchEvent(new Event('tasksUpdated'))
+    } catch (error) {
+      logger.error('Failed to save tasks to localStorage', error as Error)
+      // Check if it's a quota exceeded error
+      if (error instanceof Error && (error.name === 'QuotaExceededError' || (error as any).code === 22)) {
+        showToast('Storage is full. Please clear browser data or remove some tasks.', 'error')
+      } else {
+        showToast('Failed to save tasks. Please try again.', 'error')
+      }
+      throw error // Re-throw so caller knows save failed
+    }
   }
 
-  const addTask = (title: string, category: Task['category'] = 'other', dueDate?: string) => {
+  const addTask = async (title: string, category: Task['category'] = 'other', dueDate?: string) => {
     const task: Task = {
       id: Date.now().toString(),
       title,
@@ -50,11 +76,53 @@ export default function TasksPage() {
       dueDate,
       completed: false,
       createdAt: new Date().toISOString(),
+      sharedTo: selectedFamilyMember ? {
+        id: selectedFamilyMember.id,
+        name: selectedFamilyMember.name,
+        email: selectedFamilyMember.email,
+        phone: selectedFamilyMember.phone,
+      } : undefined,
     }
     saveTasks([...tasks, task])
     setNewTaskTitle('')
     setShowAddForm(false)
-    showToast('Added to To-Dos', 'success')
+    setShowShare(false)
+    setSelectedFamilyMember(null)
+    showToast('Added to your to-dos! ✓', 'success')
+
+    // Share with family member if selected
+    if (task.sharedTo) {
+      try {
+        // Get user's notification preferences
+        const settingsStr = localStorage.getItem('abiSettings.v1')
+        const settings = settingsStr ? JSON.parse(settingsStr) : {}
+        
+        const response = await fetch('/api/share', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: task.sharedTo,
+            item: {
+              type: 'task',
+              title: task.title,
+              date: task.dueDate,
+            },
+            preferences: {
+              emailNotifications: settings.emailNotifications !== false,
+              smsNotifications: settings.smsNotifications === true,
+            },
+          }),
+        })
+
+        if (response.ok) {
+          showToast(`Shared with ${task.sharedTo.name}`, 'success')
+        } else {
+          console.error('Failed to share task')
+        }
+      } catch (error) {
+        console.error('Error sharing task:', error)
+      }
+    }
   }
 
   const toggleTask = (id: string) => {
@@ -63,58 +131,25 @@ export default function TasksPage() {
         task.id === id ? { ...task, completed: !task.completed } : task
       )
       saveTasks(updatedTasks)
-      const task = tasks.find((t) => t.id === id)
-      if (task) {
-        showToast(task.completed ? 'To-Do marked incomplete' : 'To-Do completed', 'success')
+      // Use the UPDATED task state for the toast message
+      const updatedTask = updatedTasks.find((t) => t.id === id)
+      if (updatedTask) {
+        showToast(updatedTask.completed ? 'To-Do completed! Great job! 🎉' : 'To-Do marked incomplete', 'success')
       }
     } catch (error) {
-      showToast('Couldn\'t update To-Do', 'error')
+      showToast('Couldn\'t update that. Try again?', 'error')
     }
   }
 
   const deleteTask = (id: string) => {
     try {
       saveTasks(tasks.filter((task) => task.id !== id))
-      showToast('To-Do deleted', 'success')
+      showToast('To-Do deleted ✓', 'success')
     } catch (error) {
-      showToast('Couldn\'t delete To-Do', 'error')
+      showToast('Couldn\'t delete that. Try again?', 'error')
     }
   }
 
-  const handleAIIntent = (route: string, payload: any) => {
-    console.log('📥 handleAIIntent called with:', route, payload)
-    if (route === 'tasks') {
-      // Task was already created by tasksHandler.create() in routeIntent
-      // Reload tasks to show the new one - try multiple times to ensure it's loaded
-      const reloadTasks = () => {
-        loadTasks()
-        // Verify the task was actually saved
-        const stored = localStorage.getItem('tasks')
-        if (stored) {
-          const tasks = JSON.parse(stored)
-          const found = tasks.find((t: Task) => t.title === payload.title)
-          if (!found) {
-            console.warn('⚠️ Task not found after save, retrying...')
-            setTimeout(reloadTasks, 200)
-          } else {
-            console.log('✅ Task confirmed in localStorage')
-          }
-        }
-      }
-      
-      setTimeout(reloadTasks, 100) // Small delay to ensure localStorage is updated
-      
-      // Show success confirmation
-      showToast('To-Do added', 'success')
-    } else if (route === 'reminders') {
-      // Reminders are also stored as tasks
-      const reloadTasks = () => {
-        loadTasks()
-      }
-      setTimeout(reloadTasks, 100)
-      // Note: Confirmation already shown by AIInputBar, no need to duplicate
-    }
-  }
   
   // Also listen for storage events to update when tasks change from other tabs
   useEffect(() => {
@@ -147,16 +182,14 @@ export default function TasksPage() {
 
   return (
     <div className="min-h-screen p-6 pb-40">
-      <div className="max-w-2xl mx-auto">
+      <PageContainer>
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+          <Link href="/today" className="text-gray-500 hover:text-gray-700">
             ← Back
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">To-Do</h1>
           <div className="w-12"></div>
         </div>
-
-        <AIInputBar onIntent={handleAIIntent} context="task" />
 
         {!showAddForm ? (
           <button
@@ -164,7 +197,7 @@ export default function TasksPage() {
             className="w-full mb-6 px-6 py-4 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50/50 transition-colors flex items-center justify-center gap-2"
           >
             <span className="text-lg">+</span>
-            <span className="font-medium text-gray-700">Add To-Do</span>
+            <span className="font-medium text-gray-700">New Task</span>
           </button>
         ) : (
           <div className="glass-card p-5 mb-6">
@@ -197,7 +230,7 @@ export default function TasksPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category
@@ -234,11 +267,61 @@ export default function TasksPage() {
                 </div>
               </div>
 
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    <Share2 className="w-4 h-4 inline mr-1" strokeWidth={2} />
+                    Share with family member (optional)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowShare(!showShare)
+                      if (showShare) {
+                        setSelectedFamilyMember(null)
+                      }
+                    }}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                      showShare
+                        ? 'bg-blue-100 text-blue-600'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {showShare ? 'Cancel' : 'Share'}
+                  </button>
+                </div>
+                {showShare && (
+                  <select
+                    value={selectedFamilyMember?.id || ''}
+                    onChange={(e) => {
+                      const member = familyMembers.find(m => m.id === e.target.value)
+                      setSelectedFamilyMember(member || null)
+                    }}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">Select family member...</option>
+                    {familyMembers.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {selectedFamilyMember && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    Will share with {selectedFamilyMember.name}
+                    {selectedFamilyMember.email && ` (${selectedFamilyMember.email})`}
+                  </p>
+                )}
+              </div>
+
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => {
                     setShowAddForm(false)
                     setNewTaskTitle('')
+                    setShowShare(false)
+                    setSelectedFamilyMember(null)
                   }}
                   className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                 >
@@ -270,7 +353,9 @@ export default function TasksPage() {
               <div key={date} className="glass-card p-4">
                 <h2 className="font-semibold text-gray-700 mb-3">{date}</h2>
                 <div className="space-y-2">
-                  {dateTasks.map((task) => (
+                  {dateTasks.map((task) => {
+                    if (!task || !task.id) return null;
+                    return (
                     <div
                       key={task.id}
                       className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/50 transition-colors"
@@ -289,10 +374,10 @@ export default function TasksPage() {
                               : 'text-gray-900'
                           }`}
                         >
-                          {task.title}
+                          {task.title || 'Untitled Task'}
                         </p>
                         <span className="text-xs text-gray-500">
-                          {task.category.replace('-', ' ')}
+                          {task.category ? task.category.replace('-', ' ') : 'other'}
                         </span>
                       </div>
                       <button
@@ -302,13 +387,14 @@ export default function TasksPage() {
                         ×
                       </button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </PageContainer>
     </div>
   )
 }

@@ -5,8 +5,19 @@ $ErrorActionPreference = "Continue"
 
 Write-Host "Fixing permissions on .next directory..." -ForegroundColor Cyan
 
+$username = $env:USERNAME
+
+# Ensure the directory exists so we can grant permissions proactively.
+if (!(Test-Path .next)) {
+    try {
+        New-Item -ItemType Directory -Path .next -Force | Out-Null
+        Write-Host "Created .next directory" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to create .next directory (will retry when Next.js creates it)" -ForegroundColor Yellow
+    }
+}
+
 if (Test-Path .next) {
-    $username = $env:USERNAME
     Write-Host "Granting full control to $username on .next directory..." -ForegroundColor Yellow
     
     # Grant full control recursively
@@ -25,6 +36,4 @@ if (Test-Path .next) {
     }
     
     Write-Host "Permissions fixed!" -ForegroundColor Green
-} else {
-    Write-Host ".next directory does not exist yet (will be created on first run)" -ForegroundColor Gray
 }

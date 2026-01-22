@@ -56,12 +56,11 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
       })
       streamRef.current = stream
       setShowCamera(true)
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-      }
+      // Stream will be set via useEffect when video element is mounted
     } catch (err) {
       console.error('Error accessing camera:', err)
-      setError('Could not access camera. Please check permissions or use file upload instead.')
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError(`Could not access camera: ${errorMessage}. Please check permissions or use file upload instead.`)
     }
   }
 
@@ -172,6 +171,13 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
     stopCamera()
   }
 
+  // Set video stream when camera is shown and video element is mounted
+  useEffect(() => {
+    if (showCamera && streamRef.current && videoRef.current) {
+      videoRef.current.srcObject = streamRef.current
+    }
+  }, [showCamera])
+
   // Auto-start camera if requested (for scanner mode)
   useEffect(() => {
     if (autoStartCamera && !showCamera && !file) {
@@ -188,9 +194,9 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
   }, [])
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-card p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+      <div className="glass-card p-6 max-w-md w-full max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <h2 className="text-xl font-semibold text-gray-900">Upload Document</h2>
           <button
             onClick={onCancel}
@@ -266,6 +272,7 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
                 ref={videoRef}
                 autoPlay
                 playsInline
+                muted
                 className="w-full"
                 style={{ maxHeight: '400px', objectFit: 'contain', display: 'block' }}
               />
@@ -303,99 +310,101 @@ export default function DocumentUpload({ onUpload, onCancel, autoStartCamera = f
         />
 
         {file && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Preview */}
-            {file.type.startsWith('image/') && (
-              <div className="mb-4">
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt="Preview"
-                  className="w-full rounded-xl border border-gray-200 max-h-[400px] object-contain bg-gray-50"
-                />
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+              {/* Preview */}
+              {file.type.startsWith('image/') && (
+                <div className="mb-4">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="Preview"
+                    className="w-full rounded-xl border border-gray-200 max-h-[400px] object-contain bg-gray-50"
+                  />
+                </div>
+              )}
+              {file.type === 'application/pdf' && (
+                <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <FileType className="w-8 h-8 text-blue-600" strokeWidth={1.5} />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">PDF Document</p>
+                      <p className="text-xs text-gray-500">Preview available after saving</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* File Info */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <FileText className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                  <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                </div>
+                {file.type.startsWith('image/') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFile(null)
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = ''
+                      }
+                    }}
+                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Remove image"
+                  >
+                    <X className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                )}
               </div>
-            )}
-            {file.type === 'application/pdf' && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <FileType className="w-8 h-8 text-blue-600" strokeWidth={1.5} />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">PDF Document</p>
-                    <p className="text-xs text-gray-500">Preview available after saving</p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    placeholder="Document title"
+                    required
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <AIPen
+                      text={title}
+                      onPolished={(polished) => setTitle(polished)}
+                      disabled={false}
+                    />
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* File Info */}
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-              <FileText className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
-              </div>
-              {file.type.startsWith('image/') && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFile(null)
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = ''
-                    }
-                  }}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Remove image"
-                >
-                  <X className="w-4 h-4" strokeWidth={2} />
-                </button>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  placeholder="Document title"
-                  required
-                />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <AIPen
-                    text={title}
-                    onPolished={(polished) => setTitle(polished)}
-                    disabled={false}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description (optional)
+                </label>
+                <div className="relative">
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    placeholder="Add a description..."
+                    rows={3}
                   />
+                  <div className="absolute right-2 top-2">
+                    <AIPen
+                      text={description}
+                      onPolished={(polished) => setDescription(polished)}
+                      disabled={false}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description (optional)
-              </label>
-              <div className="relative">
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  placeholder="Add a description..."
-                  rows={3}
-                />
-                <div className="absolute right-2 top-2">
-                  <AIPen
-                    text={description}
-                    onPolished={(polished) => setDescription(polished)}
-                    disabled={false}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-4 mt-4 border-t border-gray-200 flex-shrink-0">
               <button
                 type="button"
                 onClick={onCancel}

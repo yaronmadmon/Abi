@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getOpenAIApiKey } from '@/ai/serverEnv'
 
 /**
  * OpenAI TTS API Route
@@ -6,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
  * Uses OpenAI's text-to-speech API to generate calm, natural voice output.
  * Voice options are selected for a calm, intelligent, human-like experience.
  */
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const { text, voice = 'alloy', speed = 1.0 } = await request.json()
@@ -14,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 })
     }
 
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+    const OPENAI_API_KEY = getOpenAIApiKey()
     if (!OPENAI_API_KEY) {
       return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 })
     }
@@ -37,7 +40,10 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const error = await response.text()
       console.error('OpenAI TTS API error:', response.status, error)
-      return NextResponse.json({ error: 'Failed to generate speech' }, { status: response.status })
+      return NextResponse.json(
+        { error: 'Failed to generate speech', details: error },
+        { status: response.status }
+      )
     }
 
     const audioBuffer = await response.arrayBuffer()

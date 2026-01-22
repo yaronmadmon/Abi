@@ -42,7 +42,12 @@ class OpenAIVoiceEngine implements VoiceEngineInterface {
       })
 
       if (!response.ok) {
-        throw new Error('OpenAI TTS failed')
+        // Check if it's an auth error (401/403) - do NOT retry
+        if (response.status === 401 || response.status === 403) {
+          console.warn('⚠️ OpenAI TTS authentication failed. Voice is disabled until you set a valid API key.')
+          throw new Error('OPENAI_AUTH_FAILED')
+        }
+        throw new Error(`OpenAI TTS failed with status ${response.status}`)
       }
 
       const audioBlob = await response.blob()
@@ -66,7 +71,12 @@ class OpenAIVoiceEngine implements VoiceEngineInterface {
       await this.audioRef.play()
     } catch (error) {
       this.isSpeaking = false
-      console.error('OpenAI voice error:', error)
+      // Only log auth errors once, not every time
+      if (error instanceof Error && error.message === 'OPENAI_AUTH_FAILED') {
+        // Silent fail for auth - already logged warning above
+      } else {
+        console.error('OpenAI voice error:', error)
+      }
       throw error
     }
   }
@@ -90,8 +100,60 @@ class ElevenLabsVoiceEngine implements VoiceEngineInterface {
   private isSpeaking: boolean = false
 
   async speak(text: string, options?: VoiceOptions): Promise<void> {
-    // DISABLED - For future optional use
-    throw new Error('ElevenLabs is currently disabled. Using OpenAI instead.')
+    // Cancel any ongoing speech
+    this.cancel()
+
+    this.isSpeaking = true
+
+    try {
+      const response = await fetch('/api/ai/voice/elevenlabs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          text,
+          voice: options?.voice || 'Rachel',
+          model: options?.model || 'eleven_multilingual_v2',
+        }),
+      })
+
+      if (!response.ok) {
+        // Check if it's an auth error (401/403) - do NOT retry
+        if (response.status === 401 || response.status === 403) {
+          console.warn('⚠️ ElevenLabs TTS authentication failed. Voice is disabled until you set a valid API key.')
+          throw new Error('ELEVENLABS_AUTH_FAILED')
+        }
+        throw new Error(`ElevenLabs TTS failed with status ${response.status}`)
+      }
+
+      const audioBlob = await response.blob()
+      const audioUrl = URL.createObjectURL(audioBlob)
+
+      this.audioRef = new Audio(audioUrl)
+      
+      this.audioRef.onended = () => {
+        this.isSpeaking = false
+        URL.revokeObjectURL(audioUrl)
+        this.audioRef = null
+      }
+
+      this.audioRef.onerror = () => {
+        this.isSpeaking = false
+        URL.revokeObjectURL(audioUrl)
+        this.audioRef = null
+        throw new Error('Audio playback failed')
+      }
+
+      await this.audioRef.play()
+    } catch (error) {
+      this.isSpeaking = false
+      // Only log auth errors once, not every time
+      if (error instanceof Error && error.message === 'ELEVENLABS_AUTH_FAILED') {
+        // Silent fail for auth - already logged warning above
+      } else {
+        console.error('ElevenLabs voice error:', error)
+      }
+      throw error
+    }
   }
 
   cancel(): void {
@@ -104,7 +166,7 @@ class ElevenLabsVoiceEngine implements VoiceEngineInterface {
   }
 
   isAvailable(): boolean {
-    return false // Disabled
+    return true // ElevenLabs is available if API key is configured
   }
 }
 
@@ -165,7 +227,7 @@ class BrowserVoiceEngine implements VoiceEngineInterface {
  */
 class VoiceEngineFactory {
   private static instance: VoiceEngineInterface | null = null
-  private static engineType: VoiceEngine = 'openai'
+  private static engineType: VoiceEngine = 'elevenlabs'
 
   static getInstance(): VoiceEngineInterface {
     if (!this.instance) {
@@ -215,6 +277,12 @@ export async function speak(text: string, options?: VoiceOptions): Promise<void>
   try {
     await engine.speak(text, options)
   } catch (error) {
+    // If OpenAI auth failed, skip fallback (user needs to fix key)
+    if (error instanceof Error && error.message === 'OPENAI_AUTH_FAILED') {
+      // Silent fail - do NOT spam console or try browser fallback
+      return
+    }
+    
     console.warn('Primary voice engine failed, trying browser fallback:', error)
     
     // Fallback to browser TTS if primary fails

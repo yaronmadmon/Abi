@@ -1,7 +1,12 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { Calendar, Clock, ChevronLeft, ChevronRight, MapPin, User, CheckSquare, X } from 'lucide-react'
+import { useState, useEffect, useMemo, useRef, memo } from 'react'
+import { Calendar, Clock, ChevronLeft, ChevronRight, MapPin, User, CheckSquare, X, Settings, Plus } from 'lucide-react'
+import Link from 'next/link'
+import { getCalendarPreferences, getCalendarSystem, formatInCalendar } from '@/lib/calendarSystems'
+import AppointmentCreateSheet from '@/components/sheets/AppointmentCreateSheet'
+import { showToast } from '@/components/feedback/ToastContainer'
+import { FeatureErrorBoundary } from '@/components/errors/FeatureErrorBoundary'
 
 interface Appointment {
   id: string
@@ -21,7 +26,10 @@ interface Task {
 
 type CalendarEvent = Appointment | Task
 
-export default function CalendarCard() {
+// Memoized because: Prevents re-renders when Today page updates,
+// expensive operations: date calculations, event filtering, calendar rendering.
+// Remove memo if: useMemo on calendar days + events is sufficient, or component isolated.
+const CalendarCardContent = memo(function CalendarCardContent() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -29,6 +37,8 @@ export default function CalendarCard() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [pendingCount, setPendingCount] = useState(0)
+  const [calendarPrefs, setCalendarPrefs] = useState(getCalendarPreferences())
+  const [showCreateSheet, setShowCreateSheet] = useState(false)
   
   const cardRef = useRef<HTMLDivElement>(null)
   const touchStartX = useRef<number | null>(null)
@@ -42,14 +52,19 @@ export default function CalendarCard() {
     // Listen for updates from other components
     const handleTasksUpdate = () => loadCalendarData()
     const handleAppointmentsUpdate = () => loadCalendarData()
+    const handleCalendarUpdate = () => setCalendarPrefs(getCalendarPreferences())
     
     window.addEventListener('tasksUpdated', handleTasksUpdate)
     window.addEventListener('appointmentsUpdated', handleAppointmentsUpdate)
+    window.addEventListener('calendarPreferencesUpdated', handleCalendarUpdate)
     
     // Also listen for storage events (cross-tab)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'tasks' || e.key === 'appointments') {
         loadCalendarData()
+      }
+      if (e.key === 'calendarPreferences') {
+        setCalendarPrefs(getCalendarPreferences())
       }
     }
     window.addEventListener('storage', handleStorageChange)
@@ -58,6 +73,7 @@ export default function CalendarCard() {
       clearInterval(interval)
       window.removeEventListener('tasksUpdated', handleTasksUpdate)
       window.removeEventListener('appointmentsUpdated', handleAppointmentsUpdate)
+      window.removeEventListener('calendarPreferencesUpdated', handleCalendarUpdate)
       window.removeEventListener('storage', handleStorageChange)
     }
   }, [])
@@ -232,6 +248,38 @@ export default function CalendarCard() {
   // Get selected date events
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : []
 
+  // Handle appointment save
+  const handleAppointmentSave = (appointment: { title: string; date: string; time: string; location?: string; forWho?: string }) => {
+    try {
+      const stored = localStorage.getItem('appointments') || '[]'
+      const existingAppointments = JSON.parse(stored)
+      
+      const newAppointment: Appointment = {
+        id: `apt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: appointment.title,
+        date: appointment.date,
+        time: appointment.time,
+        location: appointment.location,
+        forWho: appointment.forWho,
+      }
+      
+      existingAppointments.push(newAppointment)
+      localStorage.setItem('appointments', JSON.stringify(existingAppointments))
+      
+      // Trigger update event
+      window.dispatchEvent(new Event('appointmentsUpdated'))
+      
+      // Reload calendar data
+      loadCalendarData()
+      
+      showToast('Appointment created', 'success')
+      setShowCreateSheet(false)
+    } catch (error) {
+      console.error('Error creating appointment:', error)
+      showToast('Failed to create appointment', 'error')
+    }
+  }
+
   // Format time
   const formatTime = (time?: string) => {
     if (!time) return ''
@@ -270,15 +318,41 @@ export default function CalendarCard() {
       onTouchEnd={handleTouchEnd}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-3 relative">
-        <h2 className="text-lg font-semibold text-gray-900">Calendar</h2>
-        <div className="flex items-center gap-2">
-          {pendingCount > 0 && !isExpanded && (
-            <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto', marginLeft: 'auto' }}>
-              {pendingCount > 99 ? '99+' : pendingCount}
-            </div>
-          )}
+      <div className="mb-3">
+        <div className="flex items-center justify-between relative">
+          <h2 className="text-lg font-semibold text-gray-900">Calendar</h2>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/settings/calendar"
+              className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+              title="Calendar Systems"
+            >
+              <Settings className="w-4 h-4 text-gray-500" strokeWidth={1.5} />
+            </Link>
+            {pendingCount > 0 && !isExpanded && (
+              <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto', marginLeft: 'auto' }}>
+                {pendingCount > 99 ? '99+' : pendingCount}
+              </div>
+            )}
+          </div>
         </div>
+        
+        {/* Additional Calendar Dates */}
+        {!isExpanded && calendarPrefs.selectedCalendars && calendarPrefs.selectedCalendars.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {calendarPrefs.selectedCalendars.map((calendarId) => {
+              const system = getCalendarSystem(calendarId)
+              if (!system) return null
+              
+              return (
+                <div key={calendarId} className="flex items-center gap-1.5 text-xs text-gray-600">
+                  <span>{system.emoji}</span>
+                  <span>{formatInCalendar(currentDate, calendarId, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Monthly Calendar View */}
@@ -439,7 +513,14 @@ export default function CalendarCard() {
             {selectedDateEvents.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Calendar className="w-8 h-8 text-gray-300 mx-auto mb-2" strokeWidth={1} />
-                <p className="text-sm">No events scheduled for this day</p>
+                <p className="text-sm mb-3">No events scheduled for this day</p>
+                <button
+                  onClick={() => setShowCreateSheet(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                >
+                  <Plus className="w-4 h-4" strokeWidth={2} />
+                  <span>Add Appointment</span>
+                </button>
               </div>
             ) : (
               <div className="space-y-2">
@@ -500,6 +581,22 @@ export default function CalendarCard() {
           </div>
         </div>
       )}
+
+      {/* Appointment Create Sheet */}
+      <AppointmentCreateSheet
+        isOpen={showCreateSheet}
+        onClose={() => setShowCreateSheet(false)}
+        onSave={handleAppointmentSave}
+        initialDate={selectedDate?.toISOString().split('T')[0]}
+      />
     </div>
+  )
+})
+
+export default function CalendarCard() {
+  return (
+    <FeatureErrorBoundary featureName="Calendar">
+      <CalendarCardContent />
+    </FeatureErrorBoundary>
   )
 }

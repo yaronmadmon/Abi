@@ -72,7 +72,7 @@ export default function AIPen({ text, onPolished, disabled, className = '' }: AI
             : 'opacity-60 hover:opacity-100 hover:bg-gray-100 active:bg-gray-200'
           }
         `}
-        title={isDisabled ? 'Write something first' : 'Polish text with AI'}
+        title={isDisabled ? 'Write something first' : 'Let Abby polish this'}
       >
         {isPolishing ? (
           <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" strokeWidth={2} />

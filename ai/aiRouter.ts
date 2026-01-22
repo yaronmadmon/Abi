@@ -53,11 +53,13 @@ export async function routeIntent(intent: AIIntent): Promise<RouterResult> {
       };
 
     case "unknown":
-      // Return friendly, helpful message instead of error
+      // Keep this specific (no generic "I'm here to help" fallbacks)
       return {
         success: true,
         route: "none",
-        message: intent.followUpQuestion || "I'm here to help! What would you like to do?",
+        message:
+          intent.followUpQuestion ||
+          `I’m not sure what you want me to do with “${intent.raw || 'that'}”. Do you want to add a task, appointment, reminder, meal, or shopping item?`,
         payload: {},
       };
 
@@ -234,7 +236,6 @@ async function routeAppointment(payload: AppointmentPayload): Promise<RouterResu
     date: payload?.date,
     time: payload?.time,
     location: payload?.location,
-    withWhom: payload?.withWhom,
   };
 
   if (!appointmentPayload.title || appointmentPayload.title.trim() === '') {
