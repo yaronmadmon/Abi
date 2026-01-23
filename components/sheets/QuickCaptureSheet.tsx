@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import AppointmentCreateSheet from './AppointmentCreateSheet'
 import ThoughtCreateSheet from './ThoughtCreateSheet'
 import { showToast } from '../feedback/ToastContainer'
+import AppModal from '../modals/AppModal'
 
 interface QuickCaptureSheetProps {
   type: 'thought' | 'task' | 'reminder' | 'appointment' | 'note'
