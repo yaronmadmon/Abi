@@ -338,26 +338,6 @@ body::before {
   .pending-badge:empty {
     display: none;
   }
-
-  /* Modal Open - Debug indicator (DISABLED - removed annoying blue banner) */
-  /*
-  body.modal-open::before {
-    content: '🔵 Modal Open - Press ESC to close';
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(37, 99, 235, 0.95);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    z-index: 9999;
-    pointer-events: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-  */
   
   .btn-primary {
     @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-6 py-3 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-200 active:scale-95;
@@ -498,4 +478,14 @@ body::before {
     padding: 1rem !important;
     border-radius: 1rem !important;
   }
+}
+
+/* ============================================
+   HARD DISABLE AI DEBUG / BLUE BANNER
+   Permanent override to prevent blue banner in all environments
+   ============================================ */
+body.modal-open::before {
+  display: none !important;
+  content: none !important;
+  visibility: hidden !important;
 }
