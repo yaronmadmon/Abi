@@ -35,7 +35,7 @@ import { shouldRequireApproval } from '@/ai/factories/commandFactory'
 import { commandExecutor } from '@/ai/execution/commandExecutor'
 import { approvalQueue } from '@/ai/execution/approvalQueue'
 import { FeatureErrorBoundary } from '@/components/errors/FeatureErrorBoundary'
-import AppModal from '@/components/modals/AppModal'
+import AppModal from './modals/AppModal'
 
 interface Message {
   id: string
@@ -54,6 +54,9 @@ interface AIChatConsoleProps {
 }
 
 function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose, onIntent, onError }: AIChatConsoleProps) {
+  // Track if component has mounted (prevents hydration errors)
+  const [mounted, setMounted] = useState(false)
+  
   // Internal state management if no external control
   const [internalIsOpen, setInternalIsOpen] = useState(false)
   
@@ -108,6 +111,11 @@ function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose
     if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
     return `${Date.now()}-${Math.random().toString(16).slice(2)}`
   }
+
+  // Set mounted flag after component mounts (prevents hydration errors)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Keep refs in sync (prevents stale closures & duplicate behaviors)
   useEffect(() => {
@@ -707,13 +715,15 @@ Structure: Acknowledge → Respond → Follow-up`
   
   // Emergency close function accessible from window
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).closeAIConsole = () => {
-        logger.debug('Emergency close triggered')
-        onClose()
-      }
-      
-      return () => {
+    if (typeof window === 'undefined') return
+    
+    (window as any).closeAIConsole = () => {
+      logger.debug('Emergency close triggered')
+      onClose()
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
         delete (window as any).closeAIConsole
       }
     }
@@ -724,8 +734,8 @@ Structure: Acknowledge → Respond → Follow-up`
     // Only show floating button if no external control (self-managed)
     if (externalIsOpen !== undefined) return null
     
-    // Don't render floating button during SSR
-    if (typeof window === 'undefined') return null
+    // Don't render floating button during SSR (prevents hydration errors)
+    if (!mounted) return null
     
     return (
       <button
@@ -740,9 +750,7 @@ Structure: Acknowledge → Respond → Follow-up`
   }
 
   // Determine if Send button should be enabled
-  const canSend = (draftMessage.trim() || images.length > 0) && 
-                  mode !== 'listening' && 
-                  !isProcessing
+  const canSend = (draftMessage.trim() || images.length > 0) && mode !== 'listening' && !isProcessing;
 
   return (
     <AppModal 
@@ -1085,7 +1093,6 @@ Structure: Acknowledge → Respond → Follow-up`
             className="hidden"
           />
         </div>
-      </div>
     </AppModal>
   )
 }

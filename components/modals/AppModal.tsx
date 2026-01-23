@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, ReactNode } from 'react'
+import { useEffect, useRef, useState, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
 interface AppModalProps {
@@ -22,8 +22,14 @@ export default function AppModal({
   className = '',
   style,
 }: AppModalProps) {
+  const [mounted, setMounted] = useState(false)
   const modalRef = useRef<HTMLDivElement>(null)
   const previousActiveElement = useRef<HTMLElement | null>(null)
+
+  // Set mounted flag after component mounts (prevents hydration errors)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -71,7 +77,7 @@ export default function AppModal({
 
   // Handle ESC key
   useEffect(() => {
-    if (!isOpen) return
+    if (typeof window === 'undefined' || !isOpen) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -85,7 +91,7 @@ export default function AppModal({
 
   // Focus trap: keep focus inside modal
   useEffect(() => {
-    if (!isOpen || !modalRef.current) return
+    if (typeof window === 'undefined' || !isOpen || !modalRef.current) return
 
     const handleTabKey = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return
@@ -118,8 +124,8 @@ export default function AppModal({
     return () => window.removeEventListener('keydown', handleTabKey)
   }, [isOpen])
 
-  // Early return for SSR or when closed
-  if (typeof window === 'undefined' || !isOpen) return null
+  // Early return for SSR or when closed (prevents hydration errors)
+  if (!mounted || !isOpen) return null
 
   // Determine panel classes based on variant
   const getPanelClasses = () => {
@@ -167,6 +173,7 @@ export default function AppModal({
   )
 
   // Render to document.body using portal (client-side only)
-  // document.body is guaranteed to exist here because we checked window above
+  // Since mounted is true, document.body should exist, but add safety check
+  if (typeof window === 'undefined' || !document.body) return null
   return createPortal(overlay, document.body)
 }
