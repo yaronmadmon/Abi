@@ -4,7 +4,6 @@ import { ReactNode } from 'react'
 import Link from 'next/link'
 import { useMobilePreview } from '@/contexts/MobilePreviewContext'
 import GlobalSearchBar from '@/components/search/GlobalSearchBar'
-import ThemeToggles from '@/components/ThemeToggles'
 import BottomNavClient from '@/components/navigation/BottomNavClient'
 import AbbyLogo from '@/components/branding/AbbyLogo'
 
@@ -28,20 +27,20 @@ export default function MobileAppShell({ children }: MobileAppShellProps) {
       
       {/* Mobile Header - Sticky inside phone, full-width */}
       <header 
-        className="sticky top-0 z-[60] flex-shrink-0 backdrop-blur-xl px-4 py-3"
+        className="sticky top-0 z-[60] flex-shrink-0 px-4 py-3"
         style={{
-          backgroundColor: 'var(--background)',
-          borderBottom: '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-main)',
+          borderBottom: '1px solid var(--glass-border)',
+          backdropFilter: 'blur(20px) saturate(180%)',
         }}
       >
-        <div className="flex items-center justify-between gap-3 w-full">
+        <div className="flex items-center gap-3 w-full">
           <Link href="/today" className="flex-shrink-0">
             <AbbyLogo size="small" showSubtitle={false} />
           </Link>
           <div className="flex-1 min-w-0">
             <GlobalSearchBar />
           </div>
-          <ThemeToggles />
         </div>
       </header>
 

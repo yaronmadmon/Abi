@@ -68,18 +68,19 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
 
 
   return (
-    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col transition-all duration-250" style={{ backgroundColor: 'var(--card-bg)' }}>
         {/* Handle */}
         <div className="flex justify-center pt-2 pb-1">
-          <div className="w-10 h-0.5 bg-gray-300 rounded-full" />
+          <div className="w-10 h-0.5 rounded-full transition-all duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
         </div>
 
         {/* Header - Compact */}
-        <div className="px-4 py-2.5 border-b border-gray-100/50 flex items-center justify-between">
-          <h2 id="modal-title" className="text-base font-medium text-gray-700">New Note</h2>
+        <div className="px-4 py-2.5 border-b flex items-center justify-between transition-all duration-250" style={{ borderColor: 'var(--glass-border)' }}>
+          <h2 id="modal-title" className="text-base font-medium transition-all duration-250" style={{ color: 'var(--text-primary)' }}>New Note</h2>
           <button
             onClick={onClose}
-            className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 transition-all duration-250 hover:opacity-70"
+            style={{ color: 'var(--text-muted)' }}
           >
             <X className="w-4 h-4" strokeWidth={2} />
           </button>
@@ -96,9 +97,15 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Title"
-                  className="w-full pr-8 text-2xl font-semibold text-gray-900 border-0 focus:outline-none focus:ring-0 bg-transparent placeholder:text-gray-400"
+                  className="w-full pr-8 text-2xl font-semibold border-0 focus:outline-none focus:ring-0 bg-transparent transition-all duration-250"
+                  style={{ color: 'var(--text-primary)' }}
                   autoFocus
                 />
+                <style jsx>{`
+                  input::placeholder {
+                    color: var(--text-muted);
+                  }
+                `}</style>
                 <div className="absolute right-0 top-1/2 -translate-y-1/2">
                   <AIPen
                     text={title}
@@ -114,12 +121,18 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="Start writing..."
-                  className="w-full pr-8 text-base text-gray-700 leading-relaxed border-0 focus:outline-none focus:ring-0 bg-transparent resize-none placeholder:text-gray-400"
+                  className="w-full pr-8 text-base leading-relaxed border-0 focus:outline-none focus:ring-0 bg-transparent resize-none transition-all duration-250"
                   style={{ 
                     fontFamily: 'inherit',
                     minHeight: '200px',
+                    color: 'var(--text-primary)',
                   }}
                 />
+                <style jsx>{`
+                  textarea::placeholder {
+                    color: var(--text-muted);
+                  }
+                `}</style>
                 <div className="absolute right-0 top-2">
                   <AIPen
                     text={body}
@@ -133,18 +146,20 @@ export default function NoteCreateSheet({ isOpen, onClose, onSave }: NoteCreateS
         </div>
 
         {/* Footer - Compact */}
-        <div className="px-4 py-3 border-t border-gray-100/50 flex items-center justify-end gap-2 bg-white/50">
+        <div className="px-4 py-3 border-t flex items-center justify-end gap-2 transition-all duration-250" style={{ borderColor: 'var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <button
             onClick={handleCancel}
             disabled={isSaving}
-            className="px-4 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
+            className="px-4 py-1.5 text-sm transition-all duration-250 disabled:opacity-50 hover:opacity-70"
+            style={{ color: 'var(--text-secondary)' }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={(!title.trim() && !body.trim()) || isSaving}
-            className="px-5 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+            className="px-5 py-1.5 text-sm text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-250 flex items-center gap-1.5 hover:opacity-90"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
           >
             {isSaving ? (
               <>

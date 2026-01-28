@@ -40,7 +40,7 @@ export default function AIFocusHeader() {
 
   return (
     <div className="glass-card p-4 mb-4 animate-fade-in">
-      <p className="text-sm text-gray-700 leading-relaxed">{insight}</p>
+      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{insight}</p>
     </div>
   )
 }

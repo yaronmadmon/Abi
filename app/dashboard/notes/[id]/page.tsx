@@ -474,8 +474,8 @@ export default function NoteEditorPage(): JSX.Element {
 
   if (!note) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="w-6 h-6 border-2 rounded-full animate-spin transition-colors duration-250" style={{ borderColor: 'var(--glass-border)', borderTopColor: 'var(--accent-primary)' }}></div>
       </div>
     )
   }
@@ -498,7 +498,10 @@ export default function NoteEditorPage(): JSX.Element {
             <div className="flex items-center justify-between gap-2">
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
+                className="flex items-center gap-2 transition-colors duration-250 text-sm"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 aria-label="Back"
               >
                 <ArrowLeft className="w-4 h-4" strokeWidth={2} />
@@ -507,13 +510,13 @@ export default function NoteEditorPage(): JSX.Element {
               
               <div className="flex items-center gap-2">
                 {lastSaved && !isSaving && (
-                  <span className="text-xs text-gray-400 hidden sm:inline">
+                  <span className="text-xs hidden sm:inline transition-colors duration-250" style={{ color: 'var(--text-muted)' }}>
                     Saved {lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                   </span>
                 )}
                 {isSaving && (
-                  <div className="flex items-center gap-2 text-xs text-gray-400">
-                    <div className="w-3 h-3 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                  <div className="flex items-center gap-2 text-xs transition-colors duration-250" style={{ color: 'var(--text-muted)' }}>
+                    <div className="w-3 h-3 border-2 rounded-full animate-spin transition-colors duration-250" style={{ borderColor: 'var(--glass-border)', borderTopColor: 'var(--accent-primary)' }}></div>
                     <span className="hidden sm:inline">Saving...</span>
                   </div>
                 )}
@@ -545,7 +548,16 @@ export default function NoteEditorPage(): JSX.Element {
                       showToast('Note copied to clipboard', 'success')
                     }
                   }}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                  className="p-2 rounded-lg transition-colors duration-250"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'var(--text-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = 'var(--text-secondary)'
+                  }}
                   aria-label="Share"
                 >
                   <Share2 className="w-4 h-4" strokeWidth={1.5} />
@@ -555,7 +567,16 @@ export default function NoteEditorPage(): JSX.Element {
                     // Save before any action
                     await saveNote(true)
                   }}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                  className="p-2 rounded-lg transition-colors duration-250"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'var(--text-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = 'var(--text-secondary)'
+                  }}
                   aria-label="Save"
                   title="Save note"
                 >
@@ -563,7 +584,10 @@ export default function NoteEditorPage(): JSX.Element {
                 </button>
                 <button
                   onClick={handleDone}
-                  className="btn-primary px-3 py-1.5 text-sm flex items-center gap-1.5"
+                  className="px-3 py-1.5 text-sm flex items-center gap-1.5 transition-colors duration-250"
+                  style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                   aria-label="Done"
                 >
                   <Check className="w-3.5 h-3.5" strokeWidth={2} />
@@ -583,9 +607,10 @@ export default function NoteEditorPage(): JSX.Element {
                 contentEditable
                 onInput={handleTitleChange}
                 suppressContentEditableWarning
-                className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4 focus:outline-none min-h-[2rem] relative"
+                className="text-2xl md:text-3xl font-semibold mb-4 focus:outline-none min-h-[2rem] relative transition-colors duration-250"
                 style={{
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  color: 'var(--text-primary)',
                 }}
                 data-placeholder="Title"
               />
@@ -596,9 +621,10 @@ export default function NoteEditorPage(): JSX.Element {
                 contentEditable
                 onInput={handleBodyChange}
                 suppressContentEditableWarning
-                className="text-base text-gray-700 leading-relaxed focus:outline-none min-h-[400px] relative"
+                className="text-base leading-relaxed focus:outline-none min-h-[400px] relative transition-colors duration-250"
                 style={{
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  color: 'var(--text-primary)',
                 }}
                 data-placeholder="Start writing..."
               />
@@ -606,9 +632,10 @@ export default function NoteEditorPage(): JSX.Element {
 
             {/* Bottom Toolbar - Fixed within card, always visible */}
             <div 
-              className="flex-shrink-0 px-6 py-3 border-t border-gray-200/50"
+              className="flex-shrink-0 px-6 py-3 transition-colors duration-250"
               style={{ 
                 backgroundColor: 'var(--card-bg-solid)',
+                borderTop: '1px solid var(--glass-border)',
                 borderBottomLeftRadius: '1rem',
                 borderBottomRightRadius: '1rem',
               }}
@@ -620,7 +647,16 @@ export default function NoteEditorPage(): JSX.Element {
                   document.execCommand('undo', false)
                   bodyRef.current?.focus()
                 }}
-                className="w-8 h-8 md:w-9 md:h-9 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center text-gray-600"
+                className="w-8 h-8 md:w-9 md:h-9 rounded-lg transition-colors duration-250 flex items-center justify-center"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                  e.currentTarget.style.color = 'var(--text-primary)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                }}
                 title="Undo"
               >
                 <Undo2 className="w-4 h-4" strokeWidth={1.5} />
@@ -630,7 +666,16 @@ export default function NoteEditorPage(): JSX.Element {
               <div className="relative">
                 <button
                   onClick={() => setShowFormatMenu(!showFormatMenu)}
-                  className="w-8 h-8 md:w-9 md:h-9 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center text-gray-600"
+                  className="w-8 h-8 md:w-9 md:h-9 rounded-lg transition-colors duration-250 flex items-center justify-center"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'var(--text-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = 'var(--text-secondary)'
+                  }}
                   title="Text formatting"
                 >
                   <span className="text-xs font-semibold">Aa</span>
@@ -642,32 +687,44 @@ export default function NoteEditorPage(): JSX.Element {
                       className="fixed inset-0 z-40" 
                       onClick={() => setShowFormatMenu(false)}
                     />
-                    <div className="absolute bottom-full mb-2 left-0 z-50 glass-card rounded-xl shadow-lg border border-gray-200 py-1 min-w-[140px]">
+                    <div className="absolute bottom-full mb-2 left-0 z-50 glass-card rounded-xl shadow-lg py-1 min-w-[140px] transition-colors duration-250" style={{ border: '1px solid var(--glass-border)' }}>
                       <button
                         onClick={() => handleFormat('bold')}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm transition-colors duration-250 flex items-center gap-2"
+                        style={{ color: 'var(--text-primary)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         <span className="font-bold">B</span>
                         <span>Bold</span>
                       </button>
                       <button
                         onClick={() => handleFormat('italic')}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm transition-colors duration-250 flex items-center gap-2"
+                        style={{ color: 'var(--text-primary)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         <span className="italic">I</span>
                         <span>Italic</span>
                       </button>
                       <button
                         onClick={() => handleFormat('underline')}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm transition-colors duration-250 flex items-center gap-2"
+                        style={{ color: 'var(--text-primary)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         <span className="underline">U</span>
                         <span>Underline</span>
                       </button>
-                      <div className="border-t border-gray-100 my-1"></div>
+                      <div className="my-1 transition-colors duration-250" style={{ borderTop: '1px solid var(--glass-border)' }}></div>
                       <button
                         onClick={() => handleFormat('heading')}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="w-full text-left px-4 py-2 text-sm transition-colors duration-250"
+                        style={{ color: 'var(--text-primary)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         📝 Heading
                       </button>
@@ -679,7 +736,16 @@ export default function NoteEditorPage(): JSX.Element {
               {/* Checklist */}
               <button
                 onClick={handleInsertChecklist}
-                className="w-8 h-8 md:w-9 md:h-9 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center text-gray-600"
+                className="w-8 h-8 md:w-9 md:h-9 rounded-lg transition-colors duration-250 flex items-center justify-center"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                  e.currentTarget.style.color = 'var(--text-primary)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                }}
                 title="Checklist"
               >
                 <List className="w-4 h-4" strokeWidth={1.5} />
@@ -688,7 +754,16 @@ export default function NoteEditorPage(): JSX.Element {
               {/* Table */}
               <button
                 onClick={handleInsertTable}
-                className="w-8 h-8 md:w-9 md:h-9 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center text-gray-600"
+                className="w-8 h-8 md:w-9 md:h-9 rounded-lg transition-colors duration-250 flex items-center justify-center"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                  e.currentTarget.style.color = 'var(--text-primary)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                }}
                 title="Table"
               >
                 <Table className="w-4 h-4" strokeWidth={1.5} />
@@ -705,7 +780,16 @@ export default function NoteEditorPage(): JSX.Element {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-8 h-8 md:w-9 md:h-9 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center text-gray-600"
+                  className="w-8 h-8 md:w-9 md:h-9 rounded-lg transition-colors duration-250 flex items-center justify-center"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'var(--text-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = 'var(--text-secondary)'
+                  }}
                   title="Attachment"
                 >
                   <Paperclip className="w-4 h-4" strokeWidth={1.5} />
@@ -715,7 +799,16 @@ export default function NoteEditorPage(): JSX.Element {
               {/* Drawing / Markup */}
               <button
                 onClick={() => setShowDrawingModal(true)}
-                className="w-8 h-8 md:w-9 md:h-9 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center text-gray-600"
+                className="w-8 h-8 md:w-9 md:h-9 rounded-lg transition-colors duration-250 flex items-center justify-center"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                  e.currentTarget.style.color = 'var(--text-primary)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                }}
                 title="Drawing"
               >
                 <PenTool className="w-4 h-4" strokeWidth={1.5} />

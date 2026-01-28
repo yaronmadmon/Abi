@@ -90,15 +90,18 @@ export default function DocumentsPage() {
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/office" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/office" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to Office
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Documents</h1>
-            <p className="text-sm text-gray-500">Important files</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Documents</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Important files</p>
           </div>
           <button
             onClick={() => setShowUpload(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-250"
+            style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
             <Upload className="w-4 h-4" strokeWidth={2} />
             <span className="text-sm font-medium">Upload</span>
@@ -107,12 +110,15 @@ export default function DocumentsPage() {
 
         {documents.length === 0 ? (
           <div className="glass-card p-12 text-center">
-            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" strokeWidth={1} />
-            <p className="text-gray-500 mb-2">No documents yet</p>
-            <p className="text-sm text-gray-400 mb-6">Upload your first document to get started</p>
+            <FileText className="w-16 h-16 mx-auto mb-4" strokeWidth={1} style={{ color: 'var(--text-muted)' }} />
+            <p className="mb-2" style={{ color: 'var(--text-secondary)' }}>No documents yet</p>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>Upload your first document to get started</p>
             <button
               onClick={() => setShowUpload(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Upload className="w-5 h-5" strokeWidth={2} />
               <span>Upload Document</span>
@@ -123,15 +129,15 @@ export default function DocumentsPage() {
             {documents.map((doc) => (
               <div key={doc.id} className="glass-card p-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-blue-600" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                    <FileText className="w-6 h-6" strokeWidth={1.5} style={{ color: 'var(--accent-primary)' }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 mb-1">{doc.title}</h3>
+                    <h3 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{doc.title}</h3>
                     {doc.description && (
-                      <p className="text-sm text-gray-600 mb-2">{doc.description}</p>
+                      <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>{doc.description}</p>
                     )}
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--text-secondary)' }}>
                       <span>{doc.fileName}</span>
                       <span>{(doc.fileSize / 1024).toFixed(1)} KB</span>
                       <span>{new Date(doc.uploadedAt).toLocaleDateString()}</span>
@@ -140,28 +146,64 @@ export default function DocumentsPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setViewingDocument(doc)}
-                      className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 rounded-lg transition-colors duration-250"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'var(--accent-primary)'
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                       title="View"
                     >
                       <Eye className="w-4 h-4" strokeWidth={2} />
                     </button>
                     <button
                       onClick={() => setSharingDocument(doc)}
-                      className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      className="p-2 rounded-lg transition-colors duration-250"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#10b981'
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                       title="Share"
                     >
                       <Share2 className="w-4 h-4" strokeWidth={2} />
                     </button>
                     <button
                       onClick={() => handleDownload(doc)}
-                      className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 rounded-lg transition-colors duration-250"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'var(--accent-primary)'
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                       title="Download"
                     >
                       <Download className="w-4 h-4" strokeWidth={2} />
                     </button>
                     <button
                       onClick={() => handleDelete(doc.id)}
-                      className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 rounded-lg transition-colors duration-250"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#ef4444'
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" strokeWidth={2} />

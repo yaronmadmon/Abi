@@ -59,8 +59,8 @@ const NowCardContent = memo(function NowCardContent() {
   if (!hasContent) {
     return (
       <div className="glass-card p-5 mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Now</h2>
-        <p className="text-sm text-gray-500">Nothing urgent right now. You're all set! 🎉</p>
+        <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Now</h2>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nothing urgent right now. You're all set! 🎉</p>
       </div>
     )
   }
@@ -68,10 +68,11 @@ const NowCardContent = memo(function NowCardContent() {
   return (
     <div className="glass-card p-5 mb-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold text-gray-900">Now</h2>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Now</h2>
         <Link 
           href="/dashboard/tasks"
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          className="text-sm font-medium transition-colors duration-250 hover:opacity-80"
+          style={{ color: 'var(--accent-primary)' }}
         >
           See all →
         </Link>
@@ -79,11 +80,14 @@ const NowCardContent = memo(function NowCardContent() {
 
       <div className="space-y-3">
         {nextAppointment && (
-          <div className="flex items-start gap-3 p-2 rounded-lg bg-blue-50/50">
-            <Calendar className="w-4 h-4 mt-0.5" style={{ color: 'var(--icon-color)' }} strokeWidth={1.5} />
+          <div 
+            className="flex items-start gap-3 p-2 rounded-lg"
+            style={{ backgroundColor: 'rgba(139, 158, 255, 0.1)' }}
+          >
+            <Calendar className="w-4 h-4 mt-0.5" style={{ color: 'var(--accent-primary)' }} strokeWidth={1.5} />
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">{nextAppointment.title}</p>
-              <p className="text-xs text-gray-500">{nextAppointment.time}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{nextAppointment.title}</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{nextAppointment.time}</p>
             </div>
           </div>
         )}
@@ -91,12 +95,12 @@ const NowCardContent = memo(function NowCardContent() {
         {urgentTasks.map((task) => (
           <div
             key={task.id}
-            className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50/50 transition-colors"
+            className="flex items-start gap-3 p-2 rounded-lg transition-colors duration-250 hover:bg-white/5"
           >
-            <CheckCircle2 className="w-4 h-4 mt-0.5" style={{ color: 'var(--icon-color)' }} strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 mt-0.5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">{task.title}</p>
-              <p className="text-xs text-gray-500 capitalize">{task.category.replace('-', ' ')}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{task.title}</p>
+              <p className="text-xs capitalize" style={{ color: 'var(--text-muted)' }}>{task.category.replace('-', ' ')}</p>
             </div>
           </div>
         ))}

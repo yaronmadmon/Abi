@@ -9,15 +9,15 @@ export default function PantryPage() {
       <PageContainer>
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/kitchen" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/kitchen" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
               ← Back to Kitchen
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Pantry</h1>
-            <p className="text-sm text-gray-500">Ingredients & supplies</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Pantry</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Ingredients & supplies</p>
           </div>
         </div>
 
-        <div className="glass-card p-8 text-center text-gray-500">
+        <div className="glass-card p-8 text-center transition-all duration-250" style={{ color: 'var(--text-secondary)' }}>
           <p className="mb-4">Pantry tracking is not yet available.</p>
         </div>
       </PageContainer>

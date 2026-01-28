@@ -242,33 +242,33 @@ const WeatherCardContent = memo(function WeatherCardContent() {
   const getWeatherIcon = (condition: string) => {
     const lower = condition.toLowerCase()
     if (lower.includes('rain') || lower.includes('drizzle')) {
-      return <CloudRain className="w-8 h-8 text-blue-500" strokeWidth={1.5} />
+      return <CloudRain className="w-8 h-8" style={{ color: 'var(--accent-primary)' }} strokeWidth={1.5} />
     } else if (lower.includes('cloud')) {
-      return <Cloud className="w-8 h-8 text-gray-500" strokeWidth={1.5} />
+      return <Cloud className="w-8 h-8" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
     } else if (lower.includes('clear') || lower.includes('sun')) {
-      return <Sun className="w-8 h-8 text-yellow-500" strokeWidth={1.5} />
+      return <Sun className="w-8 h-8" style={{ color: 'var(--warning)' }} strokeWidth={1.5} />
     } else {
-      return <CloudSun className="w-8 h-8 text-gray-400" strokeWidth={1.5} />
+      return <CloudSun className="w-8 h-8" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
     }
   }
 
   const getWeatherIconFromCode = (iconCode: string) => {
     // OpenWeatherMap icon codes: 01d/01n = clear, 02d/02n = few clouds, etc.
-    if (iconCode.includes('01')) return <Sun className="w-5 h-5 text-yellow-500" strokeWidth={1.5} />
-    if (iconCode.includes('09') || iconCode.includes('10')) return <CloudRain className="w-5 h-5 text-blue-500" strokeWidth={1.5} />
-    if (iconCode.includes('11')) return <CloudRain className="w-5 h-5 text-gray-600" strokeWidth={1.5} />
-    if (iconCode.includes('13')) return <Cloud className="w-5 h-5 text-gray-400" strokeWidth={1.5} />
-    if (iconCode.includes('50')) return <Cloud className="w-5 h-5 text-gray-500" strokeWidth={1.5} />
-    return <CloudSun className="w-5 h-5 text-gray-400" strokeWidth={1.5} />
+    if (iconCode.includes('01')) return <Sun className="w-5 h-5" style={{ color: 'var(--warning)' }} strokeWidth={1.5} />
+    if (iconCode.includes('09') || iconCode.includes('10')) return <CloudRain className="w-5 h-5" style={{ color: 'var(--accent-primary)' }} strokeWidth={1.5} />
+    if (iconCode.includes('11')) return <CloudRain className="w-5 h-5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
+    if (iconCode.includes('13')) return <Cloud className="w-5 h-5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
+    if (iconCode.includes('50')) return <Cloud className="w-5 h-5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
+    return <CloudSun className="w-5 h-5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
   }
 
   return (
     <>
-      <div className="glass-card mb-4 overflow-hidden transition-all duration-200">
+      <div className="glass-card mb-4 overflow-hidden transition-all duration-250">
         {/* Location Input Section */}
         {showLocationInput && (
-          <div className="p-4 bg-gray-50 border-b border-gray-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="p-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderBottom: '1px solid var(--glass-border)' }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
               Enter location (e.g., &quot;New York, NY&quot; or &quot;London, UK&quot;)
             </label>
             <div className="flex gap-2">
@@ -282,13 +282,15 @@ const WeatherCardContent = memo(function WeatherCardContent() {
                   }
                 }}
                 placeholder="City, State/Country"
-                className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="flex-1 px-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2"
+                style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 autoFocus
               />
               <button
                 onClick={handleManualLocation}
                 disabled={!manualLocation.trim() || loading}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="px-4 py-2 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all duration-250"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
               >
                 Set
               </button>
@@ -297,7 +299,8 @@ const WeatherCardContent = memo(function WeatherCardContent() {
                   setShowLocationInput(false)
                   setManualLocation('')
                 }}
-                className="px-3 py-2 text-gray-600 hover:text-gray-800 text-sm"
+                className="px-3 py-2 text-sm transition-colors duration-250"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Cancel
               </button>
@@ -309,10 +312,10 @@ const WeatherCardContent = memo(function WeatherCardContent() {
         <button 
           onClick={handleCardClick}
           disabled={!weather || loading}
-          className="w-full text-left p-5 hover:bg-gray-50/50 transition-colors disabled:cursor-not-allowed"
+          className="w-full text-left p-5 transition-colors duration-250 disabled:cursor-not-allowed hover:bg-white/5"
         >
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Weather</h2>
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Weather</h2>
             <div className="flex items-center gap-2">
               <button
                 onClick={(e) => {
@@ -320,27 +323,29 @@ const WeatherCardContent = memo(function WeatherCardContent() {
                   loadWeather(true)
                 }}
                 disabled={loading}
-                className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1.5 transition-colors duration-250 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-80"
+                style={{ color: 'var(--text-muted)' }}
                 title="Refresh weather"
                 aria-label="Refresh weather"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} strokeWidth={2} />
               </button>
               {loading && (
-                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: 'rgba(255,255,255,0.1)', borderTopColor: 'var(--accent-primary)' }}></div>
               )}
             </div>
           </div>
 
           {locationName && (
             <div className="flex items-center gap-2 mb-3">
-              <p className="text-xs text-gray-500">{locationName}</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{locationName}</p>
               <span
                 onClick={(e) => {
                   e.stopPropagation()
                   setShowLocationInput(true)
                 }}
-                className="text-xs text-blue-600 hover:text-blue-700 underline cursor-pointer"
+                className="text-xs underline cursor-pointer transition-colors duration-250 hover:opacity-80"
+                style={{ color: 'var(--accent-primary)' }}
                 role="button"
                 tabIndex={0}
                 onKeyPress={(e) => {
@@ -358,14 +363,15 @@ const WeatherCardContent = memo(function WeatherCardContent() {
 
           {error && !weather ? (
             <div className="space-y-2">
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
               <div className="flex gap-3">
                 <span
                   onClick={(e) => {
                     e.stopPropagation()
                     loadWeather()
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-700 underline cursor-pointer"
+                  className="text-xs underline cursor-pointer transition-colors duration-250 hover:opacity-80"
+                  style={{ color: 'var(--accent-primary)' }}
                   role="button"
                   tabIndex={0}
                   onKeyPress={(e) => {
@@ -382,7 +388,8 @@ const WeatherCardContent = memo(function WeatherCardContent() {
                     e.stopPropagation()
                     setShowLocationInput(true)
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-700 underline cursor-pointer"
+                  className="text-xs underline cursor-pointer transition-colors duration-250 hover:opacity-80"
+                  style={{ color: 'var(--accent-primary)' }}
                   role="button"
                   tabIndex={0}
                   onKeyPress={(e) => {
@@ -397,7 +404,7 @@ const WeatherCardContent = memo(function WeatherCardContent() {
               </div>
             </div>
           ) : error && weather ? (
-            <p className="text-xs text-amber-600 mb-2">{error}</p>
+            <p className="text-xs mb-2" style={{ color: 'var(--warning)' }}>{error}</p>
           ) : null}
           
           {weather ? (
@@ -408,12 +415,12 @@ const WeatherCardContent = memo(function WeatherCardContent() {
                   {getWeatherIcon(weather.condition)}
                   <div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold text-gray-900">{weather.temperature}°</span>
-                      <span className="text-sm text-gray-500">F</span>
+                      <span className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{weather.temperature}°</span>
+                      <span className="text-sm" style={{ color: 'var(--text-muted)' }}>F</span>
                     </div>
-                    <p className="text-sm text-gray-600 capitalize">{weather.description}</p>
+                    <p className="text-sm capitalize" style={{ color: 'var(--text-secondary)' }}>{weather.description}</p>
                     {weather.high && weather.low && (
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                         H: {weather.high}° L: {weather.low}°
                       </p>
                     )}
@@ -422,7 +429,7 @@ const WeatherCardContent = memo(function WeatherCardContent() {
               </div>
 
               {/* Basic Stats - Always Visible */}
-              <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t border-gray-100">
+              <div className="flex items-center gap-4 text-xs pt-2" style={{ color: 'var(--text-muted)', borderTop: '1px solid var(--glass-border)' }}>
                 <div className="flex items-center gap-1">
                   <Droplets className="w-3.5 h-3.5" strokeWidth={1.5} />
                   <span>{weather.humidity}%</span>
@@ -439,10 +446,10 @@ const WeatherCardContent = memo(function WeatherCardContent() {
                 )}
               </div>
 
-              <p className="text-xs text-blue-600 mt-3 font-medium">Click for detailed forecast →</p>
+              <p className="text-xs mt-3 font-medium" style={{ color: 'var(--accent-primary)' }}>Click for detailed forecast →</p>
             </div>
           ) : (
-            <p className="text-sm text-gray-500">Loading weather...</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading weather...</p>
           )}
         </button>
       </div>

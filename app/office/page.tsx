@@ -7,8 +7,8 @@ export default function OfficePage() {
     <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Office</h1>
-          <p className="text-sm text-gray-500">Documents, scanner & archive</p>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Office</h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Documents, scanner & archive</p>
         </div>
 
         {/* Summary Cards */}
@@ -20,7 +20,7 @@ export default function OfficePage() {
             href="/office/documents"
             variant="gradient"
           >
-            <p className="text-sm text-gray-500">View and manage documents</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>View and manage documents</p>
           </SummaryCard>
 
           <SummaryCard
@@ -29,7 +29,7 @@ export default function OfficePage() {
             icon="📷"
             href="/office/scanner"
           >
-            <p className="text-sm text-gray-500">Scan new documents</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Scan new documents</p>
           </SummaryCard>
 
           <SummaryCard
@@ -38,7 +38,7 @@ export default function OfficePage() {
             icon="📠"
             href="/office/fax"
           >
-            <p className="text-sm text-gray-500">Fax management</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Fax management</p>
           </SummaryCard>
 
         </div>

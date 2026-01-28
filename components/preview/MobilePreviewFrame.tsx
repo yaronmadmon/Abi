@@ -25,7 +25,13 @@ export default function MobilePreviewFrame({ children, enablePreview = true }: M
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900/95 backdrop-blur-sm z-50">
+    <div 
+      className="fixed inset-0 flex items-center justify-center z-50"
+      style={{ 
+        backgroundColor: 'rgba(0, 0, 0, 0.95)', 
+        backdropFilter: 'blur(8px)' 
+      }}
+    >
       {/* Phone Frame Container - iPhone 14 Pro dimensions */}
       <div 
         className="relative"
@@ -38,17 +44,26 @@ export default function MobilePreviewFrame({ children, enablePreview = true }: M
         }}
       >
         {/* Phone Frame Bezel - Outer device shell */}
-        <div className="absolute inset-0 bg-gray-950 rounded-[3rem] p-2 shadow-2xl">
+        <div 
+          className="absolute inset-0 rounded-[3rem] p-2"
+          style={{
+            backgroundColor: '#0B0F14',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}
+        >
           {/* Inner Screen Area - Actual display, uses app theme background */}
           <div 
             className="relative w-full h-full rounded-[2.5rem] overflow-hidden"
             style={{
-              backgroundColor: 'var(--background)',
+              backgroundColor: 'var(--bg-main)',
             }}
           >
             {/* Status Bar / Notch Area - Visual device chrome */}
             <div className="absolute top-0 left-0 right-0 h-12 z-50 pointer-events-none">
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl" />
+              <div 
+                className="absolute top-2 left-1/2 -translate-x-1/2 w-32 h-6 rounded-b-2xl"
+                style={{ backgroundColor: '#000' }}
+              />
             </div>
             
             {/* App Viewport - Fills 100% of inner screen, creates stacking context for fixed children */}

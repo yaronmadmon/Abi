@@ -26,20 +26,34 @@ const EmptyState = memo(function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       {Icon && (
-        <Icon className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-4" strokeWidth={1.5} />
+        <Icon 
+          className="w-12 h-12 mb-4" 
+          style={{ color: 'var(--text-muted)' }}
+          strokeWidth={1.5} 
+        />
       )}
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      <h3 
+        className="text-lg font-semibold mb-2"
+        style={{ color: 'var(--text-primary)' }}
+      >
         {title}
       </h3>
       {description && (
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-md">
+        <p 
+          className="text-sm mb-6 max-w-md"
+          style={{ color: 'var(--text-secondary)' }}
+        >
           {description}
         </p>
       )}
       {action && (
         <button
           onClick={action.onClick}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="px-4 py-2 rounded-full text-white transition-all duration-250 hover:shadow-lg active:scale-[0.98]"
+          style={{ 
+            backgroundColor: 'var(--accent-primary)',
+            boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)'
+          }}
         >
           {action.label}
         </button>

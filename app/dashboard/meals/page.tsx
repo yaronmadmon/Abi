@@ -16,14 +16,14 @@ export default function MealsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white p-4 pb-16">
+    <div className="min-h-screen p-4 pb-16 transition-colors duration-250" style={{ backgroundColor: 'var(--background)' }}>
       {/* Header */}
       <PageContainer maxWidth="2xl" className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <ChefHat className="w-8 h-8 text-orange-600" strokeWidth={1.5} />
-          <h1 className="text-3xl font-bold text-gray-900">Meal Planner</h1>
+          <ChefHat className="w-8 h-8 transition-colors duration-250" strokeWidth={1.5} style={{ color: 'var(--accent-primary)' }} />
+          <h1 className="text-3xl font-bold transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>Meal Planner</h1>
         </div>
-        <p className="text-gray-600">Plan meals that fit your week</p>
+        <p className="transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>Plan meals that fit your week</p>
       </PageContainer>
 
       {/* Main Content */}
@@ -32,7 +32,10 @@ export default function MealsPage() {
         {!showPlanner && (
           <button
             onClick={() => setShowPlanner(true)}
-            className="w-full mb-6 px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 text-lg font-medium"
+            className="w-full mb-6 px-6 py-4 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-250 flex items-center justify-center gap-3 text-lg font-medium"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
             <Sparkles className="w-6 h-6" strokeWidth={2} />
             Cook with Abby AI
@@ -41,7 +44,7 @@ export default function MealsPage() {
 
         {/* Planner Flow */}
         {showPlanner && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="rounded-2xl shadow-lg p-6 mb-6 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
             <MealPlannerFlow
               onComplete={handleMealsGenerated}
               onCancel={() => setShowPlanner(false)}
@@ -51,10 +54,10 @@ export default function MealsPage() {
 
         {/* Meal Calendar */}
         {meals.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="rounded-2xl shadow-lg p-6 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
             <div className="flex items-center gap-2 mb-4">
-              <Calendar className="w-5 h-5 text-orange-600" strokeWidth={1.5} />
-              <h2 className="text-xl font-semibold text-gray-900">Your Meals</h2>
+              <Calendar className="w-5 h-5 transition-colors duration-250" strokeWidth={1.5} style={{ color: 'var(--accent-primary)' }} />
+              <h2 className="text-xl font-semibold transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>Your Meals</h2>
             </div>
             <MealCalendar meals={meals} />
           </div>
@@ -63,9 +66,9 @@ export default function MealsPage() {
         {/* Empty State */}
         {meals.length === 0 && !showPlanner && (
           <div className="text-center py-12 px-6">
-            <ChefHat className="w-16 h-16 text-gray-300 mx-auto mb-4" strokeWidth={1.5} />
-            <h3 className="text-lg font-medium text-gray-700 mb-2">No meals planned yet</h3>
-            <p className="text-gray-500 text-sm">
+            <ChefHat className="w-16 h-16 mx-auto mb-4 transition-colors duration-250" strokeWidth={1.5} style={{ color: 'var(--text-muted)' }} />
+            <h3 className="text-lg font-medium mb-2 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>No meals planned yet</h3>
+            <p className="text-sm transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
               Create a meal plan to get started
             </p>
           </div>

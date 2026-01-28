@@ -30,9 +30,16 @@ const LoadingState = memo(function LoadingState({
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div 
-        className={`${spinnerSizes[size]} border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4`}
+        className={`${spinnerSizes[size]} border-4 rounded-full animate-spin mb-4`}
+        style={{
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          borderTopColor: 'var(--accent-primary)'
+        }}
       />
-      <p className={`${textSizes[size]} text-gray-600 dark:text-gray-400`}>
+      <p 
+        className={`${textSizes[size]}`}
+        style={{ color: 'var(--text-secondary)' }}
+      >
         {message}
       </p>
     </div>

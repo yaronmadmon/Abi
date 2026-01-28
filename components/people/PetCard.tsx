@@ -95,18 +95,21 @@ export default function PetCard({ pet, onUpdate, onDelete }: PetCardProps) {
       <div className="flex items-start gap-4">
         {/* Profile Image */}
         <div className="relative flex-shrink-0">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
             {photo ? (
               <Image src={photo} alt={pet.name} fill className="object-cover" unoptimized />
             ) : (
-              <Heart className="w-10 h-10 text-gray-400" strokeWidth={1.5} />
+              <Heart className="w-10 h-10" strokeWidth={1.5} style={{ color: 'var(--text-muted)' }} />
             )}
           </div>
           {isEditing && (
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors shadow-sm"
+              className="absolute bottom-0 right-0 w-7 h-7 text-white rounded-full flex items-center justify-center transition-colors duration-250 shadow-sm"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
               title="Change photo"
             >
               <Camera className="w-3.5 h-3.5" strokeWidth={2} />

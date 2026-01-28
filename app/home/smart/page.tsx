@@ -9,15 +9,15 @@ export default function SmartHomePage() {
       <PageContainer maxWidth="2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/today" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/today" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to Today
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Smart Home</h1>
-            <p className="text-sm text-gray-500">Connected devices</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Smart Home</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Connected devices</p>
           </div>
         </div>
 
-        <div className="glass-card p-8 text-center text-gray-500">
+        <div className="glass-card p-8 text-center" style={{ color: 'var(--text-secondary)' }}>
           <p className="mb-4">Smart home features are not yet available.</p>
         </div>
       </PageContainer>

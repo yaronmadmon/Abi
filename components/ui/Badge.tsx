@@ -21,13 +21,31 @@ const Badge = memo(function Badge({
 }: BadgeProps) {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-full'
   
-  const variantClasses = {
-    default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-    primary: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    danger: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    info: 'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400'
+  const variantStyles = {
+    default: { 
+      backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+      color: 'var(--text-secondary)' 
+    },
+    primary: { 
+      backgroundColor: 'rgba(139, 158, 255, 0.2)', 
+      color: '#8B9EFF' 
+    },
+    success: { 
+      backgroundColor: 'rgba(74, 222, 128, 0.2)', 
+      color: '#4ADE80' 
+    },
+    warning: { 
+      backgroundColor: 'rgba(251, 191, 36, 0.2)', 
+      color: '#FBBF24' 
+    },
+    danger: { 
+      backgroundColor: 'rgba(248, 113, 113, 0.2)', 
+      color: '#F87171' 
+    },
+    info: { 
+      backgroundColor: 'rgba(139, 158, 255, 0.15)', 
+      color: '#8B9EFF' 
+    }
   }
   
   const sizeClasses = {
@@ -37,7 +55,10 @@ const Badge = memo(function Badge({
   }
   
   return (
-    <span className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}>
+    <span 
+      className={`${baseClasses} ${sizeClasses[size]} ${className}`}
+      style={variantStyles[variant]}
+    >
       {children}
     </span>
   )

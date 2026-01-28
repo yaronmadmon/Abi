@@ -142,8 +142,8 @@ export default function RecipeDetailPage() {
     return (
       <div className="min-h-screen p-6 page-with-bottom-nav flex items-center justify-center" style={{ backgroundColor: 'var(--background)' }}>
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full mx-auto mb-3"></div>
-          <p className="text-gray-500">Loading recipe...</p>
+          <div className="animate-spin w-8 h-8 border-4 border-t-transparent rounded-full mx-auto mb-3 transition-all duration-250" style={{ borderColor: 'var(--accent-primary)' }}></div>
+          <p style={{ color: 'var(--text-secondary)' }}>Loading recipe...</p>
         </div>
       </div>
     )
@@ -155,16 +155,17 @@ export default function RecipeDetailPage() {
         <PageContainer>
           <button
             onClick={() => router.push('/kitchen/recipes')}
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6"
+            className="inline-flex items-center gap-2 mb-6 transition-colors duration-250"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <ChevronLeft className="w-5 h-5" />
             Back to Recipes
           </button>
           
           <div className="text-center py-12">
-            <AlertTriangle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Recipe Not Found</h1>
-            <p className="text-gray-500">The recipe you're looking for doesn't exist.</p>
+            <AlertTriangle className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+            <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Recipe Not Found</h1>
+            <p style={{ color: 'var(--text-secondary)' }}>The recipe you're looking for doesn't exist.</p>
           </div>
         </PageContainer>
       </div>
@@ -179,7 +180,7 @@ export default function RecipeDetailPage() {
     <div className="min-h-screen page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
       <PageContainer>
         {/* Hero Image */}
-        <div className="relative w-full h-64 md:h-80 bg-gray-100">
+        <div className="relative w-full h-64 md:h-80" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <Image
             src={recipe.imageUrl}
             alt={recipe.title}
@@ -191,7 +192,10 @@ export default function RecipeDetailPage() {
           {/* Back Button Overlay */}
           <button
             onClick={() => router.push(getBackUrl())}
-            className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-white transition-colors shadow-lg"
+            className="absolute top-4 left-4 w-10 h-10 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-250 shadow-lg"
+            style={{ backgroundColor: 'rgba(17, 24, 39, 0.9)', color: 'var(--text-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(17, 24, 39, 1)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(17, 24, 39, 0.9)'}
           >
             <ChevronLeft className="w-5 h-5" strokeWidth={2} />
           </button>
@@ -199,13 +203,23 @@ export default function RecipeDetailPage() {
           {/* Like Button Overlay */}
           <button
             onClick={handleLikeRecipe}
-            className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-lg ${
-              isLiked
-                ? 'bg-pink-500 hover:bg-pink-600'
-                : 'bg-white/90 backdrop-blur-sm hover:bg-white'
-            }`}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-250 shadow-lg"
+            style={{
+              backgroundColor: isLiked ? 'var(--accent-primary)' : 'rgba(17, 24, 39, 0.9)',
+              color: isLiked ? 'white' : 'var(--text-primary)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isLiked) {
+                e.currentTarget.style.backgroundColor = 'rgba(17, 24, 39, 1)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isLiked) {
+                e.currentTarget.style.backgroundColor = 'rgba(17, 24, 39, 0.9)'
+              }
+            }}
           >
-            <Heart className={`w-5 h-5 ${isLiked ? 'text-white fill-white' : 'text-gray-600'}`} />
+            <Heart className={`w-5 h-5 ${isLiked ? 'text-white fill-white' : ''}`} />
           </button>
         </div>
 
@@ -213,12 +227,12 @@ export default function RecipeDetailPage() {
         <div className="p-6">
           {/* Swap Mode Banner */}
           {swapMode?.active && (
-            <div className="mb-6 bg-orange-50 border-2 border-orange-200 rounded-2xl p-4">
+            <div className="mb-6 rounded-2xl p-4 transition-all duration-250" style={{ backgroundColor: 'rgba(139, 158, 255, 0.1)', border: '2px solid var(--glass-border)' }}>
               <div className="flex items-start gap-3">
-                <Check className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                <Check className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: 'var(--accent-primary)' }} />
                 <div className="flex-1">
-                  <h3 className="font-bold text-orange-900 mb-1">Ready to Swap</h3>
-                  <p className="text-sm text-orange-800">
+                  <h3 className="font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Ready to Swap</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                     This will replace your {swapMode.mealType} on {new Date(swapMode.day).toLocaleDateString('en-US', { weekday: 'long' })}
                   </p>
                 </div>
@@ -228,12 +242,12 @@ export default function RecipeDetailPage() {
 
           {/* Allergy Warning */}
           {householdAllergens.length > 0 && !isSafe && (
-            <div className="mb-6 bg-red-50 border-2 border-red-200 rounded-2xl p-4">
+            <div className="mb-6 rounded-2xl p-4 transition-all duration-250" style={{ backgroundColor: 'rgba(248, 113, 113, 0.1)', border: '2px solid rgba(248, 113, 113, 0.3)' }}>
               <div className="flex items-start gap-3">
-                <Shield className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <Shield className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: 'var(--error)' }} />
                 <div className="flex-1">
-                  <h3 className="font-bold text-red-900 mb-1">Allergy Warning</h3>
-                  <p className="text-sm text-red-800">
+                  <h3 className="font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Allergy Warning</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                     This recipe contains: {formatAllergenNames(conflictingAllergens)}
                   </p>
                 </div>
@@ -242,41 +256,41 @@ export default function RecipeDetailPage() {
           )}
 
           {/* Recipe Header */}
-          <div className="text-xs font-medium text-orange-600 uppercase mb-2">
+          <div className="text-xs font-medium uppercase mb-2" style={{ color: 'var(--accent-primary)' }}>
             {recipe.mealType} • {recipe.cuisine} • {recipe.difficulty}
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          <h1 className="text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
             {recipe.title}
           </h1>
-          <p className="text-gray-600 mb-6">{recipe.description}</p>
+          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>{recipe.description}</p>
 
           {/* Recipe Metadata */}
-          <div className="flex gap-6 mb-6 pb-6 border-b">
+          <div className="flex gap-6 mb-6 pb-6 border-b transition-all duration-250" style={{ borderColor: 'var(--glass-border)' }}>
             <div className="text-center">
-              <Clock className="w-5 h-5 text-gray-400 mx-auto mb-1" />
-              <div className="text-sm font-semibold text-gray-900">{recipe.totalTime} min</div>
-              <div className="text-xs text-gray-500">Total Time</div>
+              <Clock className="w-5 h-5 mx-auto mb-1" style={{ color: 'var(--text-muted)' }} />
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{recipe.totalTime} min</div>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Total Time</div>
             </div>
             <div className="text-center">
-              <Users className="w-5 h-5 text-gray-400 mx-auto mb-1" />
-              <div className="text-sm font-semibold text-gray-900">{recipe.servings}</div>
-              <div className="text-xs text-gray-500">Servings</div>
+              <Users className="w-5 h-5 mx-auto mb-1" style={{ color: 'var(--text-muted)' }} />
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{recipe.servings}</div>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Servings</div>
             </div>
             {recipe.calories && (
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-900">{recipe.calories}</div>
-                <div className="text-xs text-gray-500">Calories</div>
+                <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{recipe.calories}</div>
+                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Calories</div>
               </div>
             )}
           </div>
 
           {/* Ingredients */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Ingredients</h2>
+            <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Ingredients</h2>
             <ul className="space-y-3">
               {recipe.ingredients.map((ing, idx) => (
-                <li key={idx} className="flex gap-2 items-start text-base text-gray-700">
-                  <span className="text-orange-500 font-bold flex-shrink-0 mt-1">•</span>
+                <li key={idx} className="flex gap-2 items-start text-base" style={{ color: 'var(--text-primary)' }}>
+                  <span className="font-bold flex-shrink-0 mt-1" style={{ color: 'var(--accent-primary)' }}>•</span>
                   <span className="flex-1">
                     <span className="font-medium">{ing.quantity}</span> {ing.name}
                   </span>
@@ -288,11 +302,11 @@ export default function RecipeDetailPage() {
 
           {/* Instructions */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Instructions</h2>
+            <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Instructions</h2>
             <ol className="space-y-4">
               {recipe.instructions.map((instruction, idx) => (
-                <li key={idx} className="flex gap-4 text-base text-gray-700">
-                  <span className="flex-shrink-0 w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold">
+                <li key={idx} className="flex gap-4 text-base" style={{ color: 'var(--text-primary)' }}>
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-250" style={{ backgroundColor: 'rgba(139, 158, 255, 0.2)', color: 'var(--accent-primary)' }}>
                     {idx + 1}
                   </span>
                   <span className="flex-1 pt-1">{instruction}</span>
@@ -308,7 +322,8 @@ export default function RecipeDetailPage() {
                 {recipe.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-sm px-4 py-2 bg-gray-100 text-gray-600 rounded-full"
+                    className="text-sm px-4 py-2 rounded-full transition-all duration-250"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}
                   >
                     {tag}
                   </span>

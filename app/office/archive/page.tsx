@@ -8,15 +8,15 @@ export default function ArchivePage() {
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/office" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/office" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to Office
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Archive</h1>
-            <p className="text-sm text-gray-500">Stored documents</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Archive</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Stored documents</p>
           </div>
         </div>
 
-        <div className="glass-card p-8 text-center text-gray-500">
+        <div className="glass-card p-8 text-center" style={{ color: 'var(--text-secondary)' }}>
           <p className="mb-4">Document archive is not yet available.</p>
         </div>
       </div>

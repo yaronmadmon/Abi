@@ -25,19 +25,25 @@ export default function CareCard() {
   }
 
   return (
-    <div className="glass-card p-5 mb-4 bg-gradient-to-br from-purple-50/50 to-blue-50/50 border-purple-100/50">
+    <div 
+      className="glass-card p-5 mb-4"
+      style={{
+        background: 'linear-gradient(135deg, rgba(139, 158, 255, 0.1) 0%, rgba(139, 158, 255, 0.05) 100%)'
+      }}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Take a moment</h3>
-          <p className="text-xs text-gray-600 mb-3">{suggestion}</p>
+          <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Take a moment</h3>
+          <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>{suggestion}</p>
           <button
             onClick={handleReset}
             disabled={isActive}
-            className={`text-xs font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
-              isActive
-                ? 'bg-gray-200 text-gray-500'
-                : 'bg-white/80 text-purple-700 hover:bg-white card-press'
-            }`}
+            className="text-xs font-medium px-4 py-2 rounded-full transition-all duration-250 card-press"
+            style={{
+              backgroundColor: isActive ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.1)',
+              color: isActive ? 'var(--text-muted)' : 'var(--accent-primary)',
+              border: isActive ? 'none' : '1px solid var(--glass-border)'
+            }}
           >
             {isActive ? 'Taking a moment...' : 'Take 2 minutes'}
           </button>

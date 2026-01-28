@@ -216,18 +216,21 @@ export default function FaxPage() {
       <PageContainer maxWidth="2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/office" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/office" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to Office
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Fax</h1>
-            <p className="text-sm text-gray-500">Send & receive faxes</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Fax</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Send & receive faxes</p>
           </div>
           <button
             onClick={() => {
               clearPendingAttachment()
               setShowSendFax(true)
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-250"
+            style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
             <Camera className="w-4 h-4" strokeWidth={2} />
             <span className="text-sm font-medium">Send Fax</span>
@@ -250,17 +253,17 @@ export default function FaxPage() {
 
         {showSendFax && selectedFile && (
           <div className="glass-card p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Send Fax</h2>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Send Fax</h2>
             <div className="space-y-4">
-                <div className="glass-card p-4 bg-blue-50/50">
+                <div className="glass-card p-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
                   <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-blue-600" strokeWidth={2} />
+                    <FileText className="w-5 h-5" strokeWidth={2} style={{ color: 'var(--accent-primary)' }} />
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{selectedMeta?.title || selectedFile.name}</p>
+                      <p className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedMeta?.title || selectedFile.name}</p>
                       {selectedMeta?.description && (
-                        <p className="text-sm text-gray-600 truncate">{selectedMeta.description}</p>
+                        <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{selectedMeta.description}</p>
                       )}
-                      <p className="text-sm text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{(selectedFile.size / 1024).toFixed(1)} KB</p>
                     </div>
                     <div className="flex items-center gap-1">
                       <button
@@ -273,7 +276,16 @@ export default function FaxPage() {
                             title: selectedMeta?.title || selectedFile.name.replace(/\.[^/.]+$/, ''),
                           })
                         }}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--accent-primary)'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="View / Preview"
                       >
                         <Eye className="w-4 h-4" strokeWidth={2} />
@@ -281,7 +293,16 @@ export default function FaxPage() {
                       <button
                         type="button"
                         onClick={handleDownloadPending}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--accent-primary)'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="Download"
                       >
                         <Download className="w-4 h-4" strokeWidth={2} />
@@ -293,7 +314,16 @@ export default function FaxPage() {
                           if (!ok) return
                           clearPendingAttachment()
                         }}
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#ef4444'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="Delete attachment"
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={2} />
@@ -303,17 +333,24 @@ export default function FaxPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                     Fax Number
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" strokeWidth={2} />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" strokeWidth={2} style={{ color: 'var(--text-muted)' }} />
                     <input
                       type="tel"
                       value={faxNumber}
                       onChange={(e) => setFaxNumber(e.target.value)}
                       placeholder="Enter fax number (e.g., +1-555-123-4567)"
-                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg transition-colors duration-250"
+                      style={{ 
+                        border: '1px solid var(--glass-border)',
+                        backgroundColor: 'var(--bg-elevated)',
+                        color: 'var(--text-primary)'
+                      }}
+                      onFocus={(e) => e.currentTarget.style.outline = '2px solid var(--accent-primary)'}
+                      onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     />
                   </div>
                 </div>
@@ -321,7 +358,10 @@ export default function FaxPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => handleSendFax(faxNumber)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors duration-250"
+                    style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                    onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                    onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                   >
                     <Send className="w-4 h-4" strokeWidth={2} />
                     <span>Send Fax</span>
@@ -331,7 +371,13 @@ export default function FaxPage() {
                       setShowSendFax(false)
                       clearPendingAttachment()
                     }}
-                    className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 rounded-lg transition-colors duration-250"
+                    style={{ 
+                      border: '1px solid var(--glass-border)',
+                      color: 'var(--text-primary)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     Cancel
                   </button>
@@ -343,17 +389,17 @@ export default function FaxPage() {
         {/* Sent Faxes */}
         {sentFaxes.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Sent</h2>
+            <h2 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Sent</h2>
             <div className="space-y-3">
               {sentFaxes.map((fax) => (
                 <div key={fax.id} className="glass-card p-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <Send className="w-6 h-6 text-blue-600" strokeWidth={1.5} />
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                      <Send className="w-6 h-6" strokeWidth={1.5} style={{ color: 'var(--accent-primary)' }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1">{fax.title}</h3>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
+                      <h3 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{fax.title}</h3>
+                      <div className="flex items-center gap-4 text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
                         <span className="flex items-center gap-1">
                           <Phone className="w-3 h-3" />
                           {fax.faxNumber}
@@ -361,27 +407,54 @@ export default function FaxPage() {
                         {fax.sentAt && (
                           <span>{new Date(fax.sentAt).toLocaleDateString()}</span>
                         )}
-                        <span className="text-green-600 font-medium">{fax.status}</span>
+                        <span className="font-medium" style={{ color: '#10b981' }}>{fax.status}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setViewingFax(fax)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--accent-primary)'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="View"
                       >
                         <Eye className="w-4 h-4" strokeWidth={2} />
                       </button>
                       <button
                         onClick={() => handleDownload(fax)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--accent-primary)'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="Download"
                       >
                         <Download className="w-4 h-4" strokeWidth={2} />
                       </button>
                       <button
                         onClick={() => handleDelete(fax.id)}
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#ef4444'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={2} />
@@ -397,17 +470,17 @@ export default function FaxPage() {
         {/* Received Faxes */}
         {receivedFaxes.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Received</h2>
+            <h2 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Received</h2>
             <div className="space-y-3">
               {receivedFaxes.map((fax) => (
                 <div key={fax.id} className="glass-card p-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-6 h-6 text-green-600" strokeWidth={1.5} />
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                      <FileText className="w-6 h-6" strokeWidth={1.5} style={{ color: '#10b981' }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1">{fax.title}</h3>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
+                      <h3 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{fax.title}</h3>
+                      <div className="flex items-center gap-4 text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
                         {fax.receivedAt && (
                           <span>{new Date(fax.receivedAt).toLocaleDateString()}</span>
                         )}
@@ -416,21 +489,48 @@ export default function FaxPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setViewingFax(fax)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--accent-primary)'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="View"
                       >
                         <Eye className="w-4 h-4" strokeWidth={2} />
                       </button>
                       <button
                         onClick={() => handleDownload(fax)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--accent-primary)'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="Download"
                       >
                         <Download className="w-4 h-4" strokeWidth={2} />
                       </button>
                       <button
                         onClick={() => handleDelete(fax.id)}
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors duration-250"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#ef4444'
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={2} />
@@ -446,15 +546,18 @@ export default function FaxPage() {
         {/* Empty State */}
         {faxes.length === 0 && !showSendFax && (
           <div className="glass-card p-12 text-center">
-            <Phone className="w-16 h-16 text-gray-300 mx-auto mb-4" strokeWidth={1} />
-            <p className="text-gray-500 mb-2">No faxes yet</p>
-            <p className="text-sm text-gray-400 mb-6">Scan and send your first fax to get started</p>
+            <Phone className="w-16 h-16 mx-auto mb-4" strokeWidth={1} style={{ color: 'var(--text-muted)' }} />
+            <p className="mb-2" style={{ color: 'var(--text-secondary)' }}>No faxes yet</p>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>Scan and send your first fax to get started</p>
             <button
               onClick={() => {
                 clearPendingAttachment()
                 setShowSendFax(true)
               }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Camera className="w-5 h-5" strokeWidth={2} />
               <span>Send Fax</span>

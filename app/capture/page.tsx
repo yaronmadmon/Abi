@@ -131,23 +131,26 @@ function QuickCaptureContent() {
   const IconComponent = config.icon
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200">
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--glass-border)' }}>
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors duration-250"
+            style={{ color: 'var(--text-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            <ChevronLeft className="w-6 h-6 text-gray-700" strokeWidth={2} />
+            <ChevronLeft className="w-6 h-6" strokeWidth={2} />
           </button>
           <div className="flex items-center gap-3 flex-1">
             <div className={`w-10 h-10 bg-gradient-to-br ${config.color} rounded-xl flex items-center justify-center shadow-md`}>
               <IconComponent className="w-5 h-5 text-white" strokeWidth={2} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Quick Capture</h1>
-              <p className="text-xs text-gray-500">{config.label}</p>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Quick Capture</h1>
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{config.label}</p>
             </div>
           </div>
         </div>
@@ -164,11 +167,18 @@ function QuickCaptureContent() {
               <button
                 key={t}
                 onClick={() => setType(t)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all duration-250 whitespace-nowrap ${
                   type === t
                     ? 'bg-gradient-to-r ' + cfg.color + ' text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : ''
                 }`}
+                style={type === t ? {} : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
+                onMouseEnter={(e) => {
+                  if (type !== t) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                }}
+                onMouseLeave={(e) => {
+                  if (type !== t) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'
+                }}
               >
                 <Icon className="w-4 h-4" strokeWidth={2} />
                 {cfg.label}
@@ -178,26 +188,30 @@ function QuickCaptureContent() {
         </div>
 
         {/* Input Area */}
-        <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
+        <div className="rounded-2xl border-2 p-6 shadow-sm transition-colors duration-250" style={{ backgroundColor: 'var(--bg-elevated)', border: '2px solid var(--glass-border)' }}>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={config.placeholder}
-            className="w-full min-h-[200px] resize-none focus:outline-none text-lg text-gray-900 placeholder-gray-400"
+            className="w-full min-h-[200px] resize-none focus:outline-none text-lg transition-colors duration-250"
+            style={{ color: 'var(--text-primary)', backgroundColor: 'transparent' }}
             autoFocus
           />
           
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-500">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t transition-colors duration-250" style={{ borderTop: '1px solid var(--glass-border)' }}>
+            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               {content.length} characters
             </div>
             <button
               onClick={() => setIsListening(!isListening)}
-              className={`p-3 rounded-lg transition-all ${
-                isListening
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className="p-3 rounded-lg transition-all duration-250"
+              style={isListening ? { backgroundColor: '#b91c1c', color: 'white' } : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
+              onMouseEnter={(e) => {
+                if (!isListening) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+              }}
+              onMouseLeave={(e) => {
+                if (!isListening) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'
+              }}
             >
               <Mic className="w-5 h-5" strokeWidth={2} />
             </button>
@@ -216,7 +230,10 @@ function QuickCaptureContent() {
           </button>
           <button
             onClick={() => router.back()}
-            className="w-full py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            className="w-full py-3 font-medium transition-colors duration-250"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
           >
             Cancel
           </button>

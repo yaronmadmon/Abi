@@ -200,17 +200,20 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
   return (
     <AppModal isOpen={isOpen} onClose={onCancel} variant="center" className="glass-card p-6 max-w-md w-full max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Upload Document</h2>
+          <h2 id="modal-title" className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Upload Document</h2>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="transition-colors duration-250"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
           >
             <X className="w-5 h-5" strokeWidth={2} />
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          <div className="mb-4 p-3 rounded-lg text-sm transition-colors duration-250" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444' }}>
             {error}
           </div>
         )}
@@ -220,19 +223,45 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-xl transition-colors duration-250"
+              style={{ 
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--glass-border)',
+                color: 'var(--text-primary)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--glass-border)'
+                e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'
+              }}
             >
-              <Upload className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
-              <span className="text-sm font-medium text-gray-700">Upload File</span>
+              <Upload className="w-5 h-5" strokeWidth={1.5} />
+              <span className="text-sm font-medium">Upload File</span>
             </button>
 
             <button
               type="button"
               onClick={startCamera}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-xl transition-colors duration-250"
+              style={{ 
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--glass-border)',
+                color: 'var(--text-primary)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--glass-border)'
+                e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'
+              }}
             >
-              <Camera className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
-              <span className="text-sm font-medium text-gray-700">Scan with Camera</span>
+              <Camera className="w-5 h-5" strokeWidth={1.5} />
+              <span className="text-sm font-medium">Scan with Camera</span>
             </button>
           </div>
         )}
@@ -240,17 +269,27 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
         {showCamera && !file && (
           <div className="mb-4">
             {/* Format Selector */}
-            <div className="mb-3 flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-700">Save as:</span>
+            <div className="mb-3 flex items-center gap-2 p-2 rounded-lg transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Save as:</span>
               <div className="flex gap-2 flex-1">
                 <button
                   type="button"
                   onClick={() => setSaveFormat('image')}
-                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                    saveFormat === 'image'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors duration-250"
+                  style={saveFormat === 'image' 
+                    ? { backgroundColor: 'var(--accent-primary)', color: 'white' }
+                    : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }
+                  }
+                  onMouseEnter={(e) => {
+                    if (saveFormat !== 'image') {
+                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (saveFormat !== 'image') {
+                      e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'
+                    }
+                  }}
                 >
                   <FileImage className="w-4 h-4" strokeWidth={2} />
                   <span className="text-sm font-medium">Image</span>
@@ -258,11 +297,21 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
                 <button
                   type="button"
                   onClick={() => setSaveFormat('pdf')}
-                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                    saveFormat === 'pdf'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors duration-250"
+                  style={saveFormat === 'pdf' 
+                    ? { backgroundColor: 'var(--accent-primary)', color: 'white' }
+                    : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }
+                  }
+                  onMouseEnter={(e) => {
+                    if (saveFormat !== 'pdf') {
+                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (saveFormat !== 'pdf') {
+                      e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'
+                    }
+                  }}
                 >
                   <FileType className="w-4 h-4" strokeWidth={2} />
                   <span className="text-sm font-medium">PDF</span>
@@ -270,7 +319,7 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
               </div>
             </div>
 
-            <div className="relative rounded-xl overflow-hidden mb-3 border-2 border-gray-200 bg-black">
+            <div className="relative rounded-xl overflow-hidden mb-3 border-2 bg-black transition-colors duration-250" style={{ borderColor: 'var(--glass-border)' }}>
               <video
                 ref={videoRef}
                 autoPlay
@@ -289,14 +338,20 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
               <button
                 type="button"
                 onClick={capturePhoto}
-                className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                className="flex-1 px-4 py-3 rounded-lg transition-colors duration-250 font-medium"
+                style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
               >
                 Capture {saveFormat === 'pdf' ? 'as PDF' : 'Photo'}
               </button>
               <button
                 type="button"
                 onClick={stopCamera}
-                className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                className="flex-1 px-4 py-3 rounded-lg transition-colors duration-250"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
               >
                 Cancel
               </button>
@@ -322,29 +377,30 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
                     src={URL.createObjectURL(file)}
                     alt="Preview"
                     fill
-                    className="rounded-xl border border-gray-200 object-contain bg-gray-50"
+                    className="rounded-xl object-contain transition-colors duration-250"
+                    style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)' }}
                     unoptimized
                   />
                 </div>
               )}
               {file.type === 'application/pdf' && (
-                <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="mb-4 p-4 rounded-xl transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
                   <div className="flex items-center gap-3">
-                    <FileType className="w-8 h-8 text-blue-600" strokeWidth={1.5} />
+                    <FileType className="w-8 h-8" strokeWidth={1.5} style={{ color: 'var(--accent-primary)' }} />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">PDF Document</p>
-                      <p className="text-xs text-gray-500">Preview available after saving</p>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>PDF Document</p>
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Preview available after saving</p>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* File Info */}
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                <FileText className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
+              <div className="flex items-center gap-3 p-3 rounded-xl transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                <FileText className="w-5 h-5" strokeWidth={1.5} style={{ color: 'var(--text-secondary)' }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                  <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                  <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{file.name}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{(file.size / 1024).toFixed(1)} KB</p>
                 </div>
                 {file.type.startsWith('image/') && (
                   <button
@@ -355,7 +411,10 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
                         fileInputRef.current.value = ''
                       }
                     }}
-                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    className="p-2 transition-colors duration-250"
+                    style={{ color: 'var(--text-muted)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
                     title="Remove image"
                   >
                     <X className="w-4 h-4" strokeWidth={2} />
@@ -364,15 +423,22 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                  Title <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2 pr-10 rounded-lg transition-colors duration-250"
+                    style={{ 
+                      border: '1px solid var(--glass-border)',
+                      backgroundColor: 'var(--bg-elevated)',
+                      color: 'var(--text-primary)'
+                    }}
+                    onFocus={(e) => e.currentTarget.style.outline = '2px solid var(--accent-primary)'}
+                    onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     placeholder="Document title"
                     required
                   />
@@ -387,14 +453,21 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                   Description (optional)
                 </label>
                 <div className="relative">
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2 pr-10 rounded-lg transition-colors duration-250"
+                    style={{ 
+                      border: '1px solid var(--glass-border)',
+                      backgroundColor: 'var(--bg-elevated)',
+                      color: 'var(--text-primary)'
+                    }}
+                    onFocus={(e) => e.currentTarget.style.outline = '2px solid var(--accent-primary)'}
+                    onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     placeholder="Add a description..."
                     rows={3}
                   />
@@ -409,17 +482,23 @@ export default function DocumentUpload({ isOpen = true, onUpload, onCancel, auto
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 mt-4 border-t border-gray-200 flex-shrink-0">
+            <div className="flex gap-2 pt-4 mt-4 flex-shrink-0 transition-colors duration-250" style={{ borderTop: '1px solid var(--glass-border)' }}>
               <button
                 type="button"
                 onClick={onCancel}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
               >
                 Upload
               </button>

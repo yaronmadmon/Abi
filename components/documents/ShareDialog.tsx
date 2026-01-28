@@ -100,10 +100,13 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
   return (
     <AppModal isOpen={isOpen} onClose={onClose} variant="center" className="glass-card p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Share Document</h2>
+        <h2 id="modal-title" className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Share Document</h2>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="transition-colors duration-250"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
           aria-label="Close"
         >
           <X className="w-5 h-5" strokeWidth={2} />
@@ -113,7 +116,7 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
         <div className="space-y-4">
           {/* Email Share */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Share via Email
             </label>
             <div className="flex gap-2">
@@ -122,12 +125,26 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
                 value={emailAddress}
                 onChange={(e) => setEmailAddress(e.target.value)}
                 placeholder="email@example.com"
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                style={{ 
+                  border: '1px solid var(--glass-border)',
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)'
+                }}
+                onFocus={(e) => e.currentTarget.style.outline = '2px solid var(--accent-primary)'}
+                onBlur={(e) => e.currentTarget.style.outline = 'none'}
               />
               <button
                 onClick={handleEmailShare}
                 disabled={!emailAddress}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-250 flex items-center gap-2"
+                style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.opacity = '0.9'
+                }}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.opacity = '1'
+                }}
               >
                 <Mail className="w-4 h-4" strokeWidth={2} />
                 <span>Send</span>
@@ -137,7 +154,7 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
 
           {/* WhatsApp Share */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Share via WhatsApp
             </label>
             <div className="flex gap-2">
@@ -146,12 +163,26 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+1234567890"
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                style={{ 
+                  border: '1px solid var(--glass-border)',
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)'
+                }}
+                onFocus={(e) => e.currentTarget.style.outline = '2px solid var(--accent-primary)'}
+                onBlur={(e) => e.currentTarget.style.outline = 'none'}
               />
               <button
                 onClick={handleWhatsAppShare}
                 disabled={!phoneNumber}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-250 flex items-center gap-2"
+                style={{ backgroundColor: '#10b981', color: 'white' }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.opacity = '0.9'
+                }}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.opacity = '1'
+                }}
               >
                 <MessageCircle className="w-4 h-4" strokeWidth={2} />
                 <span>Share</span>
@@ -161,7 +192,7 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
 
           {/* SMS Share */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Share via SMS/Text
             </label>
             <div className="flex gap-2">
@@ -170,12 +201,26 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+1234567890"
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                style={{ 
+                  border: '1px solid var(--glass-border)',
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)'
+                }}
+                onFocus={(e) => e.currentTarget.style.outline = '2px solid var(--accent-primary)'}
+                onBlur={(e) => e.currentTarget.style.outline = 'none'}
               />
               <button
                 onClick={handleSMSShare}
                 disabled={!phoneNumber}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-250 flex items-center gap-2"
+                style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.opacity = '0.9'
+                }}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.disabled) e.currentTarget.style.opacity = '1'
+                }}
               >
                 <MessageCircle className="w-4 h-4" strokeWidth={2} />
                 <span>Send</span>
@@ -185,7 +230,7 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
 
           {/* Copy Link */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Copy Shareable Link
             </label>
             <div className="flex gap-2">
@@ -193,11 +238,19 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
                 type="text"
                 value={shareLink || generateShareLink()}
                 readOnly
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-600"
+                className="flex-1 px-4 py-2 rounded-lg text-sm transition-colors duration-250"
+                style={{ 
+                  border: '1px solid var(--glass-border)',
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  color: 'var(--text-secondary)'
+                }}
               />
               <button
                 onClick={handleCopyLink}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-2"
+                className="px-4 py-2 rounded-lg transition-colors duration-250 flex items-center gap-2"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
               >
                 {linkCopied ? (
                   <>
@@ -229,7 +282,10 @@ export default function ShareDialog({ isOpen, onClose, fileUrl, fileName, title 
                   console.error('Share failed:', err)
                 }
               }}
-              className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 rounded-lg transition-colors duration-250 flex items-center justify-center gap-2"
+              style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Link2 className="w-4 h-4" strokeWidth={2} />
               <span>Share via System</span>

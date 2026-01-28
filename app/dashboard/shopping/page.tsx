@@ -114,20 +114,23 @@ export default function ShoppingPage() {
     <div className="min-h-screen p-6 pb-40 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
       <PageContainer>
         <div className="mb-6">
-          <Link href="/today" className="text-gray-500 hover:text-gray-700 text-sm mb-3 inline-block">
+          <Link href="/today" className="text-sm mb-3 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
             ← Back to Today
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Shopping List</h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <h1 className="text-3xl font-bold transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>Shopping List</h1>
+              <p className="text-sm mt-1 transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
                 {items.length} {items.length === 1 ? 'item' : 'items'} • {items.filter(i => i.completed).length} checked
               </p>
             </div>
             {items.length > 0 && (
               <button
                 onClick={clearAllItems}
-                className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+                className="text-sm font-medium flex items-center gap-1 transition-colors duration-250"
+                style={{ color: 'var(--error)' }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
               >
                 <Trash2 className="w-4 h-4" />
                 Clear All
@@ -139,18 +142,30 @@ export default function ShoppingPage() {
         {!showAddForm ? (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all mb-6"
+            className="w-full py-4 px-6 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-250 mb-6"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
             + Add Item Manually
           </button>
         ) : (
-          <div className="bg-white rounded-2xl p-5 mb-6 border-2 border-gray-100">
+          <div className="rounded-2xl p-5 mb-6 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
             <input
               type="text"
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
               placeholder="Item name"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none transition-all duration-250"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--glass-border)', color: 'var(--text-primary)' }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 158, 255, 0.2)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--glass-border)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && newItemName.trim()) {
                   addItem(newItemName.trim(), selectedCategory)
@@ -162,10 +177,19 @@ export default function ShoppingPage() {
               onChange={(e) =>
                 setSelectedCategory(e.target.value as ShoppingItem['category'])
               }
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none transition-all duration-250"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--glass-border)', color: 'var(--text-primary)' }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 158, 255, 0.2)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--glass-border)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
             >
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
+                <option key={cat} value={cat} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                   {cat.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                 </option>
               ))}
@@ -177,7 +201,10 @@ export default function ShoppingPage() {
                     addItem(newItemName.trim(), selectedCategory)
                   }
                 }}
-                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                className="flex-1 py-3 px-4 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-250"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
               >
                 Add
               </button>
@@ -186,7 +213,10 @@ export default function ShoppingPage() {
                   setShowAddForm(false)
                   setNewItemName('')
                 }}
-                className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all"
+                className="flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-250"
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
               >
                 Cancel
               </button>
@@ -195,34 +225,40 @@ export default function ShoppingPage() {
         )}
 
         {Object.keys(groupedItems).length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center text-gray-500 border-2 border-gray-100">
-            <p className="text-lg mb-2">No items yet</p>
+          <div className="rounded-2xl p-8 text-center transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>
+            <p className="text-lg mb-2 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>No items yet</p>
             <p className="text-sm">Add something to your list!</p>
           </div>
         ) : (
           <div className="space-y-4">
             {Object.entries(groupedItems).map(([category, categoryItems]) => (
-              <div key={category} className="bg-white rounded-2xl p-5 border-2 border-gray-100">
-                <h2 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">
+              <div key={category} className="rounded-2xl p-5 transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
+                <h2 className="font-bold mb-4 text-sm uppercase tracking-wide transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>
                   {category.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-                  <span className="ml-2 text-gray-400 font-normal">({categoryItems.length})</span>
+                  <span className="ml-2 font-normal transition-colors duration-250" style={{ color: 'var(--text-muted)' }}>({categoryItems.length})</span>
                 </h2>
                 <div className="space-y-2">
                   {categoryItems.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors bg-white border border-gray-100"
+                      className="flex items-center gap-3 p-3 rounded-xl transition-colors duration-250"
+                      style={{ backgroundColor: 'transparent', border: '1px solid var(--glass-border)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleItem(item.id)
                         }}
-                        className="flex-shrink-0 w-6 h-6 rounded border-2 border-gray-300 flex items-center justify-center hover:border-blue-500 transition-colors cursor-pointer"
+                        className="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors duration-250 cursor-pointer"
+                        style={{ borderColor: 'var(--glass-border)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                         aria-label={item.completed ? 'Uncheck item' : 'Check item'}
                       >
                         {item.completed && (
-                          <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-4 h-4 transition-colors duration-250" style={{ color: 'var(--accent-primary)' }} fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         )}
@@ -232,11 +268,10 @@ export default function ShoppingPage() {
                         className="flex-1 cursor-pointer"
                       >
                         <p
-                          className={`text-base ${
-                            item.completed
-                              ? 'line-through text-gray-400'
-                              : 'text-gray-900'
+                          className={`text-base transition-colors duration-250 ${
+                            item.completed ? 'line-through' : ''
                           }`}
+                          style={{ color: item.completed ? 'var(--text-muted)' : 'var(--text-primary)' }}
                         >
                           {item.name}
                         </p>
@@ -248,7 +283,16 @@ export default function ShoppingPage() {
                             deleteItem(item.id)
                           }
                         }}
-                        className="flex-shrink-0 w-8 h-8 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center cursor-pointer"
+                        className="flex-shrink-0 w-8 h-8 rounded-lg transition-colors duration-250 flex items-center justify-center cursor-pointer"
+                        style={{ color: 'var(--error)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(248, 113, 113, 0.2)'
+                          e.currentTarget.style.opacity = '0.8'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                          e.currentTarget.style.opacity = '1'
+                        }}
                         aria-label="Delete item"
                         title="Remove item"
                       >

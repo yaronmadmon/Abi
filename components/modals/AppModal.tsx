@@ -129,7 +129,7 @@ export default function AppModal({
 
   // Determine panel classes based on variant
   const getPanelClasses = () => {
-    const baseClasses = 'bg-white'
+    const baseClasses = ''
     
     if (variant === 'fullscreen') {
       // Full screen on mobile, constrained on desktop
@@ -138,30 +138,35 @@ export default function AppModal({
     
     if (variant === 'bottom') {
       // Full screen on mobile (h-full), constrained height on desktop
-      return `${baseClasses} w-full h-full sm:h-auto sm:max-h-[90vh] rounded-t-3xl shadow-soft-lg flex flex-col`
+      return `${baseClasses} w-full h-full sm:h-auto sm:max-h-[90vh] rounded-t-3xl flex flex-col`
     }
     
     // Center variant (default) - full screen on mobile, constrained on desktop
-    return `${baseClasses} w-full h-full sm:max-w-md sm:h-[90vh] sm:rounded-2xl shadow-2xl`
+    return `${baseClasses} w-full h-full sm:max-w-md sm:h-[90vh] sm:rounded-2xl`
   }
 
   // Determine overlay alignment based on variant
   const getOverlayClasses = () => {
     if (variant === 'bottom') {
-      return 'fixed inset-0 z-[9999] bg-black/60 flex items-end justify-center'
+      return 'fixed inset-0 z-[9999] flex items-end justify-center'
     }
-    return 'fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center'
+    return 'fixed inset-0 z-[9999] flex items-center justify-center'
   }
 
   const overlay = (
     <div
       className={getOverlayClasses()}
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(4px)' }}
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
         ref={modalRef}
         className={`${getPanelClasses()} ${className}`}
-        style={style}
+        style={{
+          backgroundColor: 'var(--bg-elevated)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          ...style
+        }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

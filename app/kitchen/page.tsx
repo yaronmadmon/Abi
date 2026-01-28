@@ -31,7 +31,16 @@ export default function KitchenPage() {
     const storedLiked = localStorage.getItem('likedRecipes')
 
     if (storedMeals) {
-      setWeeklyMeals(JSON.parse(storedMeals))
+      try {
+        const meals = JSON.parse(storedMeals)
+        console.log('📅 Loaded meals from localStorage:', meals.length, 'meals')
+        setWeeklyMeals(meals)
+      } catch (error) {
+        console.error('Failed to parse weeklyMeals:', error)
+        setWeeklyMeals([])
+      }
+    } else {
+      setWeeklyMeals([])
     }
 
     if (storedShopping) {
@@ -49,7 +58,10 @@ export default function KitchenPage() {
 
   // Refresh data when meals are updated
   useEffect(() => {
-    const handleMealsUpdate = () => loadData()
+    const handleMealsUpdate = () => {
+      console.log('🔄 mealsUpdated event received, reloading data...')
+      loadData()
+    }
     const handleAllergyUpdate = () => {
       const allergyPrefs = getAllergyPreferences()
       setHouseholdAllergens(allergyPrefs.allergens)
@@ -151,26 +163,27 @@ export default function KitchenPage() {
       <PageContainer>
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
-            <ChefHat className="w-8 h-8 text-orange-600" strokeWidth={1.5} />
-            <h1 className="text-3xl font-bold text-gray-900">Kitchen</h1>
+            <ChefHat className="w-8 h-8" style={{ color: 'var(--accent-primary)' }} strokeWidth={1.5} />
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Kitchen</h1>
           </div>
-          <p className="text-sm text-gray-500">Recipes, groceries & pantry</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Recipes, groceries & pantry</p>
         </div>
 
         {/* Allergy Banner */}
         {householdAllergens.length > 0 && (
-          <div className="mb-6 bg-red-50 border-2 border-red-200 rounded-lg p-4">
+          <div className="mb-6 rounded-lg p-4" style={{ backgroundColor: 'rgba(248, 113, 113, 0.1)', border: '2px solid rgba(248, 113, 113, 0.3)' }}>
             <div className="flex items-start gap-3">
-              <Shield className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+              <Shield className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: 'var(--error)' }} />
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Allergy-Safe Mode</h3>
-                <p className="text-sm text-red-800">
+                <h3 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Allergy-Safe Mode</h3>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   Avoiding: {formatAllergenNames(householdAllergens)}
                 </p>
               </div>
               <Link
                 href="/kitchen/settings/allergies"
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
+                className="text-sm font-medium transition-colors duration-250"
+                style={{ color: 'var(--error)' }}
               >
                 Edit
               </Link>
@@ -198,14 +211,14 @@ export default function KitchenPage() {
         {/* Summary Cards */}
         <div className="space-y-4 mb-6">
           {/* 1. Today's Meal (Read-only, derived from weekly) */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-gray-100">
+          <div className="rounded-lg p-6 shadow-sm transition-all duration-250" style={{ backgroundColor: 'var(--bg-elevated)', border: '2px solid var(--glass-border)' }}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm" style={{ backgroundColor: 'var(--accent-primary)' }}>
                 <UtensilsCrossed className="w-5 h-5 text-white" strokeWidth={2} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Today's Meal</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Today's Meal</h3>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   {todayMeals.length === 0 ? 'No meals planned' : `${todayMeals.length} planned`}
                 </p>
               </div>
@@ -229,7 +242,10 @@ export default function KitchenPage() {
                           }
                         }
                       }}
-                      className="w-full flex gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-left"
+                      className="w-full flex gap-4 p-3 rounded-lg transition-all duration-250 cursor-pointer text-left"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
                     >
                       <div className="w-20 h-20 relative flex-shrink-0 rounded-lg overflow-hidden">
                         <Image 
@@ -241,12 +257,12 @@ export default function KitchenPage() {
                         />
                       </div>
                       <div className="flex-1">
-                        <div className="text-xs font-medium text-blue-600 uppercase mb-1">
+                        <div className="text-xs font-medium uppercase mb-1" style={{ color: 'var(--accent-primary)' }}>
                           {meal.mealType}
                         </div>
-                        <h4 className="text-base font-semibold text-gray-900 mb-1">{meal.title}</h4>
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{meal.description}</p>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{meal.title}</h4>
+                        <p className="text-sm mb-2 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{meal.description}</p>
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-secondary)' }}>
                           <div className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {meal.prepTime} min
@@ -261,17 +277,21 @@ export default function KitchenPage() {
                 {/* Optional Action: Add Ingredients */}
                 <button
                   onClick={() => setShowAddIngredientsPrompt(true)}
-                  className="w-full py-2.5 px-4 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+                  className="w-full py-2.5 px-4 text-sm rounded-lg transition-all duration-250 font-medium"
+                  style={{ color: 'var(--text-primary)', backgroundColor: 'rgba(255,255,255,0.05)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
                 >
                   Add today's ingredients to shopping list
                 </button>
               </>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">No meals planned for today</p>
+                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>No meals planned for today</p>
                 <button
                   onClick={() => router.push('/kitchen/planner')}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-sm font-medium transition-colors duration-250"
+                  style={{ color: 'var(--accent-primary)' }}
                 >
                   Plan with Abby →
                 </button>
@@ -317,7 +337,8 @@ export default function KitchenPage() {
           {/* 3. Meal Planner (Primary CTA) */}
           <button
             onClick={() => router.push('/kitchen/planner')}
-            className="w-full bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white"
+            className="w-full rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-250 text-white"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -348,13 +369,14 @@ export default function KitchenPage() {
           </button>
 
           {/* 4. This Week's Meals (Clickable cards) */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="rounded-lg p-6 shadow-sm transition-all duration-250" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--glass-border)' }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">This Week's Meals</h3>
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>This Week's Meals</h3>
               {weeklyMeals.length > 0 && (
                 <button
                   onClick={handleClearAllMeals}
-                  className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+                  className="text-sm font-medium flex items-center gap-1 transition-colors duration-250"
+                  style={{ color: 'var(--error)' }}
                 >
                   <Trash2 className="w-4 h-4" />
                   Clear All
@@ -372,32 +394,28 @@ export default function KitchenPage() {
                     <button
                       key={day}
                       onClick={() => handleDayClick(dayDate)}
-                      className={`flex-shrink-0 w-[100px] p-3 rounded-lg border-2 transition-all hover:shadow-md cursor-pointer ${
-                        isToday
-                          ? 'border-blue-500 bg-blue-50'
-                          : dayMeals.length > 0
-                          ? 'border-orange-200 bg-orange-50 hover:border-orange-300'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className="flex-shrink-0 w-[100px] p-3 rounded-lg border-2 transition-all duration-250 hover:shadow-md cursor-pointer"
+                      style={{
+                        border: isToday ? '2px solid var(--accent-primary)' : dayMeals.length > 0 ? '2px solid var(--glass-border)' : '2px solid var(--glass-border)',
+                        backgroundColor: isToday ? 'rgba(139, 158, 255, 0.1)' : dayMeals.length > 0 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.05)'
+                      }}
                     >
-                      <h4 className={`text-xs font-medium mb-2 text-center ${
-                        isToday ? 'text-blue-700' : 'text-gray-700'
-                      }`}>
+                      <h4 className="text-xs font-medium mb-2 text-center" style={{ color: isToday ? 'var(--accent-primary)' : 'var(--text-primary)' }}>
                         {day}
                       </h4>
                       {dayMeals.length > 0 ? (
                         <div className="space-y-1">
                           {dayMeals.slice(0, 2).map((meal) => (
-                            <div key={meal.id} className="text-xs text-gray-600 truncate">
+                            <div key={meal.id} className="text-xs truncate" style={{ color: 'var(--text-secondary)' }}>
                               {meal.title.split(' ')[0]}
                             </div>
                           ))}
                           {dayMeals.length > 2 && (
-                            <div className="text-xs text-gray-400">+{dayMeals.length - 2}</div>
+                            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>+{dayMeals.length - 2}</div>
                           )}
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-400 text-center">-</p>
+                        <p className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>-</p>
                       )}
                     </button>
                   )
@@ -416,13 +434,13 @@ export default function KitchenPage() {
             {pendingShopping.length > 0 ? (
               <div className="space-y-2">
                 {pendingShopping.map((item) => (
-                  <div key={item.id} className="text-sm text-gray-700">
+                  <div key={item.id} className="text-sm" style={{ color: 'var(--text-primary)' }}>
                     • {item.name}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">Your shopping list is empty. Ready to add some items?</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Your shopping list is empty. Ready to add some items?</p>
             )}
           </SummaryCard>
         </div>
@@ -430,12 +448,12 @@ export default function KitchenPage() {
         {/* Add Ingredients Confirmation Prompt */}
         {showAddIngredientsPrompt && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <div className="rounded-lg max-w-md w-full p-6 shadow-2xl transition-all duration-250" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--glass-border)' }}>
+              <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Add ingredients to shopping list?
               </h3>
-              <p className="text-sm text-gray-600 mb-1">Today's Meal – Ingredients</p>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>Today's Meal – Ingredients</p>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
                 {todayMeals.length === 1 
                   ? `${todayMeals[0].ingredients.length} ingredients from ${todayMeals[0].title}`
                   : `All ingredients from ${todayMeals.length} meals`}
@@ -444,13 +462,15 @@ export default function KitchenPage() {
               <div className="space-y-3">
                 <button
                   onClick={handleAddTodayIngredients}
-                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="w-full py-3 px-4 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-250"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
                 >
                   Add to shopping list
                 </button>
                 <button
                   onClick={() => setShowAddIngredientsPrompt(false)}
-                  className="w-full py-3 px-4 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                  className="w-full py-3 px-4 font-medium transition-colors duration-250"
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   Not now
                 </button>

@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, CheckSquare, Bell, Calendar, FileText, ShoppingCart, Settings } from 'lucide-react'
+import { Sparkles, CheckSquare, FileText, ShoppingCart } from 'lucide-react'
 import GreetingHeader from '@/components/today/GreetingHeader'
-import MoodBar from '@/components/today/MoodBar'
 import AIFocusHeader from '@/components/today/AIFocusHeader'
 import WeatherCard from '@/components/today/WeatherCard'
 import CalendarCard from '@/components/today/CalendarCard'
@@ -145,7 +144,7 @@ export default function TodayPage() {
                 if (!system) return null
                 
                 return (
-                  <div key={calendarId} className="flex items-center gap-2 text-sm text-gray-600">
+                  <div key={calendarId} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                     <span className="text-base">{system.emoji}</span>
                     <span>{formatInCalendar(new Date(), calendarId)}</span>
                   </div>
@@ -153,21 +152,7 @@ export default function TodayPage() {
               })}
             </div>
           )}
-          
-          {/* Add Calendar Prompt (if no calendars selected) */}
-          {calendarPrefs && (!calendarPrefs.selectedCalendars || calendarPrefs.selectedCalendars.length === 0) && (
-            <Link 
-              href="/settings/calendar"
-              className="inline-flex items-center gap-2 mt-3 text-sm text-gray-500 hover:text-blue-600 transition-colors"
-            >
-              <Calendar className="w-4 h-4" />
-              Add Hebrew, Chinese, or other calendars →
-            </Link>
-          )}
         </div>
-
-        {/* Mood Bar - Optional, fully private */}
-        <MoodBar />
 
         {/* AI Focus Header - Hidden in evening mode */}
         {!isEveningMode && <AIFocusHeader />}
@@ -188,12 +173,12 @@ export default function TodayPage() {
               className="glass-card p-4 hover:shadow-soft-lg transition-all duration-200 card-press relative"
             >
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-soft">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft" style={{ background: 'linear-gradient(to bottom right, var(--accent-primary), var(--accent-primary))' }}>
                   <CheckSquare className="w-5 h-5 text-white" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-gray-900">To-Do</h3>
-                  <p className="text-xs text-gray-500">
+                  <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>To-Do</h3>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                     {taskCount === 0 ? 'All done!' : `${taskCount} active`}
                   </p>
                 </div>
@@ -210,12 +195,12 @@ export default function TodayPage() {
               className="glass-card p-4 hover:shadow-soft-lg transition-all duration-200 card-press relative"
             >
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center shadow-soft">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
                   <FileText className="w-5 h-5 text-white" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-gray-900">Notes</h3>
-                  <p className="text-xs text-gray-500">
+                  <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Notes</h3>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                     {noteCount === 0 ? 'No notes yet' : `${noteCount} notes`}
                   </p>
                 </div>
@@ -227,12 +212,12 @@ export default function TodayPage() {
               className="glass-card p-4 hover:shadow-soft-lg transition-all duration-200 card-press relative"
             >
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-soft">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
                   <ShoppingCart className="w-5 h-5 text-white" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-gray-900">Shopping</h3>
-                  <p className="text-xs text-gray-500">
+                  <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Shopping</h3>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                     {shoppingCount === 0 ? 'List is empty' : `${shoppingCount} items`}
                   </p>
                 </div>
@@ -250,15 +235,15 @@ export default function TodayPage() {
 
         {/* 4. Plan Something Card - Hidden in evening mode */}
         {!isEveningMode && (
-          <Link href="/kitchen/planner" className="glass-card p-5 mb-4 block hover:shadow-soft-lg transition-all card-press">
+          <Link href="/kitchen/planner" className="glass-card p-5 mb-4 block hover:shadow-soft-lg transition-all duration-250 card-press">
             <div className="w-full flex items-center justify-between text-left group">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-lg font-semibold mb-1 transition-colors duration-250" style={{ color: 'var(--text-primary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-primary)'}>
                   Plan Something
                 </h3>
-                <p className="text-sm text-gray-500">Meal planning, events & more</p>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Meal planning, events & more</p>
               </div>
-              <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform" style={{ color: 'var(--icon-color)' }} strokeWidth={1.5} />
+              <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform duration-250" style={{ color: 'var(--icon-color)' }} strokeWidth={1.5} />
             </div>
           </Link>
         )}

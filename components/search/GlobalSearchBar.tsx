@@ -80,7 +80,7 @@ export default function GlobalSearchBar() {
             title: task.title,
             subtitle: task.category,
             route: '/dashboard/tasks',
-            icon: <CheckCircle2 className="w-4 h-4 text-blue-600" strokeWidth={2} />,
+            icon: <CheckCircle2 className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />,
           })
         }
       })
@@ -102,7 +102,7 @@ export default function GlobalSearchBar() {
             title: note.title || 'Untitled Note',
             subtitle: note.body.substring(0, 50),
             route: '/home',
-            icon: <FileText className="w-4 h-4 text-purple-600" strokeWidth={2} />,
+            icon: <FileText className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />,
           })
         }
       })
@@ -124,7 +124,7 @@ export default function GlobalSearchBar() {
             title: appt.title,
             subtitle: appt.date ? new Date(appt.date).toLocaleDateString() : undefined,
             route: '/home/calendar',
-            icon: <Calendar className="w-4 h-4 text-green-600" strokeWidth={2} />,
+            icon: <Calendar className="w-4 h-4" style={{ color: 'var(--success)' }} strokeWidth={2} />,
           })
         }
       })
@@ -147,7 +147,7 @@ export default function GlobalSearchBar() {
             title: member.name,
             subtitle: member.relationship,
             route: '/people/family',
-            icon: <User className="w-4 h-4 text-blue-600" strokeWidth={2} />,
+            icon: <User className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />,
           })
         }
       })
@@ -170,7 +170,7 @@ export default function GlobalSearchBar() {
             title: pet.name,
             subtitle: `${pet.type}${pet.breed ? ` • ${pet.breed}` : ''}`,
             route: '/people/pets',
-            icon: <Heart className="w-4 h-4 text-pink-600" strokeWidth={2} />,
+            icon: <Heart className="w-4 h-4" style={{ color: 'var(--error)' }} strokeWidth={2} />,
           })
         }
       })
@@ -189,7 +189,7 @@ export default function GlobalSearchBar() {
             title: meal.name,
             subtitle: `${meal.mealType} • ${meal.day}`,
             route: '/dashboard/meals',
-            icon: <UtensilsCrossed className="w-4 h-4 text-orange-600" strokeWidth={2} />,
+            icon: <UtensilsCrossed className="w-4 h-4" style={{ color: 'var(--warning)' }} strokeWidth={2} />,
           })
         }
       })
@@ -208,7 +208,7 @@ export default function GlobalSearchBar() {
             title: item.name,
             subtitle: item.category,
             route: '/dashboard/shopping',
-            icon: <ShoppingCart className="w-4 h-4 text-yellow-600" strokeWidth={2} />,
+            icon: <ShoppingCart className="w-4 h-4" style={{ color: 'var(--warning)' }} strokeWidth={2} />,
           })
         }
       })
@@ -252,7 +252,7 @@ export default function GlobalSearchBar() {
             title: doc.title,
             subtitle: doc.fileName,
             route: '/office/documents',
-            icon: <FileText className="w-4 h-4 text-gray-600" strokeWidth={2} />,
+            icon: <FileText className="w-4 h-4" style={{ color: 'var(--text-muted)' }} strokeWidth={2} />,
           })
         }
       })
@@ -275,7 +275,7 @@ export default function GlobalSearchBar() {
             title: recipe.title,
             subtitle: `${recipe.cuisine} • ${recipe.mealType}`,
             route: '/kitchen/recipes',
-            icon: <ChefHat className="w-4 h-4 text-purple-600" strokeWidth={2} />,
+            icon: <ChefHat className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />,
             data: recipe,
           })
         }
@@ -344,7 +344,7 @@ export default function GlobalSearchBar() {
   return (
     <div ref={searchRef} className="relative w-full max-w-2xl mx-auto mb-4">
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }}>
           <Search className="w-5 h-5" strokeWidth={1.5} />
         </div>
         <input
@@ -356,9 +356,9 @@ export default function GlobalSearchBar() {
             if (results.length > 0) setIsOpen(true)
           }}
           placeholder="Search recipes, to-dos, notes, people..."
-          className="w-full pl-10 pr-10 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm transition-colors"
+          className="w-full pl-10 pr-10 py-3 rounded-xl focus:outline-none focus:ring-2 backdrop-blur-sm transition-colors duration-250"
           style={{
-            borderColor: 'var(--input-border)',
+            border: '1px solid var(--input-border)',
             backgroundColor: 'var(--input-bg)',
             color: 'var(--text-primary)',
           }}
@@ -366,7 +366,8 @@ export default function GlobalSearchBar() {
         {query && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-250 hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
             type="button"
           >
             <X className="w-5 h-5" strokeWidth={2} />
@@ -376,23 +377,22 @@ export default function GlobalSearchBar() {
 
       {/* Results Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-[400px] overflow-y-auto z-50">
+        <div 
+          className="absolute top-full left-0 right-0 mt-2 rounded-xl max-h-[400px] overflow-y-auto z-50"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+            border: '1px solid var(--glass-border)'
+          }}
+        >
           <div className="p-2">
             {results.map((result) => (
               <button
                 key={`${result.type}-${result.id}`}
                 onClick={() => handleResultClick(result)}
-                className="w-full flex items-start gap-3 p-3 rounded-lg transition-colors text-left"
+                className="w-full flex items-start gap-3 p-3 rounded-lg transition-colors duration-250 text-left hover:bg-white/5"
                 style={{
                   color: 'var(--text-primary)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--card-bg)'
-                  e.currentTarget.style.opacity = '0.9'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent'
-                  e.currentTarget.style.opacity = '1'
                 }}
               >
                 <div className="flex-shrink-0 mt-0.5">{result.icon}</div>
@@ -401,7 +401,7 @@ export default function GlobalSearchBar() {
                   {result.subtitle && (
                     <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{result.subtitle}</p>
                   )}
-                  <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-tertiary)' }}>{result.type}</p>
+                  <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>{result.type}</p>
                 </div>
               </button>
             ))}
@@ -424,8 +424,14 @@ export default function GlobalSearchBar() {
 
       {/* Recipe Detail Modal (from global search) */}
       {selectedRecipe && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 flex items-center justify-center p-4 z-[100]"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(8px)' }}
+        >
+          <div 
+            className="rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            style={{ backgroundColor: 'var(--bg-elevated)' }}
+          >
             {/* Modal Header with Image */}
             <div className="relative w-full h-64">
               <Image
@@ -437,7 +443,12 @@ export default function GlobalSearchBar() {
               />
               <button
                 onClick={() => setSelectedRecipe(null)}
-                className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-white transition-colors shadow-lg"
+                className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-250"
+                style={{ 
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+                  backdropFilter: 'blur(8px)',
+                  color: 'white'
+                }}
               >
                 <X className="w-5 h-5" strokeWidth={2} />
               </button>
@@ -445,41 +456,41 @@ export default function GlobalSearchBar() {
 
             {/* Modal Content */}
             <div className="p-6">
-              <div className="text-xs font-medium text-purple-600 uppercase mb-2">
+              <div className="text-xs font-medium uppercase mb-2" style={{ color: 'var(--accent-primary)' }}>
                 {selectedRecipe.mealType} • {selectedRecipe.cuisine} • {selectedRecipe.difficulty}
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
                 {selectedRecipe.title}
               </h2>
-              <p className="text-gray-600 mb-4">{selectedRecipe.description}</p>
+              <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{selectedRecipe.description}</p>
 
               {/* Recipe Metadata */}
-              <div className="flex gap-6 mb-6 pb-6 border-b">
+              <div className="flex gap-6 mb-6 pb-6" style={{ borderBottom: '1px solid var(--glass-border)' }}>
                 <div className="text-center">
-                  <Clock className="w-5 h-5 text-gray-400 mx-auto mb-1" />
-                  <div className="text-sm font-semibold text-gray-900">{selectedRecipe.totalTime} min</div>
-                  <div className="text-xs text-gray-500">Total Time</div>
+                  <Clock className="w-5 h-5 mx-auto mb-1" style={{ color: 'var(--text-muted)' }} />
+                  <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{selectedRecipe.totalTime} min</div>
+                  <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Total Time</div>
                 </div>
                 <div className="text-center">
-                  <User className="w-5 h-5 text-gray-400 mx-auto mb-1" />
-                  <div className="text-sm font-semibold text-gray-900">{selectedRecipe.servings}</div>
-                  <div className="text-xs text-gray-500">Servings</div>
+                  <User className="w-5 h-5 mx-auto mb-1" style={{ color: 'var(--text-muted)' }} />
+                  <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{selectedRecipe.servings}</div>
+                  <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Servings</div>
                 </div>
                 {selectedRecipe.calories && (
                   <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-900">{selectedRecipe.calories}</div>
-                    <div className="text-xs text-gray-500">Calories</div>
+                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{selectedRecipe.calories}</div>
+                    <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Calories</div>
                   </div>
                 )}
               </div>
 
               {/* Ingredients */}
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Ingredients</h3>
+                <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Ingredients</h3>
                 <ul className="space-y-2">
                   {selectedRecipe.ingredients.map((ing, idx) => (
-                    <li key={idx} className="flex gap-3 text-sm text-gray-700">
-                      <span className="text-purple-500 font-bold">•</span>
+                    <li key={idx} className="flex gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="font-bold" style={{ color: 'var(--accent-primary)' }}>•</span>
                       <span>
                         <span className="font-medium">{ing.quantity}</span> {ing.name}
                       </span>
@@ -490,11 +501,14 @@ export default function GlobalSearchBar() {
 
               {/* Instructions */}
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Instructions</h3>
+                <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Instructions</h3>
                 <ol className="space-y-3">
                   {selectedRecipe.instructions.map((instruction, idx) => (
-                    <li key={idx} className="flex gap-3 text-sm text-gray-700">
-                      <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                    <li key={idx} className="flex gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      <span 
+                        className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold"
+                        style={{ backgroundColor: 'rgba(139, 158, 255, 0.2)', color: 'var(--accent-primary)' }}
+                      >
                         {idx + 1}
                       </span>
                       <span className="flex-1 pt-0.5">{instruction}</span>
@@ -510,7 +524,8 @@ export default function GlobalSearchBar() {
                     {selectedRecipe.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full"
+                        className="text-xs px-3 py-1.5 rounded-full"
+                        style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'var(--text-secondary)' }}
                       >
                         {tag}
                       </span>
@@ -520,25 +535,28 @@ export default function GlobalSearchBar() {
               )}
 
               {/* Action Buttons */}
-              <div className="space-y-3 pt-4 border-t">
+              <div className="space-y-3 pt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
                 <button
                   onClick={() => {
                     handleAddToShoppingList(selectedRecipe)
                     setSelectedRecipe(null)
                   }}
-                  className="w-full py-3 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="w-full py-3 px-4 text-white rounded-full font-semibold transition-all duration-250 hover:shadow-lg active:scale-[0.98]"
+                  style={{ backgroundColor: 'var(--accent-primary)', boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)' }}
                 >
                   Add Ingredients to Shopping List
                 </button>
                 <button
                   onClick={() => router.push('/kitchen/recipes')}
-                  className="w-full py-3 px-4 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                  className="w-full py-3 px-4 font-medium transition-colors duration-250 hover:opacity-80"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   Browse More Recipes
                 </button>
                 <button
                   onClick={() => setSelectedRecipe(null)}
-                  className="w-full py-3 px-4 text-gray-500 hover:text-gray-700 font-medium transition-colors"
+                  className="w-full py-3 px-4 font-medium transition-colors duration-250 hover:opacity-80"
+                  style={{ color: 'var(--text-muted)' }}
                 >
                   Close
                 </button>

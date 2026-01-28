@@ -184,27 +184,36 @@ export default function TasksPage() {
     <div className="min-h-screen p-6 pb-40">
       <PageContainer>
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/today" className="text-gray-500 hover:text-gray-700">
+          <Link href="/today" className="transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
             ← Back
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">To-Do</h1>
+          <h1 className="text-3xl font-bold transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>To-Do</h1>
           <div className="w-12"></div>
         </div>
 
         {!showAddForm ? (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full mb-6 px-6 py-4 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50/50 transition-colors flex items-center justify-center gap-2"
+            className="w-full mb-6 px-6 py-4 border-2 border-dashed rounded-xl transition-all duration-250 flex items-center justify-center gap-2"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--glass-border)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent-primary)'
+              e.currentTarget.style.backgroundColor = 'rgba(139, 158, 255, 0.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--glass-border)'
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+            }}
           >
             <span className="text-lg">+</span>
-            <span className="font-medium text-gray-700">New Task</span>
+            <span className="font-medium transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>New Task</span>
           </button>
         ) : (
           <div className="glass-card p-5 mb-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  To-Do Title <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium mb-2 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>
+                  To-Do Title <span style={{ color: 'var(--error)' }}>*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -212,7 +221,16 @@ export default function TasksPage() {
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     placeholder="What needs to be done?"
-                    className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-3 pr-10 rounded-lg border focus:outline-none transition-all duration-250"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--glass-border)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                      e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 158, 255, 0.2)'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--glass-border)'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
                     autoFocus
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && newTaskTitle.trim()) {
@@ -269,7 +287,7 @@ export default function TasksPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>
                     <Share2 className="w-4 h-4 inline mr-1" strokeWidth={2} />
                     Share with family member (optional)
                   </label>
@@ -281,11 +299,21 @@ export default function TasksPage() {
                         setSelectedFamilyMember(null)
                       }
                     }}
-                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                      showShare
-                        ? 'bg-blue-100 text-blue-600'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                    className="px-3 py-1.5 text-sm rounded-lg transition-colors duration-250"
+                    style={{
+                      backgroundColor: showShare ? 'rgba(139, 158, 255, 0.2)' : 'rgba(255,255,255,0.05)',
+                      color: showShare ? 'var(--accent-primary)' : 'var(--text-secondary)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!showShare) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!showShare) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                      }
+                    }}
                   >
                     {showShare ? 'Cancel' : 'Share'}
                   </button>
@@ -297,18 +325,27 @@ export default function TasksPage() {
                       const member = familyMembers.find(m => m.id === e.target.value)
                       setSelectedFamilyMember(member || null)
                     }}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none transition-all duration-250"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--glass-border)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                      e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 158, 255, 0.2)'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--glass-border)'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
                   >
-                    <option value="">Select family member...</option>
+                    <option value="" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>Select family member...</option>
                     {familyMembers.map((member) => (
-                      <option key={member.id} value={member.id}>
+                      <option key={member.id} value={member.id} style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                         {member.name}
                       </option>
                     ))}
                   </select>
                 )}
                 {selectedFamilyMember && (
-                  <p className="mt-2 text-xs text-gray-500">
+                  <p className="mt-2 text-xs transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
                     Will share with {selectedFamilyMember.name}
                     {selectedFamilyMember.email && ` (${selectedFamilyMember.email})`}
                   </p>
@@ -323,7 +360,10 @@ export default function TasksPage() {
                     setShowShare(false)
                     setSelectedFamilyMember(null)
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
                 >
                   Cancel
                 </button>
@@ -334,7 +374,18 @@ export default function TasksPage() {
                     }
                   }}
                   disabled={!newTaskTitle.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-250"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.opacity = '0.9'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.opacity = '1'
+                    }
+                  }}
                 >
                   Add To-Do
                 </button>
@@ -344,45 +395,51 @@ export default function TasksPage() {
         )}
 
         {Object.keys(groupedTasks).length === 0 ? (
-          <div className="glass-card p-8 text-center text-gray-500">
+          <div className="glass-card p-8 text-center transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
             No tasks yet. Add one to get started!
           </div>
         ) : (
           <div className="space-y-6">
             {Object.entries(groupedTasks).map(([date, dateTasks]) => (
               <div key={date} className="glass-card p-4">
-                <h2 className="font-semibold text-gray-700 mb-3">{date}</h2>
+                <h2 className="font-semibold mb-3 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>{date}</h2>
                 <div className="space-y-2">
                   {dateTasks.map((task) => {
                     if (!task || !task.id) return null;
                     return (
                     <div
                       key={task.id}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/50 transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-xl transition-colors duration-250"
+                      style={{ backgroundColor: 'transparent' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <input
                         type="checkbox"
                         checked={task.completed}
                         onChange={() => toggleTask(task.id)}
-                        className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                        className="w-5 h-5 rounded transition-colors duration-250"
+                        style={{ borderColor: 'var(--glass-border)', accentColor: 'var(--accent-primary)' }}
                       />
                       <div className="flex-1">
                         <p
-                          className={`${
-                            task.completed
-                              ? 'line-through text-gray-400'
-                              : 'text-gray-900'
+                          className={`transition-colors duration-250 ${
+                            task.completed ? 'line-through' : ''
                           }`}
+                          style={{ color: task.completed ? 'var(--text-muted)' : 'var(--text-primary)' }}
                         >
                           {task.title || 'Untitled Task'}
                         </p>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
                           {task.category ? task.category.replace('-', ' ') : 'other'}
                         </span>
                       </div>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-red-400 hover:text-red-600"
+                        className="transition-colors duration-250"
+                        style={{ color: 'var(--error)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                       >
                         ×
                       </button>

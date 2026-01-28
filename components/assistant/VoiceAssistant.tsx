@@ -350,8 +350,12 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
-        style={{ bottom: 'calc(64px + 1rem)' }}
+        className="fixed bottom-20 right-6 w-16 h-16 rounded-full text-white shadow-lg transition-all duration-250 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
+        style={{ 
+          bottom: 'calc(64px + 1rem)',
+          backgroundColor: 'var(--accent-primary)',
+          boxShadow: '0 10px 40px rgba(139, 158, 255, 0.4)'
+        }}
         title="Open Assistant"
       >
         <Mic className="w-6 h-6" strokeWidth={1.5} />
@@ -360,23 +364,35 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
   }
 
   return (
-    <div className="fixed right-6 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col max-h-[600px]"
-         style={{ bottom: 'calc(64px + 1rem)' }}>
+    <div 
+      className="fixed right-6 w-96 max-w-[calc(100vw-3rem)] rounded-2xl z-50 flex flex-col max-h-[600px]"
+      style={{ 
+        bottom: 'calc(64px + 1rem)',
+        backgroundColor: 'var(--bg-elevated)',
+        border: '1px solid var(--glass-border)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div 
+        className="flex items-center justify-between p-4"
+        style={{ borderBottom: '1px solid var(--glass-border)' }}
+      >
         <div className="flex items-center gap-2">
-          <Mic className="w-5 h-5 text-[#4a5568]" strokeWidth={1.5} />
-          <h3 className="font-semibold text-gray-900">Assistant</h3>
+          <Mic className="w-5 h-5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
+          <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Assistant</h3>
           {state === 'listening' && (
-            <span className="ml-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            <span className="ml-2 w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--error)' }}></span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setVoiceEnabled(!voiceEnabled)}
-            className={`px-2 py-1 rounded text-xs transition-colors ${
-              voiceEnabled ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
-            }`}
+            className="px-2 py-1 rounded-full text-xs transition-all duration-250"
+            style={{
+              backgroundColor: voiceEnabled ? 'rgba(139, 158, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+              color: voiceEnabled ? 'var(--accent-primary)' : 'var(--text-muted)'
+            }}
           >
             {voiceEnabled ? '🔊' : '🔇'}
           </button>
@@ -389,7 +405,8 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
               setPendingAction(null)
               stopListening()
             }}
-            className="text-gray-400 hover:text-gray-600 text-xl"
+            className="text-xl transition-colors duration-250 hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
           >
             ×
           </button>
@@ -402,37 +419,57 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
         <div className="text-center">
           {state === 'listening' && (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
-                <Mic className="w-6 h-6" strokeWidth={1.5} />
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center animate-pulse"
+                style={{ backgroundColor: 'rgba(248, 113, 113, 0.2)' }}
+              >
+                <Mic className="w-6 h-6" style={{ color: 'var(--error)' }} strokeWidth={1.5} />
               </div>
-              <p className="text-sm text-gray-600">Listening...</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Listening...</p>
             </div>
           )}
           {state === 'thinking' && (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(139, 158, 255, 0.2)' }}
+              >
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--accent-primary)' }}></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--accent-primary)', animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--accent-primary)', animationDelay: '0.2s' }}></div>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">Thinking...</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Thinking...</p>
             </div>
           )}
           {state === 'awaiting_confirmation' && pendingAction && (
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-              <p className="text-sm text-gray-900 mb-3">{response}</p>
+            <div 
+              className="rounded-xl p-4"
+              style={{
+                backgroundColor: 'rgba(139, 158, 255, 0.1)',
+                border: '1px solid rgba(139, 158, 255, 0.2)'
+              }}
+            >
+              <p className="text-sm mb-3" style={{ color: 'var(--text-primary)' }}>{response}</p>
               <div className="flex gap-2">
                 <button
                   onClick={handleConfirm}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-full text-white transition-all duration-250 hover:shadow-lg active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: 'var(--accent-primary)',
+                    boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)'
+                  }}
                 >
                   Confirm
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-full transition-all duration-250 hover:bg-white/10 active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--text-primary)'
+                  }}
                 >
                   Cancel
                 </button>
@@ -441,14 +478,17 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
           )}
           {state === 'completed' && (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="w-7 h-7 text-green-600" strokeWidth={1.5} />
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(74, 222, 128, 0.2)' }}
+              >
+                <CheckCircle2 className="w-7 h-7" style={{ color: 'var(--success)' }} strokeWidth={1.5} />
               </div>
-              <p className="text-sm text-gray-600">{response}</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{response}</p>
             </div>
           )}
           {state === 'idle' && (
-            <div className="text-center text-gray-500 text-sm py-4">
+            <div className="text-center text-sm py-4" style={{ color: 'var(--text-muted)' }}>
               <p>Say a command or type below</p>
             </div>
           )}
@@ -456,43 +496,63 @@ export default function VoiceAssistant({ onAction, onError }: VoiceAssistantProp
 
         {/* Transcript */}
         {transcript && (
-          <div className="bg-gray-50 rounded-xl p-3">
-            <p className="text-xs text-gray-500 mb-1">You said:</p>
-            <p className="text-sm text-gray-900">{transcript}</p>
+          <div 
+            className="rounded-xl p-3"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+          >
+            <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>You said:</p>
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{transcript}</p>
           </div>
         )}
 
         {/* Response */}
         {response && state !== 'awaiting_confirmation' && (
-          <div className="bg-blue-50 rounded-xl p-3">
-            <p className="text-xs text-blue-600 mb-1">Assistant:</p>
-            <p className="text-sm text-gray-900">{response}</p>
+          <div 
+            className="rounded-xl p-3"
+            style={{ backgroundColor: 'rgba(139, 158, 255, 0.1)' }}
+          >
+            <p className="text-xs mb-1" style={{ color: 'var(--accent-primary)' }}>Assistant:</p>
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{response}</p>
           </div>
         )}
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 p-4">
+      <div 
+        className="p-4"
+        style={{ borderTop: '1px solid var(--glass-border)' }}
+      >
         <form onSubmit={handleTextSubmit} className="flex gap-2">
           <input
             type="text"
             value={transcript}
             onChange={(e) => setTranscript(e.target.value)}
             placeholder="Type a command..."
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="flex-1 px-4 py-2 rounded-xl focus:outline-none focus:ring-2"
+            style={{
+              backgroundColor: 'var(--input-bg)',
+              border: '1px solid var(--input-border)',
+              color: 'var(--text-primary)'
+            }}
             disabled={state === 'listening' || state === 'thinking' || state === 'awaiting_confirmation'}
           />
           <button
             type="button"
             onClick={isListening ? stopListening : startListening}
             disabled={state === 'thinking' || state === 'awaiting_confirmation' || !voiceInputAvailable}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              isListening
-                ? 'bg-red-500 text-white hover:bg-red-600'
+            className="px-4 py-2 rounded-xl transition-all duration-250 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: isListening
+                ? 'var(--error)'
                 : voiceInputAvailable
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(255, 255, 255, 0.05)',
+              color: isListening
+                ? 'white'
+                : voiceInputAvailable
+                  ? 'var(--text-secondary)'
+                  : 'var(--text-muted)'
+            }}
             title={!voiceInputAvailable ? 'Voice input not available (Chrome/Edge required)' : isListening ? 'Stop listening' : 'Start voice input'}
           >
             {isListening ? <Square className="w-5 h-5" strokeWidth={2} /> : <Mic className="w-5 h-5" strokeWidth={1.5} />}

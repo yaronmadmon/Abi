@@ -214,21 +214,25 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
         {/* Profile Image */}
         <div className="relative flex-shrink-0">
           <div 
-            className="relative w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+            className="relative w-20 h-20 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-250"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
             onClick={() => !isEditing && setIsEditing(true)}
             title={!isEditing ? "Click to edit photo" : undefined}
           >
             {photo ? (
               <ImageComponent src={photo} alt={member.name} fill className="object-cover" unoptimized sizes="80px" />
             ) : (
-              <User className="w-10 h-10 text-gray-400" strokeWidth={1.5} />
+              <User className="w-10 h-10" strokeWidth={1.5} style={{ color: 'var(--text-muted)' }} />
             )}
           </div>
           {isEditing && (
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors shadow-sm z-10"
+              className="absolute bottom-0 right-0 w-7 h-7 text-white rounded-full flex items-center justify-center transition-colors duration-250 shadow-sm z-10"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
               title="Change photo"
             >
               <Camera className="w-3.5 h-3.5" strokeWidth={2} />
@@ -253,14 +257,20 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Name"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
+                className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-lg font-semibold transition-colors duration-250"
+                style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
               />
               <input
                 type="text"
                 value={relationship}
                 onChange={(e) => setRelationship(e.target.value)}
                 placeholder="Relationship (optional)"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors duration-250"
+                style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
               />
               <div className="grid grid-cols-2 gap-2">
                 <input
@@ -268,14 +278,20 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Phone (optional)"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors duration-250"
+                  style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email (optional)"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors duration-250"
+                  style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -286,21 +302,30 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   placeholder="Age (optional)"
                   min="0"
                   max="150"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors duration-250"
+                  style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 />
                 <input
                   type="date"
                   value={birthday || ''}
                   onChange={(e) => setBirthday(e.target.value)}
                   placeholder="Birthday (optional)"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors duration-250"
+                  style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 />
               </div>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Notes (optional)"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors duration-250"
+                style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 rows={2}
               />
               <div className="flex gap-2">
@@ -395,8 +420,8 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
               {/* Notes Section */}
               {member.notes && (
                 <div className="mb-3">
-                  <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">{member.notes}</p>
+                  <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Notes</p>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{member.notes}</p>
                 </div>
               )}
 
@@ -406,7 +431,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   <>
                     <button
                       onClick={handleCall}
-                      className="flex-1 px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                      className="flex-1 px-4 py-2.5 rounded-lg transition-colors duration-250 flex items-center justify-center gap-2 shadow-sm"
+                      style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-primary)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.15)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.1)'}
                       title={`Call ${member.phone}`}
                     >
                       <Phone className="w-4 h-4" strokeWidth={2} />
@@ -414,7 +442,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                     </button>
                     <button
                       onClick={handleText}
-                      className="flex-1 px-4 py-2.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 active:bg-green-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                      className="flex-1 px-4 py-2.5 rounded-lg transition-colors duration-250 flex items-center justify-center gap-2 shadow-sm"
+                      style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: 'rgb(34, 197, 94)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(34, 197, 94, 0.15)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(34, 197, 94, 0.1)'}
                       title={`Text ${member.phone}`}
                     >
                       <MessageSquare className="w-4 h-4" strokeWidth={2} />
@@ -425,7 +456,8 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                   <>
                     <button
                       disabled
-                      className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 transition-colors duration-250"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
                       title="Add phone number to enable"
                     >
                       <Phone className="w-4 h-4" strokeWidth={2} />
@@ -433,7 +465,8 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                     </button>
                     <button
                       disabled
-                      className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 transition-colors duration-250"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
                       title="Add phone number to enable"
                     >
                       <MessageSquare className="w-4 h-4" strokeWidth={2} />
@@ -444,7 +477,10 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 {member.email && member.email.trim() ? (
                   <button
                     onClick={handleEmail}
-                    className="flex-1 px-4 py-2.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 active:bg-purple-200 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                    className="flex-1 px-4 py-2.5 rounded-lg transition-colors duration-250 flex items-center justify-center gap-2 shadow-sm"
+                    style={{ backgroundColor: 'rgba(168, 85, 247, 0.1)', color: 'rgb(168, 85, 247)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.15)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.1)'}
                     title={`Email ${member.email}`}
                   >
                     <Mail className="w-4 h-4" strokeWidth={2} />
@@ -453,7 +489,8 @@ export default function FamilyMemberCard({ member, onUpdate, onDelete }: FamilyM
                 ) : (
                   <button
                     disabled
-                    className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 transition-colors duration-250"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
                     title="Add email address to enable"
                   >
                     <Mail className="w-4 h-4" strokeWidth={2} />

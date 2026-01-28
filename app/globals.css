@@ -8,85 +8,53 @@
 @tailwind utilities;
 
 /* ============================================
-   THEME SYSTEM - CSS Variables
+   DARK LUXURY THEME SYSTEM - CSS Variables
+   Single dark theme for premium, calm experience
    ============================================ */
 
-/* Light Mode - Default */
-:root,
-:root.light-mode {
-  /* Colors - Warmer, slightly darker background for better contrast */
-  --background: #F2F0ED; /* Warm light stone / sand tone */
-  --foreground: #1a1a1a;
-  --card-bg: rgba(255, 255, 255, 0.75); /* Semi-transparent white for glass effect */
-  --card-bg-solid: rgba(255, 255, 255, 0.95); /* Fallback for browsers without backdrop-filter */
-  --card-border: rgba(255, 255, 255, 0.8); /* Subtle white border for glass edge */
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
-  --card-inner-highlight: rgba(255, 255, 255, 0.5); /* Inner highlight at top */
-  --icon-color: #4a5568;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a5568;
-  --text-tertiary: #718096;
-  --border-color: rgba(0, 0, 0, 0.08);
-  --input-bg: rgba(255, 255, 255, 0.9);
-  --input-border: rgba(0, 0, 0, 0.1);
+:root {
+  /* Base Backgrounds - Deep, cool dark tones */
+  --bg-main: #0B0F14;
+  --bg-elevated: #111827;
+  --background: #0B0F14;
+  --foreground: #E5E7EB;
   
-  /* Abby Brand Accent Colors */
-  --accent-blue: #2B4C7E; /* Dark blue for CTAs, logo */
-  --accent-peach: #F5E6D3; /* Light peach for highlights, hover states */
-  --accent-gold: #C9A96E; /* Golden brown for elegant touches, borders */
-  --primary-red: #b91c1c; /* Danger/delete actions */
-}
-
-/* Dark Mode */
-:root.dark-mode {
-  /* Colors - True dark with warmth, glass cards */
-  --background: #0f0f0f;
-  --foreground: #ededed;
-  --card-bg: rgba(26, 26, 26, 0.7); /* Semi-transparent for glass effect */
-  --card-bg-solid: rgba(26, 26, 26, 0.9); /* Fallback */
-  --card-border: rgba(255, 255, 255, 0.12);
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
-  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
-  --card-inner-highlight: rgba(255, 255, 255, 0.15); /* Subtle inner highlight */
-  --icon-color: #a0a0a0;
-  --text-primary: #ededed;
-  --text-secondary: #b0b0b0;
-  --text-tertiary: #808080;
-  --border-color: rgba(255, 255, 255, 0.12);
-  --input-bg: rgba(26, 26, 26, 0.8);
-  --input-border: rgba(255, 255, 255, 0.15);
+  /* Glass Surface Variables */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.18);
   
-  /* Abby Brand Accent Colors (slightly adjusted for dark mode) */
-  --accent-blue: #4B6FA3; /* Lighter blue for dark mode */
-  --accent-peach: #D4C0A8; /* Slightly darker peach */
-  --accent-gold: #B8975E; /* Slightly darker gold */
-  --primary-red: #dc2626; /* Brighter red for visibility */
-}
-
-/* Evening Mode - Calmer colors, activated at 5 PM */
-:root.evening-mode {
-  --background: #F0EDE8; /* Slightly warmer, calmer tone */
-  --foreground: #2d2d2d;
-  --card-bg: rgba(255, 255, 255, 0.7); /* More transparent for calmer feel */
-  --card-bg-solid: rgba(255, 255, 255, 0.92);
-  --card-border: rgba(255, 255, 255, 0.7);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
-  --card-inner-highlight: rgba(255, 255, 255, 0.4);
-  --icon-color: #6b7280;
-  --text-primary: #2d2d2d;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
-  --border-color: rgba(0, 0, 0, 0.06);
-  --input-bg: rgba(255, 255, 255, 0.85);
-  --input-border: rgba(0, 0, 0, 0.08);
+  /* Card System - Dark glass cards */
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --card-bg-solid: #111827;
+  --card-border: rgba(255, 255, 255, 0.18);
+  --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --card-shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --card-inner-highlight: rgba(255, 255, 255, 0.08);
   
-  /* Abby Brand Accent Colors (same as light mode) */
-  --accent-blue: #2B4C7E;
-  --accent-peach: #F5E6D3;
-  --accent-gold: #C9A96E;
-  --primary-red: #b91c1c;
+  /* Text Hierarchy - Soft, never harsh */
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --icon-color: #9CA3AF;
+  
+  /* Borders and Inputs */
+  --border-color: rgba(255, 255, 255, 0.18);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.18);
+  
+  /* Single Accent Color - Soft cool blue (ONLY accent) */
+  --accent-primary: #8B9EFF;
+  --accent-blue: #8B9EFF;
+  
+  /* Status Colors - Functional only, use sparingly */
+  --success: #4ADE80;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --primary-red: #F87171;
+  
+  /* Legacy mappings for compatibility */
+  --accent-peach: #8B9EFF;
+  --accent-gold: #8B9EFF;
 }
 
 /* Mobile Mode - Default */
@@ -98,11 +66,11 @@ body.mobile-mode {
 }
 
 body.mobile-mode .max-w-2xl {
-  max-width: 42rem; /* 672px - narrow mobile-friendly width */
+  max-width: 42rem;
 }
 
 body.mobile-mode .max-w-4xl {
-  max-width: 56rem; /* 896px */
+  max-width: 56rem;
 }
 
 /* Desktop Mode */
@@ -114,28 +82,28 @@ body.desktop-mode {
 }
 
 body.desktop-mode .max-w-2xl {
-  max-width: 80rem; /* 1280px - wider desktop width */
+  max-width: 80rem;
 }
 
 body.desktop-mode .max-w-4xl {
-  max-width: 90rem; /* 1440px */
+  max-width: 90rem;
 }
 
 body.desktop-mode .max-w-6xl {
-  max-width: 100rem; /* 1600px */
+  max-width: 100rem;
 }
 
 body {
   color: var(--foreground);
-  /* Warm background with subtle gradient for depth */
-  background: linear-gradient(135deg, var(--background) 0%, color-mix(in srgb, var(--background) 95%, #E8E6E3) 100%);
+  background: var(--bg-main);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1), 
+              color 250ms cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
 }
 
@@ -146,14 +114,14 @@ body {
 .logo-script {
   font-family: 'Allura', cursive;
   font-weight: 400;
-  color: var(--accent-blue);
+  color: var(--accent-primary);
   letter-spacing: 0.05em;
   line-height: 1.2;
 }
 
 .logo-subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 0.625rem; /* 10px */
+  font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -190,10 +158,7 @@ body {
   padding-right: var(--content-padding, 1.5rem);
 }
 
-/* Subtle edge fade / vignette overlay
-   Creates a soft, premium edge fade that gently dissolves into the browser frame.
-   Enhanced for better depth perception.
-*/
+/* Dark luxury vignette overlay - subtle depth at edges */
 body::before {
   content: '';
   position: fixed;
@@ -203,30 +168,16 @@ body::before {
   bottom: 0;
   pointer-events: none;
   z-index: 9999;
-  /* Radial vignette: subtle warm fade from edges */
-  background: radial-gradient(
-    ellipse 140% 140% at center,
-    transparent 0%,
-    transparent 60%,
-    rgba(235, 232, 228, 0.08) 80%,
-    rgba(230, 227, 223, 0.15) 90%,
-    rgba(225, 222, 218, 0.22) 100%
-  );
-  /* Ensures smooth rendering */
-  will-change: opacity;
-  transition: opacity 0.3s ease;
-}
-
-/* Dark mode vignette adjustment */
-.dark-mode body::before {
   background: radial-gradient(
     ellipse 120% 120% at center,
     transparent 0%,
     transparent 65%,
-    rgba(15, 15, 15, 0.3) 80%,
-    rgba(10, 10, 10, 0.5) 90%,
-    rgba(5, 5, 5, 0.7) 100%
+    rgba(0, 0, 0, 0.15) 80%,
+    rgba(0, 0, 0, 0.25) 90%,
+    rgba(0, 0, 0, 0.35) 100%
   );
+  will-change: opacity;
+  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Global keyframes for animations */
@@ -251,27 +202,27 @@ body::before {
 }
 
 @layer utilities {
+  /* ============================================
+     GLASS CARD - Apple-style translucent card
+     Premium dark glass with soft glow
+     ============================================ */
   .glass-card {
-    /* Modern iOS-style glass card */
-    background: var(--card-bg);
-    /* Fallback for browsers without backdrop-filter support */
+    background: var(--glass-bg);
     background-color: var(--card-bg-solid);
-    /* Backdrop blur for frosted glass effect */
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     
-    border-radius: 1.25rem; /* Slightly more rounded for modern feel */
+    border-radius: 1.25rem;
     box-shadow: var(--card-shadow);
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--glass-border);
     
-    /* Inner highlight at top for glossy effect */
     position: relative;
     overflow: hidden;
     
-    transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
-                transform 0.2s ease, 
-                background-color 0.3s ease, 
-                border-color 0.3s ease;
+    transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 250ms cubic-bezier(0.4, 0, 0.2, 1), 
+                background-color 250ms cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
     padding: var(--card-padding, 1.25rem);
   }
   
@@ -294,7 +245,6 @@ body::before {
     z-index: 1;
   }
   
-  /* Ensure content is above the highlight */
   .glass-card > * {
     position: relative;
     z-index: 2;
@@ -302,18 +252,35 @@ body::before {
   
   .glass-card:hover {
     box-shadow: var(--card-shadow-hover);
-    transform: translateY(-1px); /* Subtle lift on hover */
+    transform: translateY(-1px);
   }
   
   /* Press feedback for interactive cards */
   .glass-card:active,
   .card-press:active {
     transform: scale(0.97) translateY(0);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.1s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 100ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
+  /* ============================================
+     GLASS FLOATING BAR - Apple-style pill navigation
+     True iOS glassmorphism for floating controls
+     ============================================ */
+  .glass-floating-bar {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   /* Pending count badge - Calm, muted, informative */
   .pending-badge {
     position: absolute;
@@ -322,7 +289,7 @@ body::before {
     min-width: 1.25rem;
     height: 1.25rem;
     padding: 0 0.25rem;
-    background: #8B2E2E; /* Muted dark red - calm and informative */
+    background: var(--error);
     color: white;
     border-radius: 0.625rem;
     display: flex;
@@ -331,7 +298,7 @@ body::before {
     font-size: 0.625rem;
     font-weight: 600;
     line-height: 1;
-    box-shadow: 0 1px 2px rgba(139, 46, 46, 0.2);
+    box-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
     z-index: 10;
   }
   
@@ -339,33 +306,50 @@ body::before {
     display: none;
   }
   
+  /* Primary Button - Uses accent color */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-6 py-3 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-200 active:scale-95;
+    background: var(--accent-primary);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 15px rgba(139, 158, 255, 0.3);
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(139, 158, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  
+  /* Secondary Button - Glass style */
   .btn-secondary {
-    background-color: var(--card-bg);
+    background: var(--glass-bg);
     backdrop-filter: blur(8px);
     color: var(--text-primary);
-    font-medium: true;
+    font-weight: 500;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid var(--glass-border);
     box-shadow: var(--card-shadow);
-    transition: all 0.2s ease;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .btn-secondary:hover {
-    background-color: var(--card-bg);
-    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.12);
   }
 
   /* Smooth animations */
   .animate-fade-in {
-    animation: fadeIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: fadeIn 220ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .animate-slide-up {
-    animation: slideUp 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUp 240ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Hide scrollbar utility */
@@ -378,9 +362,7 @@ body::before {
     display: none;
   }
 
-  /* Safe area for bottom nav - using inline style in component instead */
-  
-  /* Page bottom padding to account for bottom nav (64px) + spacing */
+  /* Page bottom padding to account for bottom nav */
   .page-with-bottom-nav {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
@@ -388,17 +370,17 @@ body::before {
   /* ContentEditable placeholder */
   [contenteditable][data-placeholder]:empty:before {
     content: attr(data-placeholder);
-    color: #9ca3af;
+    color: var(--text-muted);
     pointer-events: none;
   }
   
   [contenteditable][data-placeholder]:not(:focus):empty:before {
     content: attr(data-placeholder);
-    color: #9ca3af;
+    color: var(--text-muted);
     pointer-events: none;
   }
 
-  /* Fix empty block elements in contentEditable (prevents square placeholders) */
+  /* Fix empty block elements in contentEditable */
   [contenteditable] div:empty,
   [contenteditable] p:empty {
     min-height: 1.5em;
@@ -406,7 +388,6 @@ body::before {
 
   /* ============================================
      MOBILE PREVIEW LAYOUT SYSTEM
-     Removes desktop constraints in mobile preview
      ============================================ */
   
   .mobile-content-wrapper {
@@ -414,38 +395,32 @@ body::before {
     min-height: 100%;
   }
 
-  /* Override ALL max-width utilities in mobile */
   .mobile-content-wrapper [class*="max-w-"] {
     max-width: 100% !important;
   }
 
-  /* Remove desktop centering (mx-auto) in mobile */
   .mobile-content-wrapper [class*="mx-auto"] {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
 
-  /* Ensure full-width containers */
   .mobile-content-wrapper > div {
     width: 100% !important;
     max-width: 100% !important;
-    padding-left: 1rem !important;   /* 16px default mobile padding */
+    padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
 
-  /* Preserve card padding (don't override) */
   .mobile-content-wrapper .glass-card,
   .mobile-content-wrapper [class*="rounded-"] {
     padding-left: revert !important;
     padding-right: revert !important;
   }
 
-  /* Remove page-with-bottom-nav padding in mobile (handled by shell) */
   .mobile-content-wrapper .page-with-bottom-nav {
     padding-bottom: 0 !important;
   }
 
-  /* Responsive grid columns - don't destroy all grids, make them adaptive */
   .mobile-content-wrapper .grid-cols-3,
   .mobile-content-wrapper .grid-cols-4,
   .mobile-content-wrapper .grid-cols-5,
@@ -453,10 +428,6 @@ body::before {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  /* Keep 2-column grids on mobile (they work fine on 375px width) */
-  /* .mobile-content-wrapper .grid-cols-2 stays as-is */
-
-  /* Stack cards vertically with consistent spacing */
   .mobile-content-wrapper > div > div[class*="space-y"] {
     display: flex;
     flex-direction: column;
@@ -465,13 +436,12 @@ body::before {
 
 /* ============================================
    MOBILE TEXT SCALING
-   Optimize font sizes for mobile screens
    ============================================ */
 @media (max-width: 640px) {
   .mobile-content-wrapper {
-    h1, .page-heading { font-size: 1.75rem !important; }  /* 28px */
-    h2, .section-heading { font-size: 1.5rem !important; }   /* 24px */
-    h3, .card-heading { font-size: 1.25rem !important; }  /* 20px */
+    h1, .page-heading { font-size: 1.75rem !important; }
+    h2, .section-heading { font-size: 1.5rem !important; }
+    h3, .card-heading { font-size: 1.25rem !important; }
   }
   
   .mobile-content-wrapper .glass-card {
@@ -481,8 +451,7 @@ body::before {
 }
 
 /* ============================================
-   HARD DISABLE AI DEBUG / BLUE BANNER
-   Permanent override to prevent blue banner in all environments
+   MODAL OPEN STATE
    ============================================ */
 body.modal-open::before {
   display: none !important;

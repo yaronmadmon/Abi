@@ -27,41 +27,42 @@ export default function BottomNavClient() {
 
   // In mobile preview, use absolute positioning relative to phone container
   // In desktop, use fixed positioning relative to viewport
-  const positionClass = isMobilePreview ? 'absolute bottom-0 left-0 right-0' : 'fixed bottom-0 left-0 right-0'
+  // Both use centered pill shape with left-1/2 -translate-x-1/2
+  const positionType = isMobilePreview ? 'absolute' : 'fixed'
 
   return (
     <nav 
-      className={`${positionClass} backdrop-blur-xl shadow-soft-lg z-50 transition-colors`} 
+      className={`${positionType} bottom-4 left-1/2 -translate-x-1/2 glass-floating-bar z-50 transition-all duration-250`}
       style={{ 
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        backgroundColor: 'var(--card-bg)',
-        borderTop: '1px solid var(--border-color)',
+        width: isMobilePreview ? 'calc(100% - 2rem)' : 'auto',
+        maxWidth: isMobilePreview ? '100%' : '32rem',
       }}
     >
-      <div className={`flex items-center justify-around h-16 px-4 ${isMobilePreview ? 'w-full' : 'max-w-2xl mx-auto'}`}>
+      <div className="flex items-center justify-around h-14 px-6">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (pathname?.startsWith(item.href + '/') && item.href !== '/today')
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-250 ${
                 isActive
                   ? 'scale-105'
                   : 'hover:opacity-80 active:scale-95'
               }`}
             >
               <item.Icon 
-                className="w-6 h-6 mb-1 transition-colors duration-200"
+                className="w-5 h-5 mb-0.5 transition-colors duration-250"
                 style={{
-                  color: isActive ? 'var(--accent-blue)' : 'var(--icon-color)',
+                  color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
                 }}
                 strokeWidth={isActive ? 2 : 1.5}
               />
               <span 
-                className="text-xs font-medium transition-colors duration-200"
+                className="text-[10px] transition-colors duration-250"
                 style={{
-                  color: isActive ? 'var(--accent-blue)' : 'var(--text-secondary)',
+                  color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
                   fontWeight: isActive ? 600 : 500,
                 }}
               >

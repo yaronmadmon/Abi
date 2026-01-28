@@ -17,11 +17,11 @@ export default function FinancePage() {
   }
 
   return (
-    <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
+    <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)', transition: 'all 250ms' }}>
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Finance</h1>
-          <p className="text-sm text-gray-500">Bills, budget & subscriptions</p>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)', transition: 'all 250ms' }}>Finance</h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)', transition: 'all 250ms' }}>Bills, budget & subscriptions</p>
         </div>
 
         {/* Summary Cards */}
@@ -36,13 +36,13 @@ export default function FinancePage() {
             {upcomingBills.length > 0 ? (
               <div className="space-y-2">
                 {upcomingBills.slice(0, 3).map((bill) => (
-                  <div key={bill.id} className="text-sm text-gray-700">
+                  <div key={bill.id} className="text-sm" style={{ color: 'var(--text-primary)', transition: 'all 250ms' }}>
                     • {bill.name} - ${bill.amount}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">No upcoming bills</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)', transition: 'all 250ms' }}>No upcoming bills</p>
             )}
           </SummaryCard>
 
@@ -52,7 +52,7 @@ export default function FinancePage() {
             icon="💰"
             href="/finance/budget"
           >
-            <p className="text-sm text-gray-500">Track your spending</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)', transition: 'all 250ms' }}>Track your spending</p>
           </SummaryCard>
 
           <SummaryCard
@@ -61,7 +61,7 @@ export default function FinancePage() {
             icon="🔄"
             href="/finance/subscriptions"
           >
-            <p className="text-sm text-gray-500">Manage your subscriptions</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)', transition: 'all 250ms' }}>Manage your subscriptions</p>
           </SummaryCard>
 
           <SummaryCard
@@ -70,7 +70,7 @@ export default function FinancePage() {
             icon="💸"
             href="/finance/transactions"
           >
-            <p className="text-sm text-gray-500">View transaction history</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)', transition: 'all 250ms' }}>View transaction history</p>
           </SummaryCard>
         </div>
 

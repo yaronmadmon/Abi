@@ -167,16 +167,23 @@ export default function CalendarPage() {
       <PageContainer maxWidth="4xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/today" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/today" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to Today
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Calendar</h1>
-            <p className="text-sm text-gray-500">Monthly view with appointments & tasks</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Calendar</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Monthly view with appointments & tasks</p>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/settings/calendar"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-250"
+              style={{ 
+                color: 'var(--text-primary)', 
+                backgroundColor: 'var(--bg-elevated)', 
+                border: '1px solid var(--glass-border)' 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'}
               title="Calendar Systems"
             >
               <Settings className="w-4 h-4" strokeWidth={2} />
@@ -184,7 +191,10 @@ export default function CalendarPage() {
             </Link>
             <button
               onClick={() => setShowCreateForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Plus className="w-4 h-4" strokeWidth={2} />
               <span className="text-sm font-medium">New</span>
@@ -205,7 +215,7 @@ export default function CalendarPage() {
         {selectedDate && (
           <div className="glass-card p-4 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
               </h2>
               <button
@@ -213,21 +223,27 @@ export default function CalendarPage() {
                   setSelectedDate(null)
                   setSelectedDateEvents([])
                 }}
-                className="text-sm text-gray-500 hover:text-gray-700"
+                className="text-sm transition-colors duration-250"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
               >
                 Close
               </button>
             </div>
 
             {selectedDateEvents.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                 <p className="mb-4">No events scheduled for this day</p>
                 <button
                   onClick={() => {
                     setShowCreateForm(true)
                     // Pre-fill the date in the form
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors duration-250"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                 >
                   <Plus className="w-4 h-4" strokeWidth={2} />
                   <span>Add Event</span>
@@ -236,16 +252,16 @@ export default function CalendarPage() {
             ) : (
               <div className="space-y-3">
                 {selectedDateEvents.map((event) => (
-                  <div key={event.id} className="p-3 rounded-lg bg-white/50 border border-gray-100">
+                  <div key={event.id} className="p-3 rounded-lg border transition-colors duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
                     <div className="flex items-start gap-3">
                       {'time' in event ? (
-                        <Calendar className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" strokeWidth={2} />
+                        <Calendar className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />
                       ) : (
-                        <CheckSquare className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" strokeWidth={2} />
+                        <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />
                       )}
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 mb-1">{event.title}</h3>
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                        <h3 className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{event.title}</h3>
+                        <div className="flex flex-wrap items-center gap-4 text-xs" style={{ color: 'var(--text-secondary)' }}>
                           {'time' in event && event.time && (
                             <div className="flex items-center gap-1">
                               <Clock className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -265,7 +281,7 @@ export default function CalendarPage() {
                             </div>
                           )}
                           {'dueDate' in event && (
-                            <span className="text-orange-600">To-Do</span>
+                            <span style={{ color: 'var(--accent-primary)' }}>To-Do</span>
                           )}
                         </div>
                       </div>

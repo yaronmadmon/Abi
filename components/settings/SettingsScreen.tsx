@@ -14,9 +14,12 @@ import {
   LogOut,
   Mail,
   Mic,
+  Monitor,
+  Moon,
   Shield,
   ShoppingCart,
   Sparkles,
+  Sun,
   Trash2,
   User,
   Users,
@@ -28,6 +31,7 @@ import SettingsSection from './SettingsSection'
 import SettingsRow from './SettingsRow'
 import { showToast } from '@/components/feedback/ToastContainer'
 import { useAbiSettings, type AbiConfirmationStyle, type AbiResponseStyle, type AbiTone, type MeasurementUnits } from './useAbiSettings'
+import { useTheme } from '@/contexts/ThemeContext'
 
 type ScreenId =
   | 'main'
@@ -176,6 +180,7 @@ export default function SettingsScreen({
   userId: string | null
 }) {
   const router = useRouter()
+  const { viewMode, colorMode, toggleViewMode, toggleColorMode } = useTheme()
   const {
     settings,
     update,
@@ -394,6 +399,27 @@ export default function SettingsScreen({
               icon={<UserRound className="w-4 h-4" style={{ color: 'var(--icon-color)' }} strokeWidth={1.75} />}
               title="Account details"
               onPress={() => push('account')}
+              isLast
+            />
+          </div>
+        </SettingsSection>
+
+        <SettingsSection title="Display">
+          <div className={sectionStackClass}>
+            <SettingsRow
+              icon={<Monitor className="w-4 h-4" style={{ color: 'var(--icon-color)' }} strokeWidth={1.75} />}
+              title="View mode"
+              value={viewMode === 'mobile' ? 'Mobile' : 'Desktop'}
+              kind="action"
+              onPress={toggleViewMode}
+              isLast={false}
+            />
+            <SettingsRow
+              icon={colorMode === 'light' ? <Moon className="w-4 h-4" style={{ color: 'var(--icon-color)' }} strokeWidth={1.75} /> : <Sun className="w-4 h-4" style={{ color: 'var(--icon-color)' }} strokeWidth={1.75} />}
+              title="Color mode"
+              value={colorMode === 'light' ? 'Light' : 'Dark'}
+              kind="action"
+              onPress={toggleColorMode}
               isLast
             />
           </div>

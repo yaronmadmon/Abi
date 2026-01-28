@@ -43,16 +43,31 @@ function ErrorFallback({ error }: { error: Error | null }) {
   return (
     <div className="flex items-center justify-center p-8">
       <div className="text-center max-w-md">
-        <div className="text-red-500 text-5xl mb-4">⚠️</div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="text-5xl mb-4" style={{ color: 'var(--error)' }}>
+          ⚠️
+        </div>
+        <h2
+          className="text-xl font-semibold mb-2"
+          style={{ color: 'var(--text-primary)' }}
+        >
           Something went wrong
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
           {error?.message || 'An unexpected error occurred'}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          className="px-4 py-2 rounded transition-colors duration-250"
+          style={{
+            backgroundColor: 'var(--accent-primary)',
+            color: 'var(--text-primary)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = '0.9'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = '1'
+          }}
         >
           Reload Page
         </button>

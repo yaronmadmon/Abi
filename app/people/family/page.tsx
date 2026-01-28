@@ -209,15 +209,18 @@ export default function FamilyPage() {
       <PageContainer maxWidth="2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/people" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/people" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to People
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Family</h1>
-            <p className="text-sm text-gray-500">Household members</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Family</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Household members</p>
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors duration-250"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
           >
             <Plus className="w-4 h-4" strokeWidth={2} />
             <span className="text-sm font-medium">Add Family Member</span>
@@ -226,10 +229,10 @@ export default function FamilyPage() {
 
         {showAddForm && (
           <div className="glass-card p-5 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Family Member</h2>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Add Family Member</h2>
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                   Name <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -239,7 +242,10 @@ export default function FamilyPage() {
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="e.g., Sarah"
-                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 transition-colors duration-250"
+                    style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && newName.trim()) {
                         addFamilyMember()

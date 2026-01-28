@@ -28,16 +28,20 @@ const QuickCaptureRow = memo(function QuickCaptureRow() {
 
   return (
     <div className="glass-card p-4 mb-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-3">Quick Capture</h3>
+      <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Quick Capture</h3>
       <div className="flex items-center justify-between gap-2 overflow-x-auto scrollbar-hide">
         {captureOptions.map((option) => (
           <button
             key={option.type}
             onClick={() => router.push(`/capture?type=${option.type}`)}
-            className="flex flex-col items-center justify-center gap-2 min-w-[70px] p-3 rounded-xl bg-white/60 hover:bg-white/80 card-press transition-all duration-200"
+            className="flex flex-col items-center justify-center gap-2 min-w-[70px] p-3 rounded-xl card-press transition-all duration-250 hover:bg-white/10"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--glass-border)'
+            }}
           >
-            <option.Icon className="w-5 h-5" style={{ color: 'var(--icon-color)' }} strokeWidth={1.5} />
-            <span className="text-xs font-medium text-gray-700">{option.label}</span>
+            <option.Icon className="w-5 h-5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
+            <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{option.label}</span>
           </button>
         ))}
       </div>

@@ -30,7 +30,7 @@ export default function OnboardingPage() {
       case 1:
         return (
           <div className="space-y-6">
-            <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               How many people live in your home?
             </h1>
             <div className="grid grid-cols-2 gap-4">
@@ -53,7 +53,7 @@ export default function OnboardingPage() {
       case 2:
         return (
           <div className="space-y-6">
-            <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               Do you have any pets?
             </h1>
             <div className="space-y-4">
@@ -82,7 +82,7 @@ export default function OnboardingPage() {
       case 3:
         return (
           <div className="space-y-6">
-            <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               What type of home do you live in?
             </h1>
             <div className="space-y-4">
@@ -129,10 +129,10 @@ export default function OnboardingPage() {
       case 6:
         return (
           <div className="space-y-6">
-            <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               You&apos;re all set! 🎉
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
               Let&apos;s get started managing your home.
             </p>
             <button onClick={handleNext} className="btn-primary w-full py-6 text-xl">
@@ -147,13 +147,16 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--background)' }}>
       <div className="glass-card p-8 max-w-2xl w-full">
         {renderStep()}
         {step > 1 && step < 6 && (
           <button
             onClick={handleBack}
-            className="mt-8 text-gray-500 hover:text-gray-700"
+            className="mt-8 transition-colors duration-250"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
           >
             ← Back
           </button>
@@ -162,9 +165,8 @@ export default function OnboardingPage() {
           {[1, 2, 3, 4, 5, 6].map((s) => (
             <div
               key={s}
-              className={`h-2 rounded-full transition-all ${
-                s <= step ? 'bg-blue-500 w-8' : 'bg-gray-200 w-2'
-              }`}
+              className="h-2 rounded-full transition-all duration-250"
+              style={s <= step ? { backgroundColor: 'var(--accent-primary)', width: '2rem' } : { backgroundColor: 'var(--glass-border)', width: '0.5rem' }}
             />
           ))}
         </div>
@@ -204,7 +206,7 @@ function StrugglesStep({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+      <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
         What are your top three struggles at home?
       </h1>
       <div className="space-y-3">
@@ -212,11 +214,14 @@ function StrugglesStep({
           <button
             key={option}
             onClick={() => handleToggle(option)}
-            className={`w-full py-4 px-6 rounded-xl text-left transition-all ${
-              selected.includes(option)
-                ? 'bg-blue-500 text-white shadow-soft-lg'
-                : 'bg-white/60 text-gray-700 shadow-soft hover:bg-white/80'
-            }`}
+            className="w-full py-4 px-6 rounded-xl text-left transition-all duration-250"
+            style={selected.includes(option) ? { backgroundColor: 'var(--accent-primary)', color: 'white' } : { backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+            onMouseEnter={(e) => {
+              if (!selected.includes(option)) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'
+            }}
+            onMouseLeave={(e) => {
+              if (!selected.includes(option)) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+            }}
           >
             {option}
           </button>
@@ -272,7 +277,7 @@ function DietaryStep({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+      <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
         Any dietary preferences or restrictions?
       </h1>
       <div className="space-y-3">
@@ -280,11 +285,14 @@ function DietaryStep({
           <button
             key={option}
             onClick={() => handleToggle(option)}
-            className={`w-full py-4 px-6 rounded-xl text-left transition-all ${
-              selected.includes(option)
-                ? 'bg-blue-500 text-white shadow-soft-lg'
-                : 'bg-white/60 text-gray-700 shadow-soft hover:bg-white/80'
-            }`}
+            className="w-full py-4 px-6 rounded-xl text-left transition-all duration-250"
+            style={selected.includes(option) ? { backgroundColor: 'var(--accent-primary)', color: 'white' } : { backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+            onMouseEnter={(e) => {
+              if (!selected.includes(option)) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'
+            }}
+            onMouseLeave={(e) => {
+              if (!selected.includes(option)) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+            }}
           >
             {option}
           </button>

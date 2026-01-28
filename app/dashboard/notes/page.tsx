@@ -181,17 +181,20 @@ export default function NotesPage() {
     <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       <PageContainer maxWidth="4xl">
         {/* Header */}
-        <div className="sticky top-0 z-10 backdrop-blur-xl px-6 py-4 border-b border-gray-200/50" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="sticky top-0 z-10 backdrop-blur-xl px-6 py-4 transition-colors duration-250" style={{ backgroundColor: 'var(--background)', borderBottom: '1px solid var(--glass-border)' }}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <Link href="/today" className="text-gray-500 hover:text-gray-700">
+              <Link href="/today" className="transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
                 ← Back
               </Link>
-              <h1 className="text-3xl font-bold text-gray-900">Notes</h1>
+              <h1 className="text-3xl font-bold transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>Notes</h1>
             </div>
             <button
               onClick={handleCreateNote}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Plus className="w-4 h-4" strokeWidth={2} />
               <span className="font-medium">Write a Note</span>
@@ -200,13 +203,22 @@ export default function NotesPage() {
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" strokeWidth={1.5} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors duration-250" strokeWidth={1.5} style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search notes..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border focus:outline-none transition-all duration-250"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--glass-border)', color: 'var(--text-primary)' }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 158, 255, 0.2)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--glass-border)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
             />
           </div>
         </div>
@@ -215,17 +227,20 @@ export default function NotesPage() {
         <div className="px-6 py-4">
           {filteredNotes.length === 0 ? (
             <div className="text-center py-16">
-              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" strokeWidth={1} />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <FileText className="w-16 h-16 mx-auto mb-4 transition-colors duration-250" strokeWidth={1} style={{ color: 'var(--text-muted)' }} />
+              <h3 className="text-lg font-semibold mb-2 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>
                 {searchQuery ? 'No notes found' : 'No notes yet. What\'s on your mind?'}
               </h3>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm mb-6 transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
                 {searchQuery ? 'Try a different search term' : 'Create your first note to get started'}
               </p>
               {!searchQuery && (
                 <button
                   onClick={handleCreateNote}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                  className="px-6 py-3 text-white rounded-lg transition-colors duration-250 font-medium"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                 >
                   Create Note
                 </button>
@@ -243,30 +258,39 @@ export default function NotesPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           {note.pinned && (
-                            <span className="text-xs text-blue-600 font-medium">📌</span>
+                            <span className="text-xs font-medium transition-colors duration-250" style={{ color: 'var(--accent-primary)' }}>📌</span>
                           )}
-                          <h3 className="text-lg font-bold text-gray-900 truncate">
+                          <h3 className="text-lg font-bold truncate transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>
                             {note.title || 'Untitled Note'}
                           </h3>
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-sm line-clamp-2 mb-2 transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
                           {getPreview(note.body)}
                         </p>
-                        <p className="text-[10px] text-gray-400">
+                        <p className="text-[10px] transition-colors duration-250" style={{ color: 'var(--text-muted)' }}>
                           {formatDate(note.updatedAt)}
                         </p>
                       </div>
                     </div>
                   </Link>
                   {/* Action buttons outside Link to prevent navigation on click */}
-                  <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-250">
                     <button
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
                         togglePin(note.id, e)
                       }}
-                      className="p-1.5 rounded-md bg-white hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 shadow-sm"
+                      className="p-1.5 rounded-md transition-colors duration-250 shadow-sm"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--text-muted)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'
+                        e.currentTarget.style.color = 'var(--text-muted)'
+                      }}
                       title={note.pinned ? 'Unpin' : 'Pin'}
                     >
                       {note.pinned ? '📌' : '📍'}
@@ -277,7 +301,16 @@ export default function NotesPage() {
                         e.stopPropagation()
                         handleDeleteNote(note.id, e)
                       }}
-                      className="p-1.5 rounded-md bg-white hover:bg-red-50 transition-colors text-gray-400 hover:text-red-600 shadow-sm"
+                      className="p-1.5 rounded-md transition-colors duration-250 shadow-sm"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--text-muted)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(248, 113, 113, 0.2)'
+                        e.currentTarget.style.color = 'var(--error)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'
+                        e.currentTarget.style.color = 'var(--text-muted)'
+                      }}
                       title="Delete"
                     >
                       ×
@@ -293,7 +326,8 @@ export default function NotesPage() {
       {/* Floating Action Button for quick note creation */}
       <button
         onClick={handleCreateNote}
-        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl transition-all duration-250 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
+        style={{ backgroundColor: 'var(--accent-primary)' }}
         title="New Note (⌘N)"
         aria-label="Create new note"
       >

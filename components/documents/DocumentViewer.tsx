@@ -70,21 +70,30 @@ export default function DocumentViewer({ isOpen, onClose, fileUrl, fileName, tit
             <>
               <button
                 onClick={handleZoomOut}
-                className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 text-white rounded-lg transition-colors duration-250"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 title="Zoom Out"
               >
                 <ZoomOut className="w-5 h-5" strokeWidth={2} />
               </button>
               <button
                 onClick={handleZoomIn}
-                className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 text-white rounded-lg transition-colors duration-250"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 title="Zoom In"
               >
                 <ZoomIn className="w-5 h-5" strokeWidth={2} />
               </button>
               <button
                 onClick={handleRotate}
-                className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 text-white rounded-lg transition-colors duration-250"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 title="Rotate"
               >
                 <RotateCw className="w-5 h-5" strokeWidth={2} />
@@ -94,7 +103,10 @@ export default function DocumentViewer({ isOpen, onClose, fileUrl, fileName, tit
           {onShare && (
             <button
               onClick={onShare}
-              className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+              className="p-2 text-white rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'transparent' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title="Share"
             >
               <Share2 className="w-5 h-5" strokeWidth={2} />
@@ -102,14 +114,20 @@ export default function DocumentViewer({ isOpen, onClose, fileUrl, fileName, tit
           )}
           <button
             onClick={handleDownload}
-            className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+            className="p-2 text-white rounded-lg transition-colors duration-250"
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             title="Download"
           >
             <Download className="w-5 h-5" strokeWidth={2} />
           </button>
           <button
             onClick={onClose}
-            className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+            className="p-2 text-white rounded-lg transition-colors duration-250"
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             title="Close"
           >
             <X className="w-5 h-5" strokeWidth={2} />
@@ -131,7 +149,10 @@ export default function DocumentViewer({ isOpen, onClose, fileUrl, fileName, tit
                 <p className="mb-4">Failed to load image. The file may be corrupted or the URL is invalid.</p>
                 <button
                   onClick={handleDownload}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 mx-auto"
+                  className="px-6 py-3 rounded-lg transition-colors duration-250 flex items-center gap-2 mx-auto"
+                  style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                 >
                   <Download className="w-5 h-5" strokeWidth={2} />
                   <span>Download to view</span>
@@ -173,7 +194,10 @@ export default function DocumentViewer({ isOpen, onClose, fileUrl, fileName, tit
             <p className="mb-4">Preview not available for this file type</p>
             <button
               onClick={handleDownload}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 mx-auto"
+              className="px-6 py-3 rounded-lg transition-colors duration-250 flex items-center gap-2 mx-auto"
+              style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Download className="w-5 h-5" strokeWidth={2} />
               <span>Download to view</span>

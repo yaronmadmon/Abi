@@ -36,6 +36,8 @@ import { commandExecutor } from '@/ai/execution/commandExecutor'
 import { approvalQueue } from '@/ai/execution/approvalQueue'
 import { FeatureErrorBoundary } from '@/components/errors/FeatureErrorBoundary'
 import AppModal from './modals/AppModal'
+import MealPreparationFlow from './kitchen/MealPreparationFlow'
+import { mealsHandler } from '@/ai/handlers/mealsHandler'
 
 interface Message {
   id: string
@@ -76,12 +78,14 @@ function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose
   const [images, setImages] = useState<string[]>([]) // Base64 encoded images
   const [imagePreviews, setImagePreviews] = useState<string[]>([]) // Preview URLs
   const [showMediaMenu, setShowMediaMenu] = useState(false)
+  const [showMealPreparationFlow, setShowMealPreparationFlow] = useState(false)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const recognitionRef = useRef<any>(null)
   const isSpeakingRef = useRef<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const pathname = usePathname()
   const hasLoadedHistoryRef = useRef<boolean>(false)
   const pendingUserMessageIdRef = useRef<string | null>(null)
@@ -261,6 +265,19 @@ function AIChatConsoleContent({ isOpen: externalIsOpen, onClose: externalOnClose
     }
   }, [isOpen])
 
+  // Focus input when modal opens (if not disabled)
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      // Small delay to ensure modal is fully rendered
+      const timer = setTimeout(() => {
+        if (inputRef.current && !isProcessing && mode !== 'listening' && !showMealPreparationFlow) {
+          inputRef.current.focus()
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, isProcessing, mode, showMealPreparationFlow])
+
   // Auto-send in speech mode when voice input completes
   const autoSendTriggeredRef = useRef<boolean>(false)
 
@@ -392,6 +409,31 @@ Structure: Acknowledge → Respond → Follow-up`
     setIsProcessing(true)
 
     try {
+      // Check for explicit meal preparation requests BEFORE AI classification (skip slow API call)
+      const lowerInput = messageText.toLowerCase()
+      const isMealPreparationRequest = 
+        lowerInput.includes('prepare a meal') ||
+        lowerInput.includes('prepare meal') ||
+        lowerInput.includes('plan a meal') ||
+        lowerInput.includes('make a meal') ||
+        (lowerInput.includes('meal') && (lowerInput.includes('prepare') || lowerInput.includes('plan') || lowerInput.includes('make')))
+      
+      if (isMealPreparationRequest && pathname?.includes('/kitchen')) {
+        // Skip AI classification, directly show meal preparation flow
+        setShowMealPreparationFlow(true)
+        const responseMessage: Message = {
+          id: makeId(),
+          role: 'assistant',
+          text: 'Great! Let\'s prepare a meal together. Choose your meal type and protein preference.',
+          timestamp: Date.now(),
+        }
+        appendMessage(responseMessage)
+        handleSpeak(responseMessage.text)
+        setIsProcessing(false)
+        isProcessingRef.current = false
+        return
+      }
+
       // Get app context
       const context = getAppContext()
       const fullHistory = buildHistoryText([...messagesRef.current, userMessage])
@@ -443,7 +485,7 @@ Structure: Acknowledge → Respond → Follow-up`
       if (intent.type === 'clarification' || intent.type === 'unknown') {
         const responseText =
           intent.followUpQuestion?.trim() ||
-          `I’m not sure what you want me to do with “${messageText || 'that'}”. What outcome do you want?`
+          `I'm not sure what you want me to do with "${messageText || 'that'}". What outcome do you want?`
 
         const responseMessage: Message = {
           id: makeId(),
@@ -740,8 +782,12 @@ Structure: Acknowledge → Respond → Follow-up`
     return (
       <button
         onClick={() => setInternalIsOpen(true)}
-        className="fixed bottom-20 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
-        style={{ bottom: 'calc(64px + 1rem)' }}
+        className="fixed bottom-20 right-6 w-16 h-16 rounded-full text-white shadow-lg transition-all duration-250 flex items-center justify-center z-40 hover:scale-110 active:scale-95"
+        style={{ 
+          bottom: 'calc(64px + 1rem)',
+          backgroundColor: 'var(--accent-primary)',
+          boxShadow: '0 10px 40px rgba(139, 158, 255, 0.4)'
+        }}
         title="Open AI Assistant"
       >
         <Mic className="w-6 h-6" strokeWidth={1.5} />
@@ -758,11 +804,14 @@ Structure: Acknowledge → Respond → Follow-up`
       onClose={onClose} 
       variant="center" 
       className="glass-card w-full max-w-2xl max-h-[90vh] flex flex-col p-0"
-      style={{ backgroundColor: 'var(--card-bg)' }}
+      style={{ backgroundColor: 'var(--bg-elevated)' }}
     >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Abby</h2>
+        <div 
+          className="flex items-center justify-between p-4 flex-shrink-0"
+          style={{ borderBottom: '1px solid var(--glass-border)' }}
+        >
+          <h2 id="modal-title" className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Abby</h2>
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -774,11 +823,16 @@ Structure: Acknowledge → Respond → Follow-up`
                   setVoiceEnabled(true)
                 }
               }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-250 ${
                 speechMode
-                  ? 'bg-green-100 text-green-700 border-2 border-green-300'
-                  : 'bg-gray-100 text-gray-500'
+                  ? ''
+                  : ''
               }`}
+              style={{
+                backgroundColor: speechMode ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                color: speechMode ? 'var(--success)' : 'var(--text-muted)',
+                border: speechMode ? '1px solid rgba(74, 222, 128, 0.3)' : '1px solid transparent'
+              }}
               title={speechMode ? 'Speech Mode ON (Auto-send + Auto-speak)' : 'Speech Mode OFF'}
             >
               {speechMode ? '🎙️ ON' : '🎙️'}
@@ -786,11 +840,11 @@ Structure: Acknowledge → Respond → Follow-up`
             <button
               type="button"
               onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                voiceEnabled
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-500'
-              }`}
+              className="px-3 py-1.5 rounded-full text-sm transition-all duration-250"
+              style={{
+                backgroundColor: voiceEnabled ? 'rgba(139, 158, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                color: voiceEnabled ? 'var(--accent-primary)' : 'var(--text-muted)'
+              }}
               title={voiceEnabled ? 'Voice Responses On' : 'Voice Responses Off'}
             >
               🔊
@@ -801,7 +855,8 @@ Structure: Acknowledge → Respond → Follow-up`
                 e.stopPropagation()
                 onClose()
               }}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-2 transition-colors duration-250 hover:bg-white/10 rounded-full"
+              style={{ color: 'var(--text-muted)' }}
               title="Close"
             >
               <X className="w-5 h-5" strokeWidth={2} />
@@ -812,7 +867,7 @@ Structure: Acknowledge → Respond → Follow-up`
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
           {messages.length === 0 && (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center py-8" style={{ color: 'var(--text-muted)' }}>
               <p className="text-sm">Start a conversation</p>
               <p className="text-xs mt-2">Type a message, use the microphone, or attach an image</p>
             </div>
@@ -823,11 +878,11 @@ Structure: Acknowledge → Respond → Follow-up`
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                  message.role === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-900'
-                }`}
+                className="max-w-[80%] rounded-2xl px-4 py-2"
+                style={{
+                  backgroundColor: message.role === 'user' ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.1)',
+                  color: message.role === 'user' ? 'white' : 'var(--text-primary)'
+                }}
               >
                 <p className="text-sm whitespace-pre-wrap">{message.text}</p>
               </div>
@@ -835,11 +890,14 @@ Structure: Acknowledge → Respond → Follow-up`
           ))}
           {isProcessing && (
             <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-2xl px-4 py-2">
+              <div 
+                className="rounded-2xl px-4 py-2"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+              >
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-muted)' }}></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-muted)', animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-muted)', animationDelay: '0.2s' }}></div>
                 </div>
               </div>
             </div>
@@ -860,6 +918,84 @@ Structure: Acknowledge → Respond → Follow-up`
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Meal Preparation Flow Overlay */}
+        {showMealPreparationFlow && (
+          <div 
+            className="fixed inset-0 flex items-center justify-center p-4 z-[100]"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(8px)' }}
+          >
+            <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <MealPreparationFlow
+                onComplete={async (meal) => {
+                  try {
+                    // Save meal to weeklyMeals
+                    const stored = localStorage.getItem('weeklyMeals')
+                    const weeklyMeals: any[] = stored ? JSON.parse(stored) : []
+                    weeklyMeals.push(meal)
+                    localStorage.setItem('weeklyMeals', JSON.stringify(weeklyMeals))
+                    
+                    // Dispatch event to notify other components
+                    window.dispatchEvent(new Event('mealsUpdated'))
+                    
+                    // Add small delay to ensure save completes before closing
+                    await new Promise(resolve => setTimeout(resolve, 100))
+                    
+                    // Add ingredients to shopping list
+                    if (meal.ingredients && meal.ingredients.length > 0) {
+                      const ingredientNames = meal.ingredients.map((ing: any) => ing.name.toLowerCase().trim())
+                      const uniqueIngredients = Array.from(new Set(ingredientNames))
+                      
+                      await fetch('/api/shopping/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                          items: uniqueIngredients,
+                          category: 'pantry'
+                        })
+                      })
+                    }
+                    
+                    setShowMealPreparationFlow(false)
+                    setIsProcessing(false)
+                    isProcessingRef.current = false
+                    
+                    const successMessage: Message = {
+                      id: makeId(),
+                      role: 'assistant',
+                      text: `Perfect! I've added "${meal.title}" to your meal plan and added the ingredients to your shopping list. Want to plan another meal?`,
+                      timestamp: Date.now(),
+                    }
+                    appendMessage(successMessage)
+                    handleSpeak(successMessage.text)
+                    onIntent?.('meals', meal)
+                  } catch (error) {
+                    console.error('Failed to save meal:', error)
+                    const errorMessage: Message = {
+                      id: makeId(),
+                      role: 'assistant',
+                      text: 'Sorry, I had trouble saving that meal. Please try again.',
+                      timestamp: Date.now(),
+                    }
+                    appendMessage(errorMessage)
+                    handleSpeak(errorMessage.text)
+                  }
+                }}
+                onCancel={() => {
+                  setShowMealPreparationFlow(false)
+                  const cancelMessage: Message = {
+                    id: makeId(),
+                    role: 'assistant',
+                    text: 'No problem! Let me know when you\'re ready to plan a meal.',
+                    timestamp: Date.now(),
+                  }
+                  appendMessage(cancelMessage)
+                  handleSpeak(cancelMessage.text)
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Image Previews */}
         {imagePreviews.length > 0 && (
           <div className="px-4 pb-2 flex gap-2 flex-wrap flex-shrink-0">
@@ -869,12 +1005,14 @@ Structure: Acknowledge → Respond → Follow-up`
                   src={preview}
                   alt={`Preview ${index + 1}`}
                   fill
-                  className="object-cover rounded-lg border border-gray-200"
+                  className="object-cover rounded-lg"
+                  style={{ border: '1px solid var(--glass-border)' }}
                   unoptimized
                 />
                 <button
                   onClick={() => removeImage(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                  className="absolute -top-2 -right-2 text-white rounded-full p-1 transition-colors duration-250 hover:opacity-80"
+                  style={{ backgroundColor: 'var(--error)' }}
                   type="button"
                 >
                   <X className="w-3 h-3" strokeWidth={2} />
@@ -885,16 +1023,22 @@ Structure: Acknowledge → Respond → Follow-up`
         )}
 
         {/* Input Bar - FIXED LAYOUT (no jumping during listening) */}
-        <div className="border-t border-gray-200 p-4 bg-white flex-shrink-0">
+        <div 
+          className="p-4 flex-shrink-0"
+          style={{ 
+            borderTop: '1px solid var(--glass-border)',
+            backgroundColor: 'var(--bg-elevated)'
+          }}
+        >
           {/* Mode indicator */}
           {mode === 'listening' && (
-            <div className="mb-2 flex items-center gap-2 text-sm text-blue-600">
+            <div className="mb-2 flex items-center gap-2 text-sm" style={{ color: 'var(--accent-primary)' }}>
               <Mic className="w-4 h-4 animate-pulse" strokeWidth={2} />
               <span>Listening...</span>
             </div>
           )}
           {mode === 'preview' && (
-            <div className="mb-2 text-xs text-gray-500">
+            <div className="mb-2 text-xs" style={{ color: 'var(--text-muted)' }}>
               Review and edit your message, then tap Send
             </div>
           )}
@@ -912,8 +1056,10 @@ Structure: Acknowledge → Respond → Follow-up`
               {/* Input Field - Fixed height to prevent layout jumps */}
               <div className="flex-1 relative" style={{ minHeight: '44px' }}>
                 <input
+                  ref={inputRef}
                   type="text"
                   value={draftMessage}
+                  autoFocus
                   onChange={(e) => {
                     setDraftMessage(e.target.value)
                     // Switch to typing mode when user starts typing
@@ -961,13 +1107,15 @@ Structure: Acknowledge → Respond → Follow-up`
                       ? 'Review your message...'
                       : 'Type a message...'
                   }
-                  className="w-full px-4 py-3 pr-20 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  disabled={isProcessing || mode === 'listening'}
-                  style={{ 
-                    height: '44px',
-                    // Freeze layout during listening
-                    pointerEvents: mode === 'listening' ? 'none' : 'auto'
+                  className="w-full px-4 py-3 pr-20 rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: 'var(--input-bg)',
+                    border: '1px solid var(--input-border)',
+                    color: 'var(--text-primary)',
+                    height: '44px'
                   }}
+                  disabled={isProcessing || mode === 'listening' || showMealPreparationFlow}
+                  readOnly={false}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {/* + Button for Media */}
@@ -979,21 +1127,33 @@ Structure: Acknowledge → Respond → Follow-up`
                         setShowMediaMenu(!showMediaMenu)
                       }}
                       disabled={isProcessing || mode === 'listening'}
-                      className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50"
+                      className="p-2 rounded-lg transition-colors duration-250 disabled:opacity-50"
+                      style={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        color: 'var(--text-secondary)'
+                      }}
                       title="Add media"
                     >
                       <Plus className="w-4 h-4" strokeWidth={2} />
                     </button>
                     {/* Media Menu */}
                     {showMediaMenu && (
-                      <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 min-w-[160px] z-10">
+                      <div 
+                        className="absolute bottom-full right-0 mb-2 rounded-xl p-2 min-w-[160px] z-10"
+                        style={{
+                          backgroundColor: 'var(--bg-elevated)',
+                          border: '1px solid var(--glass-border)',
+                          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+                        }}
+                      >
                         <button
                           type="button"
                           onClick={() => {
                             cameraInputRef.current?.click()
                             setShowMediaMenu(false)
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-sm"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm transition-colors duration-250 hover:bg-white/5"
+                          style={{ color: 'var(--text-primary)' }}
                         >
                           <Camera className="w-4 h-4" strokeWidth={1.5} />
                           <span>Take Photo</span>
@@ -1004,7 +1164,8 @@ Structure: Acknowledge → Respond → Follow-up`
                             fileInputRef.current?.click()
                             setShowMediaMenu(false)
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-sm"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm transition-colors duration-250 hover:bg-white/5"
+                          style={{ color: 'var(--text-primary)' }}
                         >
                           <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
                           <span>Upload Image</span>
@@ -1012,7 +1173,8 @@ Structure: Acknowledge → Respond → Follow-up`
                         <button
                           type="button"
                           disabled
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-sm opacity-50 cursor-not-allowed"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm opacity-50 cursor-not-allowed"
+                          style={{ color: 'var(--text-muted)' }}
                         >
                           <FileText className="w-4 h-4" strokeWidth={1.5} />
                           <span>Upload File</span>
@@ -1029,8 +1191,13 @@ Structure: Acknowledge → Respond → Follow-up`
                   type="button"
                   onClick={startListening}
                   disabled={isProcessing}
-                  className="px-4 py-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  style={{ height: '44px', width: '44px' }}
+                  className="px-4 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-250 hover:bg-white/15"
+                  style={{ 
+                    height: '44px', 
+                    width: '44px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--text-secondary)'
+                  }}
                   title="Hold to talk"
                 >
                   <Mic className="w-5 h-5" strokeWidth={1.5} />
@@ -1042,8 +1209,12 @@ Structure: Acknowledge → Respond → Follow-up`
                 <button
                   type="button"
                   onClick={stopListening}
-                  className="px-4 py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors animate-pulse"
-                  style={{ height: '44px', width: '44px' }}
+                  className="px-4 py-3 rounded-xl text-white transition-colors duration-250 animate-pulse"
+                  style={{ 
+                    height: '44px', 
+                    width: '44px',
+                    backgroundColor: 'var(--error)'
+                  }}
                   title="Stop recording"
                 >
                   <Square className="w-5 h-5" strokeWidth={2} />
@@ -1055,8 +1226,12 @@ Structure: Acknowledge → Respond → Follow-up`
                 <button
                   type="submit"
                   disabled={!canSend}
-                  className="px-6 py-3 rounded-xl bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  style={{ height: '44px' }}
+                  className="px-6 py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-250 hover:shadow-lg active:scale-[0.98]"
+                  style={{ 
+                    height: '44px',
+                    backgroundColor: 'var(--accent-primary)',
+                    boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)'
+                  }}
                 >
                   <Send className="w-5 h-5" strokeWidth={2} />
                 </button>

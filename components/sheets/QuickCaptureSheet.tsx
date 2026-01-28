@@ -141,20 +141,20 @@ export default function QuickCaptureSheet({ type, isOpen, onClose }: QuickCaptur
   // But provide a quick capture option here
   if (type === 'task' || type === 'reminder') {
     return (
-      <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
+      <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col transition-all duration-250" style={{ backgroundColor: 'var(--card-bg)' }}>
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full" />
+          <div className="w-12 h-1 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
         </div>
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+        <div className="px-6 py-4 border-b transition-all duration-250" style={{ borderColor: 'var(--glass-border)' }}>
+          <h2 id="modal-title" className="text-xl font-semibold transition-all duration-250" style={{ color: 'var(--text-primary)' }}>
             {type === 'task' ? 'Add a To-Do' : type === 'reminder' ? 'Add a Reminder' : type === 'appointment' ? 'Add an Appointment' : type === 'note' ? 'Add a Note' : 'Quick Capture'}
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm mt-1 transition-all duration-250" style={{ color: 'var(--text-secondary)' }}>
             {type === 'task' ? 'What needs to be done?' : type === 'reminder' ? 'What should I remind you about?' : 'Describe what you need'}
           </p>
         </div>
         <div className="flex-1 overflow-y-auto p-6">
-          <p className="text-gray-500 text-center">Quick capture moved to full-page view</p>
+          <p className="text-center transition-all duration-250" style={{ color: 'var(--text-secondary)' }}>Quick capture moved to full-page view</p>
         </div>
       </AppModal>
     )

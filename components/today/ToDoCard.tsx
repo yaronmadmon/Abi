@@ -61,16 +61,22 @@ export default function ToDoCard() {
   return (
     <Link
       href="/dashboard/tasks"
-      className="glass-card p-5 hover:shadow-soft-lg transition-all duration-200 card-press relative"
+      className="glass-card p-5 transition-all duration-250 card-press relative"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-soft">
+          <div 
+            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            style={{ 
+              backgroundColor: 'var(--accent-primary)',
+              boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)'
+            }}
+          >
             <CheckSquare className="w-6 h-6 text-white" strokeWidth={1.5} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">To-Do</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>To-Do</h3>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
               {incompleteCount === 0
                 ? 'All done!'
                 : incompleteCount === 1

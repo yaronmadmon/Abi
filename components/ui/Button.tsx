@@ -24,20 +24,32 @@ const Button = memo(function Button({
   children,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'rounded-full font-medium transition-all duration-250 disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variantClasses = {
     primary: 'text-white hover:shadow-lg active:scale-[0.98]',
-    secondary: 'text-gray-800 hover:shadow-md active:scale-[0.98] dark:text-gray-200',
+    secondary: 'hover:shadow-md active:scale-[0.98]',
     danger: 'text-white hover:shadow-lg active:scale-[0.98]',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+    ghost: 'bg-transparent hover:bg-white/5 active:scale-[0.98]'
   }
   
   const variantStyles = {
-    primary: { backgroundColor: 'var(--accent-blue)' },
-    secondary: { backgroundColor: 'var(--accent-peach)' },
-    danger: { backgroundColor: 'var(--primary-red)' },
-    ghost: {}
+    primary: { 
+      backgroundColor: 'var(--accent-primary)',
+      boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)'
+    },
+    secondary: { 
+      backgroundColor: 'var(--glass-bg)', 
+      color: 'var(--text-primary)',
+      border: '1px solid var(--glass-border)'
+    },
+    danger: { 
+      backgroundColor: 'var(--error)',
+      boxShadow: '0 4px 15px rgba(248, 113, 113, 0.3)'
+    },
+    ghost: {
+      color: 'var(--text-primary)'
+    }
   }
   
   const sizeClasses = {

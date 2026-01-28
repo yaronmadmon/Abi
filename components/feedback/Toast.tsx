@@ -25,52 +25,88 @@ export default function Toast({ toast, onDismiss }: ToastProps) {
     return () => clearTimeout(timer)
   }, [toast.id, onDismiss])
 
-  const getIcon = () => {
+  const getIconStyle = () => {
     switch (toast.type) {
       case 'success':
-        return <CheckCircle2 className="w-5 h-5 text-green-600" strokeWidth={2} />
+        return { color: 'var(--success)' }
       case 'error':
-        return <XCircle className="w-5 h-5 text-red-600" strokeWidth={2} />
+        return { color: 'var(--error)' }
       case 'info':
-        return <AlertCircle className="w-5 h-5 text-blue-600" strokeWidth={2} />
+        return { color: 'var(--accent-primary)' }
     }
   }
 
-  const getBgColor = () => {
-    // Dark mode compatible colors
-    const isDark = document.documentElement.classList.contains('dark-mode')
+  const getContainerStyle = () => {
+    const baseStyle = {
+      backgroundColor: 'var(--bg-elevated)',
+      border: '1px solid var(--glass-border)',
+      transition: 'all 250ms ease',
+    }
     switch (toast.type) {
       case 'success':
-        return isDark ? 'bg-green-900/30 border-green-700/50' : 'bg-green-50 border-green-200'
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgba(74, 222, 128, 0.1)',
+          borderColor: 'rgba(74, 222, 128, 0.3)',
+        }
       case 'error':
-        return isDark ? 'bg-red-900/30 border-red-700/50' : 'bg-red-50 border-red-200'
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgba(248, 113, 113, 0.1)',
+          borderColor: 'rgba(248, 113, 113, 0.3)',
+        }
       case 'info':
-        return isDark ? 'bg-blue-900/30 border-blue-700/50' : 'bg-blue-50 border-blue-200'
+        return {
+          ...baseStyle,
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderColor: 'rgba(59, 130, 246, 0.3)',
+        }
     }
   }
 
-  const getTextColor = () => {
-    const isDark = document.documentElement.classList.contains('dark-mode')
+  const getTextStyle = () => {
     switch (toast.type) {
       case 'success':
-        return isDark ? 'text-green-200' : 'text-green-800'
+        return { color: 'var(--success)' }
       case 'error':
-        return isDark ? 'text-red-200' : 'text-red-800'
+        return { color: 'var(--error)' }
       case 'info':
-        return isDark ? 'text-blue-200' : 'text-blue-800'
+        return { color: 'var(--accent-primary)' }
     }
   }
 
   return (
     <div
-      className={`${getBgColor()} border rounded-lg px-4 py-3 shadow-soft-lg flex items-center gap-3 min-w-[280px] max-w-[400px] animate-slideUp`}
-      style={{ animation: 'slideUp 200ms ease-out' }}
+      className="rounded-lg px-4 py-3 shadow-soft-lg flex items-center gap-3 min-w-[280px] max-w-[400px] animate-slideUp"
+      style={{
+        ...getContainerStyle(),
+        animation: 'slideUp 200ms ease-out',
+      }}
     >
-      <div className="flex-shrink-0">{getIcon()}</div>
-      <p className={`flex-1 text-sm font-medium ${getTextColor()}`}>{toast.message}</p>
+      <div className="flex-shrink-0">
+        {toast.type === 'success' && (
+          <CheckCircle2 className="w-5 h-5" style={getIconStyle()} strokeWidth={2} />
+        )}
+        {toast.type === 'error' && (
+          <XCircle className="w-5 h-5" style={getIconStyle()} strokeWidth={2} />
+        )}
+        {toast.type === 'info' && (
+          <AlertCircle className="w-5 h-5" style={getIconStyle()} strokeWidth={2} />
+        )}
+      </div>
+      <p className="flex-1 text-sm font-medium" style={getTextStyle()}>
+        {toast.message}
+      </p>
       <button
         onClick={() => onDismiss(toast.id)}
-        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+        className="flex-shrink-0 transition-colors duration-250"
+        style={{ color: 'var(--text-muted)' }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--text-secondary)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--text-muted)'
+        }}
         type="button"
       >
         <X className="w-4 h-4" strokeWidth={2} />

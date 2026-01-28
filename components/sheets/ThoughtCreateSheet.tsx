@@ -29,18 +29,19 @@ export default function ThoughtCreateSheet({ isOpen, onClose, onSave }: ThoughtC
   }
 
   return (
-    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col" style={{ backgroundColor: 'var(--card-bg)' }}>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col transition-all duration-250" style={{ backgroundColor: 'var(--card-bg)' }}>
       {/* Handle */}
       <div className="flex justify-center pt-3 pb-2">
-        <div className="w-12 h-1 bg-gray-300 rounded-full" />
+        <div className="w-12 h-1 rounded-full transition-all duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
       </div>
 
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Quick Thought</h2>
+      <div className="px-6 py-4 border-b flex items-center justify-between transition-all duration-250" style={{ borderColor: 'var(--glass-border)' }}>
+        <h2 id="modal-title" className="text-xl font-semibold transition-all duration-250" style={{ color: 'var(--text-primary)' }}>Quick Thought</h2>
         <button
           onClick={onClose}
-          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-2 transition-all duration-250 hover:opacity-70"
+          style={{ color: 'var(--text-muted)' }}
           aria-label="Close"
         >
           <X className="w-5 h-5" strokeWidth={2} />
@@ -54,9 +55,15 @@ export default function ThoughtCreateSheet({ isOpen, onClose, onSave }: ThoughtC
             value={thought}
             onChange={(e) => setThought(e.target.value)}
             placeholder="What's on your mind?"
-            className="w-full px-4 py-3 pr-10 min-h-[150px] border-0 focus:outline-none focus:ring-0 bg-transparent resize-none"
+            className="w-full px-4 py-3 pr-10 min-h-[150px] border-0 focus:outline-none focus:ring-0 bg-transparent resize-none transition-all duration-250"
+            style={{ color: 'var(--text-primary)' }}
             autoFocus
           />
+          <style jsx>{`
+            textarea::placeholder {
+              color: var(--text-muted);
+            }
+          `}</style>
           <div className="absolute right-2 top-2">
             <AIPen
               text={thought}
@@ -68,17 +75,19 @@ export default function ThoughtCreateSheet({ isOpen, onClose, onSave }: ThoughtC
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3">
+      <div className="px-6 py-4 border-t flex items-center justify-end gap-3 transition-all duration-250" style={{ borderColor: 'var(--glass-border)' }}>
         <button
           onClick={onClose}
-          className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+          className="px-4 py-2 transition-all duration-250 hover:opacity-70"
+          style={{ color: 'var(--text-secondary)' }}
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={!thought.trim()}
-          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          className="px-6 py-2 text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-250 flex items-center gap-2"
+          style={{ backgroundColor: 'var(--accent-primary)' }}
         >
           <Save className="w-4 h-4" strokeWidth={2} />
           <span>Save</span>

@@ -184,13 +184,13 @@ export default function SignInPage() {
             <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
               Supabase is not configured. Please set up your environment variables.
             </p>
-            <div className="space-y-3 text-left bg-blue-50 p-4 rounded-lg mb-6" style={{ backgroundColor: 'var(--card-bg)' }}>
+            <div className="space-y-3 text-left p-4 rounded-lg mb-6 transition-colors duration-250" style={{ backgroundColor: 'var(--bg-elevated)' }}>
               <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Quick Setup:</p>
               <ol className="text-sm space-y-2 list-decimal list-inside" style={{ color: 'var(--text-secondary)' }}>
-                <li>Open <code className="bg-gray-100 px-2 py-1 rounded text-xs">SETUP-SUPABASE.md</code></li>
-                <li>Create a Supabase project at <a href="https://supabase.com" target="_blank" className="text-blue-500 underline">supabase.com</a></li>
+                <li>Open <code className="px-2 py-1 rounded text-xs" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>SETUP-SUPABASE.md</code></li>
+                <li>Create a Supabase project at <a href="https://supabase.com" target="_blank" className="underline transition-colors duration-250" style={{ color: 'var(--accent-primary)' }}>supabase.com</a></li>
                 <li>Run the database schema</li>
-                <li>Create <code className="bg-gray-100 px-2 py-1 rounded text-xs">.env.local</code> with your keys</li>
+                <li>Create <code className="px-2 py-1 rounded text-xs" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>.env.local</code> with your keys</li>
                 <li>Restart the dev server</li>
               </ol>
             </div>
@@ -198,7 +198,10 @@ export default function SignInPage() {
               href="https://supabase.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="inline-block px-6 py-3 text-white rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               Set Up Supabase
             </a>
@@ -228,12 +231,14 @@ export default function SignInPage() {
               <button
                 onClick={handleSignInWithGoogle}
                 disabled={loading}
-                className="w-full px-6 py-3.5 border-2 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-medium"
+                className="w-full px-6 py-3.5 border-2 rounded-xl transition-all duration-250 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-medium"
                 style={{
-                  borderColor: 'var(--border-color)',
-                  backgroundColor: 'var(--card-bg)',
+                  borderColor: 'var(--glass-border)',
+                  backgroundColor: 'var(--bg-elevated)',
                   color: 'var(--text-primary)',
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'}
               >
                 <Chrome className="w-5 h-5" strokeWidth={2} />
                 <span>Continue with Google</span>
@@ -313,7 +318,14 @@ export default function SignInPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-2 text-white rounded-lg transition-colors duration-250 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => {
+                    if (!loading) e.currentTarget.style.opacity = '0.9'
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) e.currentTarget.style.opacity = '1'
+                  }}
                 >
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
@@ -321,7 +333,7 @@ export default function SignInPage() {
 
               <p className="mt-4 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Don&apos;t have an account?{' '}
-                <a href="/auth/signup" className="text-blue-500 hover:text-blue-600">
+                <a href="/auth/signup" className="transition-colors duration-250" style={{ color: 'var(--accent-primary)' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
                   Sign up
                 </a>
               </p>
@@ -329,7 +341,10 @@ export default function SignInPage() {
           ) : (
             <button
               onClick={() => setShowPasswordAuth(true)}
-              className="mt-6 w-full text-sm text-center text-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+              className="mt-6 w-full text-sm text-center transition-colors duration-250 flex items-center justify-center gap-2"
+              style={{ color: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               <Mail className="w-4 h-4" strokeWidth={2} />
               <span>Sign in with email instead</span>

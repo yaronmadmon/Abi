@@ -58,34 +58,34 @@ export default function WeeklyPage() {
     <div className="min-h-screen p-6 pb-40" style={{ backgroundColor: 'var(--background)' }}>
       <PageContainer maxWidth="6xl">
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/today" className="text-gray-500 hover:text-gray-700">
+          <Link href="/today" className="transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
             ← Back
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Weekly Overview</h1>
+          <h1 className="text-3xl font-bold transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>Weekly Overview</h1>
           <div className="w-12"></div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <div className="lg:col-span-2">
             <div className="glass-card p-4 mb-4">
-              <h2 className="font-semibold text-gray-900 mb-4">This Week</h2>
+              <h2 className="font-semibold mb-4 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>This Week</h2>
               <div className="grid grid-cols-7 gap-2">
                 {days.map((day) => {
                   const dayTasks = getTasksForDay(day)
                   const dayMeals = getMealsForDay(day)
                   return (
                     <div key={day} className="text-center">
-                      <div className="font-medium text-gray-700 mb-2 text-sm">
+                      <div className="font-medium mb-2 text-sm transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>
                         {day.charAt(0).toUpperCase() + day.slice(1).slice(0, 3)}
                       </div>
                       <div className="space-y-1">
                         {dayTasks.length > 0 && (
-                          <div className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
+                          <div className="text-xs px-2 py-1 rounded transition-colors duration-250" style={{ backgroundColor: 'rgba(139, 158, 255, 0.2)', color: 'var(--accent-primary)' }}>
                             {dayTasks.length} task{dayTasks.length > 1 ? 's' : ''}
                           </div>
                         )}
                         {dayMeals.length > 0 && (
-                          <div className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                          <div className="text-xs px-2 py-1 rounded transition-colors duration-250" style={{ backgroundColor: 'rgba(74, 222, 128, 0.2)', color: 'var(--success)' }}>
                             {dayMeals.length} meal{dayMeals.length > 1 ? 's' : ''}
                           </div>
                         )}
@@ -97,20 +97,21 @@ export default function WeeklyPage() {
             </div>
 
             <div className="glass-card p-4">
-              <h2 className="font-semibold text-gray-900 mb-4">Upcoming Tasks</h2>
+              <h2 className="font-semibold mb-4 transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>Upcoming Tasks</h2>
               {upcomingTasks.length === 0 ? (
-                <p className="text-gray-500 text-sm">No upcoming tasks</p>
+                <p className="text-sm transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>No upcoming tasks</p>
               ) : (
                 <div className="space-y-2">
                   {upcomingTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-center gap-3 p-2 rounded-lg bg-white/50"
+                      className="flex items-center gap-3 p-2 rounded-lg transition-colors duration-250"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                     >
-                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      <div className="w-2 h-2 rounded-full transition-colors duration-250" style={{ backgroundColor: 'var(--accent-primary)' }}></div>
                       <div className="flex-1">
-                        <p className="text-sm text-gray-900">{task.title}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm transition-colors duration-250" style={{ color: 'var(--text-primary)' }}>{task.title}</p>
+                        <p className="text-xs transition-colors duration-250" style={{ color: 'var(--text-secondary)' }}>
                           {task.dueDate &&
                             new Date(task.dueDate).toLocaleDateString()}
                         </p>

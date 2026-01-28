@@ -117,15 +117,18 @@ export default function PetsPage() {
       <PageContainer maxWidth="2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <Link href="/people" className="text-gray-500 hover:text-gray-700 text-sm mb-2 inline-block">
+            <Link href="/people" className="text-sm mb-2 inline-block transition-colors duration-250" style={{ color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
               ← Back to People
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Pets</h1>
-            <p className="text-sm text-gray-500">Your furry friends</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Pets</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Your furry friends</p>
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors duration-250"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
           >
             <Plus className="w-4 h-4" strokeWidth={2} />
             <span className="text-sm font-medium">Add a Pet</span>
@@ -134,7 +137,7 @@ export default function PetsPage() {
 
         {showAddForm && (
           <div className="glass-card p-5 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Pet</h2>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Add Pet</h2>
             <div className="space-y-4">
               <div>
                 <label htmlFor="pet-name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -196,7 +199,7 @@ export default function PetsPage() {
                 </div>
               </div>
               <div>
-                <label htmlFor="pet-breed" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="pet-breed" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                   Breed (optional)
                 </label>
                 <input
@@ -205,11 +208,14 @@ export default function PetsPage() {
                   value={newBreed}
                   onChange={(e) => setNewBreed(e.target.value)}
                   placeholder="e.g., Golden Retriever"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition-colors duration-250"
+                  style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 />
               </div>
               <div>
-                <label htmlFor="pet-birthday" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="pet-birthday" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                   Birthday (optional)
                 </label>
                 <input
@@ -217,30 +223,39 @@ export default function PetsPage() {
                   type="date"
                   value={newBirthday}
                   onChange={(e) => setNewBirthday(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition-colors duration-250"
+                  style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                 />
               </div>
-              <div className="border-t border-gray-200 pt-3">
-                <p className="text-xs font-medium text-gray-500 mb-2">Veterinarian Info (optional)</p>
+              <div className="border-t pt-3" style={{ borderColor: 'var(--glass-border)' }}>
+                <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Veterinarian Info (optional)</p>
                 <div className="space-y-2">
                   <input
                     type="text"
                     value={newVetName}
                     onChange={(e) => setNewVetName(e.target.value)}
                     placeholder="Vet name"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition-colors duration-250"
+                    style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                   />
                   <input
                     type="tel"
                     value={newVetPhone}
                     onChange={(e) => setNewVetPhone(e.target.value)}
                     placeholder="Vet phone"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition-colors duration-250"
+                    style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="pet-notes" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="pet-notes" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                   Notes (optional)
                 </label>
                 <div className="relative">
@@ -249,7 +264,10 @@ export default function PetsPage() {
                     value={newNotes}
                     onChange={(e) => setNewNotes(e.target.value)}
                     placeholder="Additional information..."
-                    className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 resize-none transition-colors duration-250"
+                    style={{ border: '1px solid var(--glass-border)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+                    onBlur={(e) => e.currentTarget.style.borderColor = 'var(--glass-border)'}
                     rows={2}
                   />
                   <div className="absolute right-2 top-2">
@@ -265,7 +283,10 @@ export default function PetsPage() {
                 <button
                   onClick={addPet}
                   disabled={!newName.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-250"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'var(--accent-primary)')}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
                 >
                   Add Pet
                 </button>
@@ -282,7 +303,10 @@ export default function PetsPage() {
                     setNewVetPhone('')
                     setNewPhoto('')
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-lg transition-colors duration-250"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
                 >
                   Cancel
                 </button>
@@ -293,12 +317,15 @@ export default function PetsPage() {
 
         {pets.length === 0 ? (
           <div className="glass-card p-12 text-center">
-            <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" strokeWidth={1} />
-            <p className="text-gray-500 mb-2">No pets yet</p>
-            <p className="text-sm text-gray-400 mb-6">Add your first pet to get started</p>
+            <Heart className="w-16 h-16 mx-auto mb-4" strokeWidth={1} style={{ color: 'var(--text-muted)' }} />
+            <p className="mb-2" style={{ color: 'var(--text-secondary)' }}>No pets yet</p>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>Add your first pet to get started</p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-colors duration-250"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
             >
               <Plus className="w-5 h-5" strokeWidth={2} />
               <span>Add Pet</span>

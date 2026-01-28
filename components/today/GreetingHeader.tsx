@@ -27,10 +27,10 @@ export default function GreetingHeader() {
 
   return (
     <div className="mb-2">
-      <h1 className="text-3xl font-bold text-gray-900 animate-fade-in">
+      <h1 className="text-3xl font-bold animate-fade-in" style={{ color: 'var(--text-primary)' }}>
         {greeting}
       </h1>
-      <p className="text-sm text-gray-500 mt-1 animate-fade-in" style={{ animationDelay: '100ms' }}>
+      <p className="text-sm mt-1 animate-fade-in" style={{ color: 'var(--text-muted)', animationDelay: '100ms' }}>
         {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
       </p>
     </div>

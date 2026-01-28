@@ -66,18 +66,18 @@ export default function AIPen({ text, onPolished, disabled, className = '' }: AI
         }}
         disabled={isDisabled}
         className={`
-          p-1.5 rounded-md transition-all
+          p-1.5 rounded-md transition-all duration-250
           ${isDisabled 
             ? 'opacity-30 cursor-not-allowed' 
-            : 'opacity-60 hover:opacity-100 hover:bg-gray-100 active:bg-gray-200'
+            : 'opacity-60 hover:opacity-100 hover:bg-white/10 active:bg-white/15'
           }
         `}
         title={isDisabled ? 'Write something first' : 'Let Abby polish this'}
       >
         {isPolishing ? (
-          <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" strokeWidth={2} />
+          <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />
         ) : (
-          <Sparkles className="w-3.5 h-3.5 text-gray-500" strokeWidth={1.5} />
+          <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} strokeWidth={1.5} />
         )}
       </button>
 
@@ -88,28 +88,39 @@ export default function AIPen({ text, onPolished, disabled, className = '' }: AI
             className="fixed inset-0 z-10" 
             onClick={() => setShowMenu(false)}
           />
-          <div className="absolute right-0 bottom-full mb-2 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[140px]">
+          <div 
+            className="absolute right-0 bottom-full mb-2 z-20 rounded-xl py-1 min-w-[140px]"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              border: '1px solid var(--glass-border)',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+            }}
+          >
             <button
               onClick={() => handlePolish('polish')}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full text-left px-3 py-2 text-sm transition-colors duration-250 hover:bg-white/5"
+              style={{ color: 'var(--text-primary)' }}
             >
               ✨ Polish
             </button>
             <button
               onClick={() => handlePolish('shorten')}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full text-left px-3 py-2 text-sm transition-colors duration-250 hover:bg-white/5"
+              style={{ color: 'var(--text-primary)' }}
             >
               📝 Shorten
             </button>
             <button
               onClick={() => handlePolish('friendlier')}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full text-left px-3 py-2 text-sm transition-colors duration-250 hover:bg-white/5"
+              style={{ color: 'var(--text-primary)' }}
             >
               😊 Make friendlier
             </button>
             <button
               onClick={() => handlePolish('professional')}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full text-left px-3 py-2 text-sm transition-colors duration-250 hover:bg-white/5"
+              style={{ color: 'var(--text-primary)' }}
             >
               💼 Make professional
             </button>

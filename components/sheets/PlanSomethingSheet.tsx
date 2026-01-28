@@ -36,16 +36,16 @@ export default function PlanSomethingSheet({ isOpen, onClose }: PlanSomethingShe
   }
 
   return (
-    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col max-h-[70vh]" style={{ backgroundColor: 'var(--card-bg)' }}>
+    <AppModal isOpen={isOpen} onClose={onClose} variant="bottom" className="flex flex-col max-h-[70vh] transition-all duration-250" style={{ backgroundColor: 'var(--card-bg)' }}>
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full" />
+          <div className="w-12 h-1 rounded-full transition-all duration-250" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
         </div>
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-900">Plan Something</h2>
-          <p className="text-sm text-gray-500 mt-1">What would you like to plan?</p>
+        <div className="px-6 py-4 border-b transition-all duration-250" style={{ borderColor: 'var(--glass-border)' }}>
+          <h2 id="modal-title" className="text-xl font-semibold transition-all duration-250" style={{ color: 'var(--text-primary)' }}>Plan Something</h2>
+          <p className="text-sm mt-1 transition-all duration-250" style={{ color: 'var(--text-secondary)' }}>What would you like to plan?</p>
         </div>
 
         {/* Content */}
@@ -55,10 +55,14 @@ export default function PlanSomethingSheet({ isOpen, onClose }: PlanSomethingShe
               <button
                 key={option.type}
                 onClick={() => handleSelect(option)}
-                className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50/50 border border-gray-100 hover:border-blue-200 hover:shadow-soft transition-all duration-200 active:scale-95"
+                className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border transition-all duration-250 active:scale-95 hover:opacity-80"
+                style={{ 
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  borderColor: 'var(--glass-border)',
+                }}
               >
                 <span className="text-4xl">{option.icon}</span>
-                <span className="text-sm font-medium text-gray-900">{option.label}</span>
+                <span className="text-sm font-medium transition-all duration-250" style={{ color: 'var(--text-primary)' }}>{option.label}</span>
               </button>
             ))}
           </div>

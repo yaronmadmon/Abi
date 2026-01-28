@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef, memo } from 'react'
-import { Calendar, Clock, ChevronLeft, ChevronRight, MapPin, User, CheckSquare, X, Settings, Plus } from 'lucide-react'
-import Link from 'next/link'
+import { Calendar, Clock, ChevronLeft, ChevronRight, MapPin, User, CheckSquare, X, Plus } from 'lucide-react'
 import { getCalendarPreferences, getCalendarSystem, formatInCalendar } from '@/lib/calendarSystems'
 import AppointmentCreateSheet from '@/components/sheets/AppointmentCreateSheet'
 import { showToast } from '@/components/feedback/ToastContainer'
@@ -303,7 +302,7 @@ const CalendarCardContent = memo(function CalendarCardContent() {
     return (
       <div className="glass-card p-5 mb-4">
         <div className="flex items-center justify-center py-8">
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: 'rgba(255,255,255,0.1)', borderTopColor: 'var(--accent-primary)' }}></div>
         </div>
       </div>
     )
@@ -320,21 +319,12 @@ const CalendarCardContent = memo(function CalendarCardContent() {
       {/* Header */}
       <div className="mb-3">
         <div className="flex items-center justify-between relative">
-          <h2 className="text-lg font-semibold text-gray-900">Calendar</h2>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/settings/calendar"
-              className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
-              title="Calendar Systems"
-            >
-              <Settings className="w-4 h-4 text-gray-500" strokeWidth={1.5} />
-            </Link>
-            {pendingCount > 0 && !isExpanded && (
-              <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto', marginLeft: 'auto' }}>
-                {pendingCount > 99 ? '99+' : pendingCount}
-              </div>
-            )}
-          </div>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Calendar</h2>
+          {pendingCount > 0 && !isExpanded && (
+            <div className="pending-badge" style={{ position: 'static', top: 'auto', right: 'auto', marginLeft: 'auto' }}>
+              {pendingCount > 99 ? '99+' : pendingCount}
+            </div>
+          )}
         </div>
         
         {/* Additional Calendar Dates */}
@@ -345,7 +335,7 @@ const CalendarCardContent = memo(function CalendarCardContent() {
               if (!system) return null
               
               return (
-                <div key={calendarId} className="flex items-center gap-1.5 text-xs text-gray-600">
+                <div key={calendarId} className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
                   <span>{system.emoji}</span>
                   <span>{formatInCalendar(currentDate, calendarId, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 </div>
@@ -362,19 +352,20 @@ const CalendarCardContent = memo(function CalendarCardContent() {
           <div className="flex items-center justify-between mb-3">
             <button
               onClick={goToPreviousMonth}
-              className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+              className="p-1.5 rounded-lg transition-colors duration-250 hover:bg-white/5"
               aria-label="Previous month"
             >
-              <ChevronLeft className="w-4 h-4 text-gray-600" strokeWidth={2} />
+              <ChevronLeft className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} strokeWidth={2} />
             </button>
             
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {monthNames[month]} {year}
               </h3>
               <button
                 onClick={goToToday}
-                className="px-2.5 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                className="px-2.5 py-1 text-xs rounded-lg transition-colors duration-250 font-medium hover:bg-white/5"
+                style={{ color: 'var(--accent-primary)' }}
               >
                 Today
               </button>
@@ -382,10 +373,10 @@ const CalendarCardContent = memo(function CalendarCardContent() {
             
             <button
               onClick={goToNextMonth}
-              className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+              className="p-1.5 rounded-lg transition-colors duration-250 hover:bg-white/5"
               aria-label="Next month"
             >
-              <ChevronRight className="w-4 h-4 text-gray-600" strokeWidth={2} />
+              <ChevronRight className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} strokeWidth={2} />
             </button>
           </div>
 
@@ -393,7 +384,7 @@ const CalendarCardContent = memo(function CalendarCardContent() {
           <div className="grid grid-cols-7 gap-1">
             {/* Day headers */}
             {dayNames.map(day => (
-              <div key={day} className="text-center text-[10px] font-medium text-gray-500 py-1">
+              <div key={day} className="text-center text-[10px] font-medium py-1" style={{ color: 'var(--text-muted)' }}>
                 {day}
               </div>
             ))}
@@ -412,15 +403,14 @@ const CalendarCardContent = memo(function CalendarCardContent() {
                 <button
                   key={date.toISOString()}
                   onClick={() => handleDayClick(date)}
-                  className={`aspect-square p-1 rounded-lg transition-all duration-150 text-center relative ${
-                    isTodayDate
-                      ? 'bg-blue-500 text-white font-semibold'
-                      : isCurrentMonth
-                      ? 'hover:bg-gray-100/50 text-gray-900'
-                      : 'text-gray-400 hover:bg-gray-50/50'
-                  }`}
+                  className="aspect-square p-1 rounded-lg transition-all duration-250 text-center relative hover:bg-white/5"
+                  style={{
+                    backgroundColor: isTodayDate ? 'var(--accent-primary)' : 'transparent',
+                    color: isTodayDate ? 'white' : isCurrentMonth ? 'var(--text-primary)' : 'var(--text-muted)',
+                    fontWeight: isTodayDate ? 600 : 400
+                  }}
                 >
-                  <div className={`text-xs ${isTodayDate ? 'text-white' : 'text-gray-700'}`}>
+                  <div className="text-xs">
                     {date.getDate()}
                   </div>
                   {/* Event indicators */}
@@ -437,26 +427,27 @@ const CalendarCardContent = memo(function CalendarCardContent() {
                           return (
                             <div
                               key={i}
-                              className={`w-1 h-1 rounded-full ${
-                                isTodayDate
-                                  ? 'bg-white/80'
+                              className="w-1 h-1 rounded-full"
+                              style={{
+                                backgroundColor: isTodayDate
+                                  ? 'rgba(255,255,255,0.8)'
                                   : isAppointment
-                                  ? 'bg-blue-500'
+                                  ? 'var(--accent-primary)'
                                   : isReminder
-                                  ? 'bg-purple-500'
-                                  : 'bg-orange-500'
-                              }`}
+                                  ? '#A855F7'
+                                  : 'var(--warning)'
+                              }}
                             />
                           )
                         })
                       ) : (
                         // Show number for 4+ events
                         <div
-                          className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
-                            isTodayDate
-                              ? 'bg-white/30 text-white'
-                              : 'bg-gray-200 text-gray-700'
-                          }`}
+                          className="text-[8px] font-semibold px-1 py-0.5 rounded"
+                          style={{
+                            backgroundColor: isTodayDate ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)',
+                            color: isTodayDate ? 'white' : 'var(--text-secondary)'
+                          }}
                         >
                           {eventCount}
                         </div>
@@ -476,7 +467,7 @@ const CalendarCardContent = memo(function CalendarCardContent() {
           {/* Daily Header */}
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-semibold text-gray-900">
+              <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {selectedDate.toLocaleDateString('en-US', { 
                   weekday: 'long', 
                   month: 'long', 
@@ -484,7 +475,7 @@ const CalendarCardContent = memo(function CalendarCardContent() {
                   year: selectedDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
                 })}
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                 {selectedDateEvents.length === 0 
                   ? 'No events scheduled' 
                   : `${selectedDateEvents.length} ${selectedDateEvents.length === 1 ? 'event' : 'events'}`
@@ -494,16 +485,17 @@ const CalendarCardContent = memo(function CalendarCardContent() {
             <div className="flex items-center gap-2">
               <button
                 onClick={goToToday}
-                className="px-2.5 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                className="px-2.5 py-1 text-xs rounded-lg transition-colors duration-250 font-medium hover:bg-white/5"
+                style={{ color: 'var(--accent-primary)' }}
               >
                 Today
               </button>
               <button
                 onClick={handleCollapse}
-                className="p-1.5 rounded-lg hover:bg-gray-100/50 transition-colors"
+                className="p-1.5 rounded-lg transition-colors duration-250 hover:bg-white/5"
                 aria-label="Close"
               >
-                <X className="w-4 h-4 text-gray-600" strokeWidth={2} />
+                <X className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} strokeWidth={2} />
               </button>
             </div>
           </div>
@@ -511,12 +503,13 @@ const CalendarCardContent = memo(function CalendarCardContent() {
           {/* Agenda List */}
           <div className="max-h-[400px] overflow-y-auto scrollbar-hide">
             {selectedDateEvents.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Calendar className="w-8 h-8 text-gray-300 mx-auto mb-2" strokeWidth={1} />
+              <div className="text-center py-8" style={{ color: 'var(--text-muted)' }}>
+                <Calendar className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--text-muted)' }} strokeWidth={1} />
                 <p className="text-sm mb-3">No events scheduled for this day</p>
                 <button
                   onClick={() => setShowCreateSheet(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-full transition-all duration-250 text-sm font-medium hover:shadow-lg active:scale-[0.98]"
+                  style={{ backgroundColor: 'var(--accent-primary)', boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)' }}
                 >
                   <Plus className="w-4 h-4" strokeWidth={2} />
                   <span>Add Appointment</span>
@@ -531,21 +524,22 @@ const CalendarCardContent = memo(function CalendarCardContent() {
                   return (
                     <div
                       key={event.id}
-                      className="p-3 rounded-lg bg-white/50 border border-gray-100/50 hover:bg-white/70 transition-colors"
+                      className="p-3 rounded-lg transition-colors duration-250 hover:bg-white/5"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}
                     >
                       <div className="flex items-start gap-3">
                         <div className="mt-0.5 flex-shrink-0">
                           {isAppointment ? (
-                            <Calendar className="w-4 h-4 text-blue-500" strokeWidth={2} />
+                            <Calendar className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} strokeWidth={2} />
                           ) : isReminder ? (
-                            <Clock className="w-4 h-4 text-purple-500" strokeWidth={2} />
+                            <Clock className="w-4 h-4" style={{ color: '#A855F7' }} strokeWidth={2} />
                           ) : (
-                            <CheckSquare className="w-4 h-4 text-orange-500" strokeWidth={2} />
+                            <CheckSquare className="w-4 h-4" style={{ color: 'var(--warning)' }} strokeWidth={2} />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 mb-1">{event.title}</h4>
-                          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                          <h4 className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{event.title}</h4>
+                          <div className="flex flex-wrap items-center gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
                             {'time' in event && event.time && (
                               <div className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" strokeWidth={1.5} />
@@ -565,10 +559,10 @@ const CalendarCardContent = memo(function CalendarCardContent() {
                               </div>
                             )}
                             {isReminder && (
-                              <span className="text-purple-600 font-medium">Reminder</span>
+                              <span className="font-medium" style={{ color: '#A855F7' }}>Reminder</span>
                             )}
                             {!isAppointment && !isReminder && (
-                              <span className="text-orange-600 font-medium">To-Do</span>
+                              <span className="font-medium" style={{ color: 'var(--warning)' }}>To-Do</span>
                             )}
                           </div>
                         </div>

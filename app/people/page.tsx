@@ -8,8 +8,8 @@ export default function PeoplePage() {
     <div className="min-h-screen p-6 page-with-bottom-nav" style={{ backgroundColor: 'var(--background)' }}>
       <PageContainer>
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">People</h1>
-          <p className="text-sm text-gray-500">Family, pets & applicants</p>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>People</h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Family, pets & applicants</p>
         </div>
 
         {/* Summary Cards */}
@@ -21,7 +21,7 @@ export default function PeoplePage() {
             href="/people/family"
             variant="gradient"
           >
-            <p className="text-sm text-gray-500">Manage family members</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Manage family members</p>
           </SummaryCard>
 
           <SummaryCard
@@ -30,7 +30,7 @@ export default function PeoplePage() {
             icon="🐾"
             href="/people/pets"
           >
-            <p className="text-sm text-gray-500">Pet care & information</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Pet care & information</p>
           </SummaryCard>
 
         </div>

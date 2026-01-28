@@ -397,7 +397,7 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 mb-4">
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 py-8">
+          <div className="text-center py-8" style={{ color: 'var(--text-muted)' }}>
             <p className="text-sm">Start a conversation</p>
             <p className="text-xs mt-2">You can type or use the microphone to speak</p>
           </div>
@@ -408,11 +408,11 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                message.role === 'user'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-900'
-              }`}
+              className="max-w-[80%] rounded-2xl px-4 py-2"
+              style={{
+                backgroundColor: message.role === 'user' ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.1)',
+                color: message.role === 'user' ? 'white' : 'var(--text-primary)'
+              }}
             >
               <p className="text-sm whitespace-pre-wrap">{message.text}</p>
             </div>
@@ -420,11 +420,14 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
         ))}
         {isProcessing && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl px-4 py-2">
+            <div 
+              className="rounded-2xl px-4 py-2"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+            >
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-muted)' }}></div>
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-muted)', animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-muted)', animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
@@ -433,24 +436,30 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 p-4 bg-white">
+      <div 
+        className="p-4"
+        style={{ 
+          borderTop: '1px solid var(--glass-border)',
+          backgroundColor: 'var(--bg-elevated)'
+        }}
+      >
         {/* Voice Toggle */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                voiceEnabled
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-500'
-              }`}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all duration-250"
+              style={{
+                backgroundColor: voiceEnabled ? 'rgba(139, 158, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                color: voiceEnabled ? 'var(--accent-primary)' : 'var(--text-muted)'
+              }}
             >
               <span>🔊</span>
               <span>{voiceEnabled ? 'Voice On' : 'Voice Off'}</span>
             </button>
             {(isSpeaking || isListening) && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                 {isSpeaking && <span className="animate-pulse">🔊 Speaking...</span>}
                 {isListening && (
                   <span className="animate-pulse flex items-center gap-1">
@@ -472,12 +481,14 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
                   src={preview}
                   alt={`Preview ${index + 1}`}
                   fill
-                  className="object-cover rounded-lg border border-gray-200"
+                  className="object-cover rounded-lg"
+                  style={{ border: '1px solid var(--glass-border)' }}
                   unoptimized
                 />
                 <button
                   onClick={() => removeImage(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                  className="absolute -top-2 -right-2 text-white rounded-full p-1 transition-colors duration-250"
+                  style={{ backgroundColor: 'var(--error)' }}
                   type="button"
                 >
                   <X className="w-3 h-3" strokeWidth={2} />
@@ -496,7 +507,12 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type a message or use the microphone..."
-                className="w-full px-4 py-3 pr-28 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-4 py-3 pr-28 rounded-xl focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: 'var(--input-bg)',
+                  border: '1px solid var(--input-border)',
+                  color: 'var(--text-primary)'
+                }}
                 disabled={isProcessing || isListening}
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -510,7 +526,11 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessing}
-                  className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  className="p-2 rounded-lg transition-colors duration-250 disabled:opacity-50"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--text-secondary)'
+                  }}
                   title="Upload image"
                 >
                   <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
@@ -549,15 +569,17 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
                 }
               }}
               disabled={isProcessing}
-              className={`px-4 py-3 rounded-xl transition-colors ${
-                isListening
+              className="px-4 py-3 rounded-xl transition-all duration-250 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: isListening
                   ? conversationMode
-                    ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-red-500 text-white hover:bg-red-600'
+                    ? 'var(--success)'
+                    : 'var(--error)'
                   : conversationMode
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    ? 'var(--accent-primary)'
+                    : 'rgba(255, 255, 255, 0.1)',
+                color: isListening || conversationMode ? 'white' : 'var(--text-secondary)'
+              }}
               title={
                 isListening
                   ? conversationMode
@@ -581,7 +603,11 @@ export default function ConversationChat({ onIntent, onError }: ConversationChat
             <button
               type="submit"
               disabled={(!input.trim() && images.length === 0) || isProcessing || isListening}
-              className="px-6 py-3 rounded-xl bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-3 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-250 hover:shadow-lg active:scale-[0.98]"
+              style={{ 
+                backgroundColor: 'var(--accent-primary)',
+                boxShadow: '0 4px 15px rgba(139, 158, 255, 0.3)'
+              }}
             >
               {isProcessing ? '...' : '→'}
             </button>
